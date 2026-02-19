@@ -37,83 +37,25 @@ A comprehensive web-based event management platform for Bible Global Congress, b
 
 ## 📁 Project Structure
 bgc-event-management-system/
-│
-├── 📦 src/
-│   └── 📦 main/
-│       ├── 📦 java/com/bgc/event/
-│       │   ├── BgcEventManagementApplication.java
-│       │   │
-│       │   ├── 📂 config/          # Application configuration (Security, CORS, Beans)
-│       │   ├── 📂 controller/      # MVC Controllers (Admin, Organizer, Attendee, Auth)
-│       │   ├── 📂 model/           # JPA Entities (User, Event, Role, Category, etc.)
-│       │   ├── 📂 repository/      # Spring Data JPA Repositories
-│       │   ├── 📂 service/         # Business Logic Layer
-│       │   ├── 📂 security/        # Spring Security Config & JWT/Auth logic
-│       │   ├── 📂 dto/             # Data Transfer Objects
-│       │   ├── 📂 exception/       # Global & Custom Exception Handling
-│       │   ├── 📂 util/            # Utility Classes
-│       │   └── 📂 audit/           # Audit Logging & Tracking
-│       │
-│       └── 📦 resources/
-│           ├── 📂 templates/       # Thymeleaf Templates
-│           │
-│           │   ├── 📂 layouts/
-│           │   │   └── main-layout.html
-│           │   │
-│           │   ├── 📂 admin/
-│           │   │   ├── dashboard.html
-│           │   │   ├── users.html
-│           │   │   ├── roles.html
-│           │   │   ├── categories.html
-│           │   │   └── audit-logs.html
-│           │   │
-│           │   ├── 📂 organizer/
-│           │   │   ├── dashboard.html
-│           │   │   ├── events.html
-│           │   │   ├── event-form.html
-│           │   │   ├── attendance.html
-│           │   │   ├── reports.html
-│           │   │   └── analytics.html
-│           │   │
-│           │   ├── 📂 attendee/
-│           │   │   ├── dashboard.html
-│           │   │   ├── events.html
-│           │   │   ├── calendar.html
-│           │   │   ├── registrations.html
-│           │   │   └── profile.html
-│           │   │
-│           │   ├── 📂 auth/
-│           │   │   ├── login.html
-│           │   │   ├── register.html
-│           │   │   └── forgot-password.html
-│           │   │
-│           │   ├── 📂 fragments/
-│           │   │   ├── header.html
-│           │   │   ├── sidebar.html
-│           │   │   ├── footer.html
-│           │   │   │
-│           │   │   ├── 📂 modals/
-│           │   │   │   ├── user-modal.html
-│           │   │   │   ├── event-modal.html
-│           │   │   │   ├── role-modal.html
-│           │   │   │   ├── category-modal.html
-│           │   │   │   └── confirm-delete-modal.html
-│           │   │   │
-│           │   │   └── 📂 charts/
-│           │   │       ├── attendance-chart.html
-│           │   │       └── revenue-chart.html
-│           │   │
-│           │   └── 📂 error/
-│           │       ├── 403.html
-│           │       ├── 404.html
-│           │       └── 500.html
-│           │
-│           ├── 📂 static/          # CSS, JS, Images, Fonts
-│           ├── 📂 messages/        # i18n message bundles
-│           ├── 📂 db/migration/    # Flyway/Liquibase migration scripts
-│           └── application.properties
-│
-├── 📂 docker/
-│   └── Dockerfile
-│
-└── docker-compose.yml
+├── src/main/java/com/bgc/event/
+│ ├── config/ # Configuration classes
+│ ├── controller/ # MVC controllers
+│ ├── controller/api/ # REST API controllers
+│ ├── model/ # JPA entities
+│ ├── repository/ # Data repositories
+│ ├── service/ # Business logic
+│ ├── dto/ # Data transfer objects
+│ ├── exception/ # Custom exceptions
+│ ├── util/ # Utility classes
+│ └── audit/ # Audit logging
+├── src/main/resources/
+│ ├── templates/ # Thymeleaf templates
+│ ├── static/ # CSS, JS, images
+│ ├── messages/ # i18n message files
+│ ├── db/migration/ # Flyway migrations
+│ └── application.properties
+├── docker/
+│ └── Dockerfile
+└── docker-compose.yml     
+          
+      
