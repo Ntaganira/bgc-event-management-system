@@ -5,7 +5,7 @@ package com.bgc.event.dto;
  * - Project    : BGC EVENT
  * - Package    : com.bgc.event.dto
  * - File       : EventUpdateRequest.java
- * - Date       : 2026. 02. 21.
+ * - Date       : 2026. 02. 22.
  * - User       : NTAGANIRA H.
  * - Desc       : Request DTO for event update
  * </pre>
@@ -67,9 +67,30 @@ public class EventUpdateRequest {
     
     private String termsAndConditions;
     
+    // Boolean fields with explicit getter methods
     private Boolean allowWaitlist;
-    
     private Boolean requireApproval;
     
     private Set<String> tags;
+    
+    // Explicit getter for allowWaitlist (returns false if null)
+    public boolean isAllowWaitlist() {
+        return allowWaitlist != null ? allowWaitlist : false;
+    }
+    
+    // Explicit getter for requireApproval (returns false if null)
+    public boolean isRequireApproval() {
+        return requireApproval != null ? requireApproval : false;
+    }
+    
+    // Helper method to check if any field is present
+    public boolean hasUpdates() {
+        return title != null || description != null || shortDescription != null ||
+               venue != null || address != null || city != null ||
+               startDate != null || endDate != null || registrationDeadline != null ||
+               capacity != null || waitlistCapacity != null ||
+               featuredImage != null || colorCode != null ||
+               termsAndConditions != null || allowWaitlist != null || 
+               requireApproval != null || (tags != null && !tags.isEmpty());
+    }
 }

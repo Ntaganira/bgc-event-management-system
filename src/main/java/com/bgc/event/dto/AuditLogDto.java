@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -32,4 +33,11 @@ public class AuditLogDto {
     private String details;
     private String ipAddress;
     private String userAgent;
+    private String actionCategory;
+    private String userEmail;
+    private String userRole;
+    private String entityName;
+    private String changesSummary;
+    private String status;
+    private Integer executionTimeMs;
 }

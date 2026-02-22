@@ -61,4 +61,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Modifying
     @Query("UPDATE Event e SET e.status = :status WHERE e.id = :eventId")
     int updateEventStatus(@Param("eventId") Long eventId, @Param("status") Event.EventStatus status);
+
+    Page<Event> findByDeletedFalse(Pageable pageable); 
 }

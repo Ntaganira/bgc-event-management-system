@@ -47,6 +47,9 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
        @Query("SELECT COUNT(r) FROM Registration r WHERE r.event.id = :eventId AND r.checkedIn = true")
        long countCheckedInByEvent(@Param("eventId") Long eventId);
 
+       
+       long countByEventIdAndDeletedFalse(@Param("eventId") Long eventId);
+
        @Query("SELECT r FROM Registration r WHERE r.email = :email ORDER BY r.createdAt DESC")
        List<Registration> findRegistrationsByEmail(@Param("email") String email);
 

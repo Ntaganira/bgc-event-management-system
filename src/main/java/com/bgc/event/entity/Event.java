@@ -42,7 +42,8 @@ public class Event extends BaseEntity {
         FULL,
         CLOSED,
         CANCELLED,
-        COMPLETED
+        COMPLETED,
+        PUBLISHED
     }
 
     @Column(name = "title", nullable = false, length = 200)
@@ -120,4 +121,8 @@ public class Event extends BaseEntity {
     @CollectionTable(name = "event_tags", joinColumns = @JoinColumn(name = "event_id"))
     @Column(name = "tag")
     private Set<String> tags = new HashSet<>();
+    @Column
+    private int availableSpots;
+    @Column
+    private boolean isFull;
 }
