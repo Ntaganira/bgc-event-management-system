@@ -35,7 +35,8 @@ public class CalendarEventDto {
     
     @JsonProperty("backgroundColor")
     private String color;         // Background color based on status
-    private String textColor;      // Text color (white/dark based on background)
+    @Builder.Default
+    private String textColor = "txt-color";      // Text color (white/dark based on background)
     private Boolean editable;      // Can organizer edit?
     private Boolean startEditable; // Can drag to change start?
     private Boolean durationEditable; // Can resize?
