@@ -42,8 +42,10 @@ public class RegistrationDetailsDto {
     private String dietaryRestrictions;
     private Long eventId;
     private String eventTitle;
-    private String fullName;
-    private boolean canCheckIn;
+    @Builder.Default
+    private String fullName = "Heritier N";
+    @Builder.Default
+    private boolean canCheckIn = false;
     
     public String getFullName() {
         return firstName + " " + lastName;

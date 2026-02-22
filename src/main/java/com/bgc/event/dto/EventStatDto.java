@@ -29,7 +29,8 @@ public class EventStatDto {
     private LocalDateTime eventDate;
     private Long registrations;
     private Long checkedIn;
-    private Double attendanceRate;
+    @Builder.Default
+    private Double attendanceRate = 0d;
     private Integer capacity;
     private String status;
     private Long waitlistCount;
