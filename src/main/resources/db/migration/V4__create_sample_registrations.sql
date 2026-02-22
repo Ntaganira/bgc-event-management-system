@@ -135,21 +135,6 @@ BEGIN
             CURRENT_TIMESTAMP - (i * INTERVAL '3 hour')
         );
     END LOOP;
-
-
-    -- Create attendance records for checked-in attendees
-    INSERT INTO attendances (event_id, registration_id, checked_in_at, check_in_method, created_at)
-    SELECT 
-        r.event_id,
-        r.id,
-        r.checked_in_at,
-        'MANUAL',
-        r.checked_in_at
-    FROM registrations r
-    WHERE r.checked_in = true
-    AND NOT EXISTS (
-        SELECT 1 FROM attendances a WHERE a.registration_id = r.id
-    );
     
     -- Update networking registration count
     UPDATE events SET 

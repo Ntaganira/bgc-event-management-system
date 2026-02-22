@@ -1,6 +1,6 @@
 -- V1__initial_schema.sql
 -- Project    : BGC EVENT
--- Date       : 2026. 02. 21.
+-- Date       : 2026. 02. 22.
 -- Description: Initial database schema creation
 
 -- Create base tables
@@ -99,7 +99,11 @@ CREATE TABLE IF NOT EXISTS events (
     allow_waitlist BOOLEAN DEFAULT FALSE,
     require_approval BOOLEAN DEFAULT FALSE,
     published_at TIMESTAMP,
-    organizer_id BIGINT NOT NULL REFERENCES users(id)
+    organizer_id BIGINT NOT NULL REFERENCES users(id),
+    
+    -- Note: available_spots and is_full are NOT stored in DB
+    -- They are calculated at runtime using @Transient
+    current_attendees INTEGER DEFAULT 0  -- Added for attendance tracking
 );
 
 CREATE TABLE IF NOT EXISTS event_tags (
@@ -140,18 +144,60 @@ CREATE TABLE IF NOT EXISTS registrations (
     CONSTRAINT unique_event_email UNIQUE (event_id, email)
 );
 
+CREATE TABLE IF NOT EXISTS attendances (
+    id BIGSERIAL PRIMARY KEY,
+    version INTEGER DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
+    created_by VARCHAR(50),
+    updated_by VARCHAR(50),
+    deleted BOOLEAN DEFAULT FALSE,
+    deleted_at TIMESTAMP,
+    
+    event_id BIGINT NOT NULL REFERENCES events(id),
+    registration_id BIGINT NOT NULL REFERENCES registrations(id),
+    checked_in_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    checked_in_by BIGINT REFERENCES users(id),
+    check_in_method VARCHAR(20),
+    qr_code_used VARCHAR(100),
+    ip_address VARCHAR(45),
+    device_info VARCHAR(255),
+    latitude DOUBLE PRECISION,  -- Changed from DECIMAL to DOUBLE PRECISION
+    longitude DOUBLE PRECISION, -- Changed from DECIMAL to DOUBLE PRECISION
+    notes TEXT,
+    
+    CONSTRAINT unique_registration_attendance UNIQUE (registration_id)
+);
+
 CREATE TABLE IF NOT EXISTS audit_logs (
     id BIGSERIAL PRIMARY KEY,
+    version INTEGER DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
+    created_by VARCHAR(50),
+    updated_by VARCHAR(50),
+    deleted BOOLEAN DEFAULT FALSE,
+    deleted_at TIMESTAMP,
     
     action VARCHAR(50) NOT NULL,
+    action_category VARCHAR(30),
     user_id BIGINT REFERENCES users(id),
     username VARCHAR(50),
+    user_email VARCHAR(100),
+    user_role VARCHAR(50),
     entity_type VARCHAR(50) NOT NULL,
     entity_id BIGINT,
-    details TEXT,
+    entity_name VARCHAR(200),
     ip_address VARCHAR(45),
-    user_agent TEXT
+    user_agent TEXT,
+    request_method VARCHAR(10),
+    request_path VARCHAR(255),
+    old_values JSONB,
+    new_values JSONB,
+    changes_summary TEXT,
+    status VARCHAR(20) DEFAULT 'SUCCESS',
+    error_message TEXT,
+    execution_time_ms INTEGER
 );
 
 -- Create indexes for performance
@@ -170,6 +216,12 @@ CREATE INDEX idx_registrations_status ON registrations(status);
 CREATE INDEX idx_registrations_event ON registrations(event_id);
 CREATE INDEX idx_registrations_checked_in ON registrations(checked_in);
 
+CREATE INDEX idx_attendances_event ON attendances(event_id);
+CREATE INDEX idx_attendances_registration ON attendances(registration_id);
+CREATE INDEX idx_attendances_checked_in_at ON attendances(checked_in_at);
+
+CREATE INDEX idx_audit_logs_created ON audit_logs(created_at);
 CREATE INDEX idx_audit_logs_user ON audit_logs(user_id);
 CREATE INDEX idx_audit_logs_entity ON audit_logs(entity_type, entity_id);
-CREATE INDEX idx_audit_logs_created ON audit_logs(created_at);
+CREATE INDEX idx_audit_logs_action ON audit_logs(action);
+CREATE INDEX idx_audit_logs_category ON audit_logs(action_category);

@@ -39,13 +39,7 @@ CREATE TABLE IF NOT EXISTS audit_logs_new (
     error_message TEXT,
     
     -- Performance
-    execution_time_ms INTEGER,
-    
-    INDEX idx_audit_logs_created (created_at),
-    INDEX idx_audit_logs_user (user_id),
-    INDEX idx_audit_logs_entity (entity_type, entity_id),
-    INDEX idx_audit_logs_action (action),
-    INDEX idx_audit_logs_category (action_category)
+    execution_time_ms INTEGER
 );
 
 -- Migrate existing data if any
@@ -59,8 +53,22 @@ SELECT
 FROM audit_logs;
 
 -- Drop old table and rename new one
-DROP TABLE IF EXISTS audit_logs;
+DROP TABLE IF EXISTS audit_logs CASCADE;
 ALTER TABLE audit_logs_new RENAME TO audit_logs;
+
+-- Create indexes (without IF NOT EXISTS - use DROP IF EXISTS first)
+DROP INDEX IF EXISTS idx_audit_logs_created;
+DROP INDEX IF EXISTS idx_audit_logs_user;
+DROP INDEX IF EXISTS idx_audit_logs_entity;
+DROP INDEX IF EXISTS idx_audit_logs_action;
+DROP INDEX IF EXISTS idx_audit_logs_category;
+
+-- Create indexes for performance
+CREATE INDEX idx_audit_logs_created ON audit_logs(created_at);
+CREATE INDEX idx_audit_logs_user ON audit_logs(user_id);
+CREATE INDEX idx_audit_logs_entity ON audit_logs(entity_type, entity_id);
+CREATE INDEX idx_audit_logs_action ON audit_logs(action);
+CREATE INDEX idx_audit_logs_category ON audit_logs(action_category);
 
 -- Create function to extract changes summary
 CREATE OR REPLACE FUNCTION extract_changes_summary(old_json JSONB, new_json JSONB)

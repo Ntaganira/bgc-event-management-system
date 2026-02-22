@@ -75,15 +75,19 @@ public class Event extends BaseEntity {
 
     @Column(name = "capacity")
     private Integer capacity;
+    
     @Builder.Default
     @Column(name = "current_registrations")
     private Integer currentRegistrations = 0;
+    
     @Builder.Default
     @Column(name = "waitlist_capacity")
     private Integer waitlistCapacity = 0;
+    
     @Builder.Default
     @Column(name = "current_waitlist")
     private Integer currentWaitlist = 0;
+    
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -91,15 +95,18 @@ public class Event extends BaseEntity {
 
     @Column(name = "featured_image")
     private String featuredImage;
+    
     @Builder.Default
     @Column(name = "color_code", length = 7)
     private String colorCode = "#3788d8";
 
     @Column(name = "terms_and_conditions", length = 5000)
     private String termsAndConditions;
+    
     @Builder.Default
     @Column(name = "allow_waitlist")
     private boolean allowWaitlist = false;
+    
     @Builder.Default
     @Column(name = "require_approval")
     private boolean requireApproval = false;
@@ -110,19 +117,61 @@ public class Event extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizer_id", nullable = false)
     private User organizer;
+    
     @Builder.Default
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Registration> registrations = new HashSet<>();
+    
     @Builder.Default
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Attendance> attendances = new HashSet<>();
+    
     @Builder.Default
     @ElementCollection
     @CollectionTable(name = "event_tags", joinColumns = @JoinColumn(name = "event_id"))
     @Column(name = "tag")
     private Set<String> tags = new HashSet<>();
-    @Column
+    
+    // ===== DERIVED FIELDS - MARKED AS @Transient =====
+    
+    @Transient  // This tells Hibernate NOT to map this to a database column
     private int availableSpots;
-    @Column
+    
+    @Transient  // This tells Hibernate NOT to map this to a database column
     private boolean isFull;
+    
+    // ===== HELPER METHODS TO CALCULATE DERIVED VALUES =====
+    
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    public void calculateDerivedFields() {
+        this.availableSpots = calculateAvailableSpots();
+        this.isFull = calculateIsFull();
+    }
+    
+    private int calculateAvailableSpots() {
+        if (capacity == null || currentRegistrations == null) return 0;
+        return Math.max(0, capacity - currentRegistrations);
+    }
+    
+    private boolean calculateIsFull() {
+        return capacity != null && currentRegistrations != null && 
+               currentRegistrations >= capacity;
+    }
+    
+    // ===== CONVENIENCE METHODS =====
+    
+    public boolean getIsFull() {
+        return isFull;
+    }
+    
+    // Prevent setting derived fields directly
+    public void setAvailableSpots(int availableSpots) {
+        throw new UnsupportedOperationException("availableSpots is a derived field and cannot be set directly");
+    }
+    
+    public void setFull(boolean full) {
+        throw new UnsupportedOperationException("isFull is a derived field and cannot be set directly");
+    }
 }

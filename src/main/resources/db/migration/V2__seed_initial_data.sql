@@ -1,6 +1,6 @@
 -- V2__seed_initial_data.sql
 -- Project    : BGC EVENT
--- Date       : 2026. 02. 21.
+-- Date       : 2026. 02. 22.
 -- Description: Seed initial roles, permissions, and admin user
 
 -- Insert roles
@@ -58,7 +58,7 @@ AND p.name IN (
     'REPORT_VIEW', 'REPORT_EXPORT'
 );
 
--- Assign permissions to PUBLIC role (read-only)
+-- Assign permissions to PUBLIC role
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r, permissions p
@@ -72,7 +72,7 @@ INSERT INTO users (
 ) VALUES (
     'admin',
     'admin@bgc.event',
-    '$2a$10$N.zmJ9CFsC7XTZ5QkQxqQO5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5', -- BCrypt hash of 'Admin@123'
+    '$2a$10$N.zmJ9CFsC7XTZ5QkQxqQO5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5',
     'System',
     'Administrator',
     true,
@@ -87,7 +87,7 @@ INSERT INTO users (
 ) VALUES (
     'organizer1',
     'organizer1@bgc.event',
-    '$2a$10$N.zmJ9CFsC7XTZ5QkQxqQO5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5', -- BCrypt hash of 'Organizer@123'
+    '$2a$10$N.zmJ9CFsC7XTZ5QkQxqQO5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5',
     'John',
     'Organizer',
     true,
@@ -106,7 +106,7 @@ SELECT u.id, r.id
 FROM users u, roles r
 WHERE u.username = 'organizer1' AND r.name = 'ORGANIZER';
 
--- Give PUBLIC role to all users (they already have it by default, but explicit doesn't hurt)
+-- Give PUBLIC role to all users
 INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.id
 FROM users u, roles r

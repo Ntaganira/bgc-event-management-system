@@ -1,66 +1,42 @@
-# docker-compose.yml
-# Project    : BGC EVENT
-# User       : Heritier N
-# Date       : 2026. 02. 22.
-
-#version: '3.8'
+version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: bgc_postgres
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: bgc_timescaledb
     environment:
       POSTGRES_DB: bgc_event_db
       POSTGRES_USER: bgc_user
       POSTGRES_PASSWORD: bgc_password
+      TIMESCALEDB_TELEMETRY: off
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - timescaledb_data:/var/lib/postgresql/data
+      - ./docker/db/init:/docker-entrypoint-initdb.d
     networks:
       - bgc_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bgc_user -d bgc_event_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
     container_name: bgc_redis
+    command: redis-server --requirepass bgc_redis_password
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
       - bgc_network
-
-  mailhog:
-    image: mailhog/mailhog
-    container_name: bgc_mailhog
-    ports:
-      - "1025:1025"  # SMTP
-      - "8025:8025"  # Web UI
-    networks:
-      - bgc_network
-
-  app:
-    build: .
-    container_name: bgc_app
-    depends_on:
-      - postgres
-      - redis
-      - mailhog
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bgc_event_db
-      SPRING_DATASOURCE_USERNAME: bgc_user
-      SPRING_DATASOURCE_PASSWORD: bgc_password
-      SPRING_REDIS_HOST: redis
-      SPRING_MAIL_HOST: mailhog
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./logs:/app/logs
-    networks:
-      - bgc_network
+    restart: unless-stopped
 
 volumes:
-  postgres_data:
+  timescaledb_data:
   redis_data:
 
 networks:
