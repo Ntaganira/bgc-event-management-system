@@ -47,9 +47,6 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
        @Query("SELECT COUNT(r) FROM Registration r WHERE r.event.id = :eventId AND r.checkedIn = true")
        long countCheckedInByEvent(@Param("eventId") Long eventId);
 
-       
-       long countByEventIdAndDeletedFalse(@Param("eventId") Long eventId);
-
        @Query("SELECT r FROM Registration r WHERE r.email = :email ORDER BY r.createdAt DESC")
        List<Registration> findRegistrationsByEmail(@Param("email") String email);
 
@@ -88,4 +85,95 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
 
        @Query("SELECT r FROM Registration r WHERE r.id = :id AND r.email = :email")
        Optional<Registration> findByIdAndEmail(@Param("id") Long id, @Param("email") String email);
+
+       // Add these methods to RegistrationRepository.java
+
+       /**
+        * Get monthly registration stats for chart
+        */
+       @Query("SELECT FUNCTION('TO_CHAR', r.createdAt, 'YYYY-MM') as month, " +
+                     "SUM(CASE WHEN r.status IN ('CONFIRMED', 'ATTENDED') THEN 1 ELSE 0 END) as approved, " +
+                     "SUM(CASE WHEN r.status = 'PENDING' THEN 1 ELSE 0 END) as pending " +
+                     "FROM Registration r " +
+                     "WHERE r.createdAt BETWEEN :startDate AND :endDate AND r.deleted = false " +
+                     "GROUP BY FUNCTION('TO_CHAR', r.createdAt, 'YYYY-MM') " +
+                     "ORDER BY month")
+       List<Object[]> getMonthlyRegistrationStats(@Param("startDate") LocalDateTime startDate,
+                     @Param("endDate") LocalDateTime endDate);
+
+       /**
+        * Get registration status distribution
+        */
+       @Query("SELECT r.status, COUNT(r) FROM Registration r WHERE r.deleted = false GROUP BY r.status")
+       List<Object[]> getRegistrationStatusDistribution();
+
+       /**
+        * Get daily registration trend for all events
+        */
+       @Query("SELECT FUNCTION('DATE', r.createdAt), COUNT(r) FROM Registration r " +
+                     "WHERE r.createdAt BETWEEN :startDate AND :endDate AND r.deleted = false " +
+                     "GROUP BY FUNCTION('DATE', r.createdAt) ORDER BY FUNCTION('DATE', r.createdAt)")
+       List<Object[]> getDailyRegistrationTrend(@Param("startDate") LocalDateTime startDate,
+                     @Param("endDate") LocalDateTime endDate);
+
+       /**
+        * Get daily registration trend for specific event
+        */
+       @Query("SELECT FUNCTION('DATE', r.createdAt), COUNT(r) FROM Registration r " +
+                     "WHERE r.event.id = :eventId AND r.createdAt BETWEEN :startDate AND :endDate AND r.deleted = false "
+                     +
+                     "GROUP BY FUNCTION('DATE', r.createdAt) ORDER BY FUNCTION('DATE', r.createdAt)")
+       List<Object[]> getDailyRegistrationTrendForEvent(@Param("eventId") Long eventId,
+                     @Param("startDate") LocalDateTime startDate,
+                     @Param("endDate") LocalDateTime endDate);
+
+       /**
+        * Get hourly distribution for all events
+        */
+       @Query("SELECT EXTRACT(HOUR FROM r.createdAt), COUNT(r) FROM Registration r " +
+                     "WHERE r.deleted = false GROUP BY EXTRACT(HOUR FROM r.createdAt) ORDER BY EXTRACT(HOUR FROM r.createdAt)")
+       List<Object[]> getHourlyDistribution();
+
+       /**
+        * Get hourly distribution for specific event
+        */
+       @Query("SELECT EXTRACT(HOUR FROM r.createdAt), COUNT(r) FROM Registration r " +
+                     "WHERE r.event.id = :eventId AND r.deleted = false " +
+                     "GROUP BY EXTRACT(HOUR FROM r.createdAt) ORDER BY EXTRACT(HOUR FROM r.createdAt)")
+       List<Object[]> getHourlyDistributionForEvent(@Param("eventId") Long eventId);
+
+       /**
+        * Count registrations by date range
+        */
+       long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+       /**
+        * Count registrations after date
+        */
+       long countByCreatedAtAfter(LocalDateTime date);
+
+       /**
+        * Count registrations for event after date
+        */
+       long countByEventIdAndCreatedAtAfter(Long eventId, LocalDateTime date);
+
+       /**
+        * Get top organizations
+        */
+       @Query("SELECT r.organization, COUNT(r) FROM Registration r " +
+                     "WHERE r.organization IS NOT NULL AND r.organization != '' AND r.deleted = false " +
+                     "GROUP BY r.organization ORDER BY COUNT(r) DESC")
+       List<Object[]> getTopOrganizations(Pageable pageable);
+
+       /**
+        * Count by status for event
+        */
+       @Query("SELECT COUNT(r) FROM Registration r WHERE r.event.id = :eventId AND r.status = :status AND r.deleted = false")
+       long countByEventAndStatus(@Param("eventId") Long eventId,
+                     @Param("status") Registration.RegistrationStatus status);
+
+       /**
+        * Count by event ID (deleted false)
+        */
+       long countByEventIdAndDeletedFalse(Long eventId);
 }

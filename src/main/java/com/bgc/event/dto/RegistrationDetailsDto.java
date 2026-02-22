@@ -42,6 +42,7 @@ public class RegistrationDetailsDto {
     private String dietaryRestrictions;
     private Long eventId;
     private String eventTitle;
+    private byte[] qrCodeImage;
     @Builder.Default
     private String fullName = "Heritier N";
     @Builder.Default

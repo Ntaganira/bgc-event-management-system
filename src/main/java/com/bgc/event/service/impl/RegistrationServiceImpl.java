@@ -573,6 +573,139 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .build();
     }
 
+
+    @Override
+    public List<Object[]> getMonthlyRegistrationStats(LocalDateTime startDate, LocalDateTime endDate) {
+        log.debug("Getting monthly registration stats from {} to {}", startDate, endDate);
+        return registrationRepository.getMonthlyRegistrationStats(startDate, endDate);
+    }
+    
+    @Override
+    public Map<String, Long> getRegistrationStatusDistribution() {
+        log.debug("Getting registration status distribution");
+        
+        List<Object[]> results = registrationRepository.getRegistrationStatusDistribution();
+        
+        return results.stream()
+                .collect(Collectors.toMap(
+                        arr -> (String) arr[0],
+                        arr -> (Long) arr[1]
+                ));
+    }
+    
+    @Override
+    public List<Object[]> getDailyRegistrationTrend(Long eventId, int days) {
+        log.debug("Getting daily registration trend for event: {}, days: {}", eventId, days);
+        
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusDays(days);
+        
+        if (eventId != null) {
+            return registrationRepository.getDailyRegistrationTrendForEvent(eventId, startDate, endDate);
+        } else {
+            return registrationRepository.getDailyRegistrationTrend(startDate, endDate);
+        }
+    }
+    
+    @Override
+    public Map<Integer, Long> getHourlyRegistrationDistribution(Long eventId) {
+        log.debug("Getting hourly registration distribution for event: {}", eventId);
+        
+        List<Object[]> results;
+        if (eventId != null) {
+            results = registrationRepository.getHourlyDistributionForEvent(eventId);
+        } else {
+            results = registrationRepository.getHourlyDistribution();
+        }
+        
+        Map<Integer, Long> distribution = new HashMap<>();
+        // Initialize all hours with 0
+        for (int hour = 0; hour < 24; hour++) {
+            distribution.put(hour, 0L);
+        }
+        
+        // Fill with actual data
+        for (Object[] result : results) {
+            Integer hour = ((Number) result[0]).intValue();
+            Long count = (Long) result[1];
+            distribution.put(hour, count);
+        }
+        
+        return distribution;
+    }
+    
+    @Override
+    public long getRegistrationCountBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        log.debug("Getting registration count between {} and {}", startDate, endDate);
+        return registrationRepository.countByCreatedAtBetween(startDate, endDate);
+    }
+    
+    @Override
+    public List<Object[]> getTopOrganizations(int limit) {
+        log.debug("Getting top {} organizations by registration count", limit);
+        return registrationRepository.getTopOrganizations(Pageable.ofSize(limit));
+    }
+    
+    @Override
+    public double getRegistrationConversionRate(Long eventId) {
+        log.debug("Getting registration conversion rate for event: {}", eventId);
+        
+        long total = registrationRepository.countByEventIdAndDeletedFalse(eventId);
+        long confirmed = registrationRepository.countByEventAndStatus(
+                eventId, Registration.RegistrationStatus.CONFIRMED);
+        
+        if (total == 0) return 0.0;
+        return (confirmed * 100.0) / total;
+    }
+    
+    @Override
+    public double getAverageDailyRegistrations(Long eventId) {
+        log.debug("Getting average daily registrations for event: {}", eventId);
+        
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        long count;
+        
+        if (eventId != null) {
+            count = registrationRepository.countByEventIdAndCreatedAtAfter(eventId, thirtyDaysAgo);
+        } else {
+            count = registrationRepository.countByCreatedAtAfter(thirtyDaysAgo);
+        }
+        
+        return count / 30.0;
+    }
+    
+    @Override
+    public int getPeakRegistrationHour(Long eventId) {
+        log.debug("Getting peak registration hour for event: {}", eventId);
+        
+        Map<Integer, Long> distribution = getHourlyRegistrationDistribution(eventId);
+        
+        return distribution.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(12); // Default to noon if no data
+    }
+    
+    @Override
+    public double getRegistrationGrowthRate(int period) {
+        log.debug("Getting registration growth rate over {} days", period);
+        
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime currentPeriodStart = now.minusDays(period);
+        LocalDateTime previousPeriodStart = now.minusDays(period * 2);
+        
+        long currentPeriodCount = registrationRepository.countByCreatedAtBetween(
+                currentPeriodStart, now);
+        long previousPeriodCount = registrationRepository.countByCreatedAtBetween(
+                previousPeriodStart, currentPeriodStart);
+        
+        if (previousPeriodCount == 0) {
+            return currentPeriodCount > 0 ? 100.0 : 0.0;
+        }
+        
+        return ((double) (currentPeriodCount - previousPeriodCount) / previousPeriodCount) * 100;
+    }
+
     @Override
     public RegistrationDetailsDto getRegistrationById(Long registrationId, String email) throws RegistrationException {
         // TODO Auto-generated method stub
