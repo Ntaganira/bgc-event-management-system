@@ -1,0 +1,245 @@
+<!-- error/403.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - Access Denied | BGC Events</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .error-container {
+            text-align: center;
+            z-index: 10;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .lock-icon {
+            font-size: 80px;
+            color: white;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .error-code {
+            font-size: 120px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            font-size: 18px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+
+        .permissions-box {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+            max-width: 400px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .permissions-box h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .role-list {
+            list-style: none;
+        }
+
+        .role-list li {
+            color: white;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .role-list li i {
+            width: 20px;
+        }
+
+        .role-list li:last-child {
+            border-bottom: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #fda085;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: #fda085;
+        }
+
+        .login-prompt {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .login-prompt p {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .login-btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background: white;
+            color: #fda085;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="error-container">
+        <div class="lock-icon">
+            <i class="fas fa-lock"></i>
+        </div>
+        
+        <div class="error-code">403</div>
+        <h1 class="error-title">Access Denied</h1>
+        <p class="error-message" th:text="${message} ?: 'You don\'t have permission to access this resource.'">
+            You don't have permission to access this resource.
+        </p>
+
+        <!-- Required Permissions -->
+        <div class="permissions-box" th:if="${requiredRole}">
+            <h3><i class="fas fa-key"></i> Required Access</h3>
+            <ul class="role-list">
+                <li>
+                    <i class="fas fa-shield-alt"></i>
+                    <span th:text="${requiredRole}">ADMIN</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- User's Current Roles -->
+        <div class="permissions-box" th:if="${#authorization.isAuthenticated()}">
+            <h3><i class="fas fa-user-shield"></i> Your Current Access</h3>
+            <ul class="role-list">
+                <li th:each="role : ${#authorization.getAllRoles()}">
+                    <i class="fas fa-circle" style="font-size: 8px;"></i>
+                    <span th:text="${role}"></span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-home"></i>
+                Go to Homepage
+            </a>
+            <a href="/dashboard" class="btn btn-outline">
+                <i class="fas fa-chart-pie"></i>
+                Go to Dashboard
+            </a>
+            <a href="javascript:history.back()" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i>
+                Go Back
+            </a>
+        </div>
+
+        <!-- Login Prompt for Unauthenticated Users -->
+        <div th:if="${!#authorization.isAuthenticated()}" class="login-prompt">
+            <p><i class="fas fa-info-circle"></i> You need to login with appropriate credentials</p>
+            <a href="/login" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i>
+                Login
+            </a>
+        </div>
+    </div>
+</body>
+</html>

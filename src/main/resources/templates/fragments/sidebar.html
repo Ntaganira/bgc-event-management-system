@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div th:fragment="sidebar" class="sidebar" id="sidebar">
+        <!-- Logo & Toggle -->
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <span class="logo-text">BGC Events</span>
+            </div>
+            <button class="toggle-btn" id="toggleSidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="globalSearch" 
+                       placeholder="Search events...">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </div>
+        
+        <!-- Navigation Menu -->
+        <ul class="nav-menu">
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a href="/dashboard" class="nav-link" 
+                   th:classappend="${#request.requestURI == '/dashboard'} ? 'active' : ''">
+                    <i class="fas fa-chart-pie menu-icon"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+            
+            <!-- Events -->
+            <li class="nav-item">
+                <a href="/events" class="nav-link"
+                   th:classappend="${#request.requestURI.startsWith('/events')} ? 'active' : ''">
+                    <i class="fas fa-calendar menu-icon"></i>
+                    <span class="menu-text">Events</span>
+                    <span class="badge" th:text="${eventCount}" th:if="${eventCount > 0}">12</span>
+                </a>
+            </li>
+            
+            <!-- Calendar -->
+            <li class="nav-item">
+                <a href="/events/calendar" class="nav-link"
+                   th:classappend="${#request.requestURI == '/events/calendar'} ? 'active' : ''">
+                    <i class="fas fa-calendar-alt menu-icon"></i>
+                    <span class="menu-text">Calendar</span>
+                </a>
+            </li>
+            
+            <!-- Registrations -->
+            <li class="nav-item">
+                <a href="/registrations" class="nav-link"
+                   th:classappend="${#request.requestURI.startsWith('/registrations')} ? 'active' : ''">
+                    <i class="fas fa-users menu-icon"></i>
+                    <span class="menu-text">Registrations</span>
+                    <span class="badge" th:text="${pendingRegistrations}" 
+                        th:if="${pendingRegistrations > 0}">345</span>
+                </a>
+            </li>
+            
+            <!-- Check-in -->
+            <li class="nav-item">
+                <a href="/checkin" class="nav-link"
+                   th:classappend="${#request.requestURI.startsWith('/checkin')} ? 'active' : ''">
+                    <i class="fas fa-qrcode menu-icon"></i>
+                    <span class="menu-text">Check-in</span>
+                </a>
+            </li>
+            
+            <!-- Analytics -->
+            <li class="nav-item">
+                <a href="/analytics" class="nav-link"
+                   th:classappend="${#request.requestURI.startsWith('/analytics')} ? 'active' : ''">
+                    <i class="fas fa-chart-line menu-icon"></i>
+                    <span class="menu-text">Analytics</span>
+                </a>
+            </li>
+            
+            <!-- Reports -->
+            <li class="nav-item">
+                <a href="/analytics/reports" class="nav-link"
+                   th:classappend="${#request.requestURI.startsWith('/analytics/reports')} ? 'active' : ''">
+                    <i class="fas fa-file-alt menu-icon"></i>
+                    <span class="menu-text">Reports</span>
+                </a>
+            </li>
+            
+            <!-- Admin Section (visible only to ADMIN) -->
+            <li class="nav-divider" sec:authorize="hasRole('ADMIN')">
+                <span>Administration</span>
+            </li>
+            
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a href="/admin/users" class="nav-link"
+                   th:classappend="${#request.requestURI.startsWith('/admin/users')} ? 'active' : ''">
+                    <i class="fas fa-user-cog menu-icon"></i>
+                    <span class="menu-text">Users</span>
+                </a>
+            </li>
+            
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a href="/admin/audit" class="nav-link"
+                   th:classappend="${#request.requestURI.startsWith('/admin/audit')} ? 'active' : ''">
+                    <i class="fas fa-history menu-icon"></i>
+                    <span class="menu-text">Audit Logs</span>
+                </a>
+            </li>
+            
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a href="/admin/settings" class="nav-link"
+                   th:classappend="${#request.requestURI.startsWith('/admin/settings')} ? 'active' : ''">
+                    <i class="fas fa-cog menu-icon"></i>
+                    <span class="menu-text">Settings</span>
+                </a>
+            </li>
+        </ul>
+        
+        <!-- User Profile -->
+        <div class="user-profile" sec:authorize="isAuthenticated()">
+            <div class="d-flex align-items-center gap-3">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" sec:authentication="name">John Doe</div>
+                    <div class="user-role" sec:authorize="hasRole('ADMIN')">Administrator</div>
+                    <div class="user-role" sec:authorize="hasRole('ORGANIZER')">Event Organizer</div>
+                </div>
+                <a href="/logout" class="text-white-50 ms-auto" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Login Prompt (for non-authenticated users) -->
+        <div class="user-profile" sec:authorize="!isAuthenticated()">
+            <div class="text-center">
+                <a href="/login" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="/register" class="btn btn-light btn-sm ms-2">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar JavaScript -->
+    <script th:fragment="sidebar-scripts">
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleBtn = document.getElementById('toggleSidebar');
+            const toggleIcon = toggleBtn.querySelector('i');
+            
+            // Load saved state
+            const sidebarState = localStorage.getItem('sidebarCollapsed');
+            if (sidebarState === 'true') {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+            }
+            
+            // Toggle sidebar
+            toggleBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+                
+                if (sidebar.classList.contains('collapsed')) {
+                    toggleIcon.classList.remove('fa-chevron-left');
+                    toggleIcon.classList.add('fa-chevron-right');
+                    localStorage.setItem('sidebarCollapsed', 'true');
+                } else {
+                    toggleIcon.classList.remove('fa-chevron-right');
+                    toggleIcon.classList.add('fa-chevron-left');
+                    localStorage.setItem('sidebarCollapsed', 'false');
+                }
+            });
+            
+            // Global search
+            const searchInput = document.getElementById('globalSearch');
+            const searchResults = document.getElementById('searchResults');
+            let searchTimeout;
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    const query = this.value.trim();
+                    
+                    if (query.length < 2) {
+                        searchResults.classList.remove('show');
+                        return;
+                    }
+                    
+                    searchTimeout = setTimeout(() => {
+                        fetch(`/api/search?q=${encodeURIComponent(query)}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.length > 0) {
+                                    renderSearchResults(data);
+                                    searchResults.classList.add('show');
+                                } else {
+                                    searchResults.classList.remove('show');
+                                }
+                            });
+                    }, 300);
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.classList.remove('show');
+                    }
+                });
+            }
+            
+            function renderSearchResults(results) {
+                searchResults.innerHTML = results.map(result => `
+                    <a href="${result.url}" class="search-result-item">
+                        <i class="fas fa-${result.icon}"></i>
+                        <div class="result-content">
+                            <div class="result-title">${result.title}</div>
+                            <div class="result-subtitle">${result.subtitle}</div>
+                        </div>
+                    </a>
+                `).join('');
+            }
+        });
+    </script>
+</body>
+</html>

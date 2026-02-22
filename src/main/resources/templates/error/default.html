@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register – BGC Events</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Copy the same styles from login.html and add: */
+        .password-strength {
+            margin-top: 6px;
+            display: flex;
+            gap: 4px;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            flex: 1;
+            background: #e0e0e0;
+            border-radius: 2px;
+        }
+        
+        .strength-bar.weak { background: var(--danger); }
+        .strength-bar.medium { background: #ffc107; }
+        .strength-bar.strong { background: var(--success); }
+        
+        .terms {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+        
+        .terms input {
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Similar structure to login.html but with registration form -->
+</body>
+</html>

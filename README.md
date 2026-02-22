@@ -187,8 +187,8 @@ docker-compose -f docker-compose.prod.yml up -d
 open http://localhost:8080
 
 # Default credentials
-# Admin: admin@bgc.event / Admin@123
-# Organizer: organizer@bgc.event / Organizer@123
+# Admin: admin@bgc.event / password123
+# Organizer: organizer@bgc.event / password123
 🏗 System Architecture
 text
 ┌─────────────────────────────────────────────────────────────┐

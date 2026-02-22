@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login – BGC Events</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bgc-dark: #1a237e;
+            --bgc-light: #283593;
+            --bgc-hover: #3f51b5;
+            --bgc-icon: #9fa8da;
+            --green-dark: #2d6b4a;
+            --green-mid: #6a9e7f;
+            --sand: #e8c88a;
+            --lavender: #b0bbd4;
+            --cream: #f5ede0;
+            --bg: #e8edf2;
+            --white: #ffffff;
+            --text: #1a1a2e;
+            --muted: #6b7280;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .card {
+            display: flex;
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 860px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            min-height: 520px;
+        }
+
+        /* Geometric art panel */
+        .art-panel {
+            width: 260px;
+            flex-shrink: 0;
+            background: #f0f2f5;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(4, 1fr);
+            overflow: hidden;
+        }
+
+        .shape {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .shape svg { width: 100%; height: 100%; }
+
+        /* Form panel */
+        .form-panel {
+            flex: 1;
+            padding: 40px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--muted);
+            font-size: 13px;
+            text-decoration: none;
+            margin-bottom: 32px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--text); }
+        .back-link::before { content: "‹"; font-size: 16px; }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--bgc-dark), var(--bgc-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text);
+            font-family: 'DM Serif Display', serif;
+        }
+        
+        .logo-text span {
+            color: var(--bgc-dark);
+            font-weight: 700;
+        }
+
+        h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 32px;
+            font-weight: 400;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 13.5px;
+            color: var(--muted);
+            margin-bottom: 28px;
+        }
+        .subtitle a {
+            color: var(--bgc-dark);
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: var(--danger);
+        }
+        
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: var(--success);
+        }
+
+        .field { margin-bottom: 16px; }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--muted);
+            margin-bottom: 6px;
+            letter-spacing: 0.02em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--white);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        input:focus {
+            border-color: var(--bgc-light);
+            box-shadow: 0 0 0 3px rgba(40, 53, 147, 0.12);
+        }
+
+        .password-wrap { position: relative; }
+        .toggle-pw {
+            position: absolute; 
+            right: 12px; 
+            top: 50%; 
+            transform: translateY(-50%);
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            color: var(--muted);
+            font-size: 13px; 
+            padding: 4px;
+        }
+
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--bgc-dark);
+        }
+        
+        .remember-me label {
+            margin-bottom: 0;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .forgot a {
+            font-size: 12.5px;
+            color: var(--muted);
+            text-decoration: underline;
+        }
+        .forgot a:hover {
+            color: var(--bgc-dark);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 13px;
+            background: var(--bgc-dark);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .btn-primary:hover { 
+            background: var(--bgc-light); 
+        }
+        .btn-primary:active { transform: scale(0.99); }
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 11px;
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: 50px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            transition: background 0.2s, border-color 0.2s;
+            text-decoration: none;
+        }
+        .btn-google:hover { 
+            background: #f9fafb; 
+            border-color: var(--bgc-icon);
+        }
+
+        .btn-google svg { width: 18px; height: 18px; }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .register-link a {
+            color: var(--bgc-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Demo credentials */
+        .demo-credentials {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: var(--radius);
+            font-size: 12px;
+        }
+        
+        .demo-credentials p {
+            color: var(--muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .cred-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+        
+        .cred-role {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .cred-role.admin { background: var(--bgc-dark); color: white; }
+        .cred-role.organizer { background: var(--success); color: white; }
+        
+        .cred-details {
+            flex: 1;
+            font-family: monospace;
+            color: var(--text);
+        }
+        
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .copy-btn:hover {
+            color: var(--bgc-dark);
+        }
+
+        @media (max-width: 640px) {
+            .art-panel { display: none; }
+            .form-panel { padding: 36px 28px; }
+            .card { border-radius: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <!-- Geometric art panel -->
+    <div class="art-panel">
+        <!-- Row 1 -->
+        <div class="shape" style="background:#b0bbd4">
+            <svg viewBox="0 0 130 130"><circle cx="65" cy="65" r="65" fill="#1a237e" clip-path="url(#tl1)"/>
+                <defs><clipPath id="tl1"><rect x="0" y="0" width="130" height="130"/></clipPath></defs>
+            </svg>
+        </div>
+        <div class="shape" style="background:#2d6b4a">
+            <svg viewBox="0 0 130 130"><rect x="0" y="0" width="130" height="130" fill="#2d6b4a"/>
+                <ellipse cx="65" cy="0" rx="65" ry="65" fill="#1a237e"/>
+            </svg>
+        </div>
+        <!-- Row 2 -->
+        <div class="shape" style="background:#e8c88a">
+            <svg viewBox="0 0 130 130">
+                <rect x="0" y="0" width="130" height="130" fill="#e8c88a"/>
+                <path d="M0,130 Q65,0 130,130Z" fill="#d4a843"/>
+            </svg>
+        </div>
+        <div class="shape" style="background:#f0f2f5">
+            <svg viewBox="0 0 130 130">
+                <rect x="0" y="0" width="130" height="130" fill="#f0f2f5"/>
+                <circle cx="65" cy="65" r="50" fill="none" stroke="#1a237e" stroke-width="3"/>
+                <path d="M65,15 A50,50 0 0,1 115,65" fill="none" stroke="#1a237e" stroke-width="3"/>
+            </svg>
+        </div>
+        <!-- Row 3 -->
+        <div class="shape" style="background:#283593">
+            <svg viewBox="0 0 130 130">
+                <rect x="0" y="0" width="130" height="130" fill="#283593"/>
+                <ellipse cx="65" cy="130" rx="65" ry="65" fill="#1a237e"/>
+            </svg>
+        </div>
+        <div class="shape" style="background:#6a9e7f">
+            <svg viewBox="0 0 130 130">
+                <rect x="0" y="0" width="130" height="130" fill="#6a9e7f"/>
+                <path d="M0,0 L130,0 L130,130Z" fill="#2d6b4a"/>
+            </svg>
+        </div>
+        <!-- Row 4 -->
+        <div class="shape" style="background:#b0bbd4">
+            <svg viewBox="0 0 130 130">
+                <rect x="0" y="0" width="130" height="130" fill="#b0bbd4"/>
+                <rect x="10" y="10" width="110" height="110" rx="55" fill="none" stroke="white" stroke-width="3"/>
+            </svg>
+        </div>
+        <div class="shape" style="background:#f5ede0">
+            <svg viewBox="0 0 130 130">
+                <rect x="0" y="0" width="130" height="130" fill="#f5ede0"/>
+                <circle cx="65" cy="65" r="50" fill="#e8c88a"/>
+                <path d="M65,15 A50,50 0 0,0 15,65L65,65Z" fill="#d4a843"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Form panel -->
+    <div class="form-panel">
+        <a href="/" th:href="@{/}" class="back-link">Back to website</a>
+        
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="logo-text">BGC <span>Events</span></div>
+        </div>
+
+        <h1>Welcome back!</h1>
+        <p class="subtitle">
+            <a href="/register" th:href="@{/register}">Create a free account</a>
+            or log in to manage your events
+        </p>
+
+        <!-- Error message -->
+        <div th:if="${param.error}" class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Invalid email or password. Please try again.'}">Invalid email or password</span>
+        </div>
+        
+        <!-- Logout message -->
+        <div th:if="${param.logout}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span>You have been logged out successfully.</span>
+        </div>
+
+        <!-- Registration success message -->
+        <div th:if="${param.registered}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span>Registration successful! Please log in.</span>
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/> -->
+
+            <div class="field">
+                <label for="username">Email</label>
+                <input type="email" id="username" name="username"
+                       placeholder="you@example.com"
+                       th:value="${param.username != null ? param.username[0] : ''}"
+                       autocomplete="email" required/>
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <div class="password-wrap">
+                    <input type="password" id="password" name="password"
+                           placeholder="••••••••••"
+                           autocomplete="current-password" required/>
+                    <button type="button" class="toggle-pw" onclick="togglePassword()" aria-label="Show/hide password">👁️</button>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember-me" name="remember-me">
+                    <label for="remember-me">Remember me</label>
+                </div>
+                <div class="forgot">
+                    <a href="/forgot-password" th:href="@{/forgot-password}">Forgot password?</a>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="loginButton">
+                <span class="btn-text">Log in</span>
+                <span class="spinner" style="display: none;"></span>
+            </button>
+        </form>
+
+        <div class="register-link">
+            <p>Don't have an account? <a href="/register" th:href="@{/register}">Sign up now</a></p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function togglePassword() {
+        const password = document.getElementById('password');
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+    }
+    
+    // Form submit loading state
+    document.querySelector('form').addEventListener('submit', function() {
+        const button = document.getElementById('loginButton');
+        const btnText = button.querySelector('.btn-text');
+        const spinner = button.querySelector('.spinner');
+        
+        button.disabled = true;
+        btnText.style.opacity = '0.7';
+        spinner.style.display = 'inline-block';
+    });
+    
+    // Fill credentials
+    function fillCredentials(email, password) {
+        document.getElementById('username').value = email;
+        document.getElementById('password').value = password;
+    }
+    
+    // Copy credentials
+    function copyCredentials(event, email, password) {
+        event.stopPropagation();
+        const text = `Email: ${email}\nPassword: ${password}`;
+        navigator.clipboard.writeText(text).then(() => {
+            const tooltip = document.createElement('div');
+            tooltip.textContent = '✓ Copied!';
+            tooltip.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--success);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 4px;
+                z-index: 1000;
+                animation: slideIn 0.3s;
+            `;
+            document.body.appendChild(tooltip);
+            setTimeout(() => tooltip.remove(), 2000);
+        });
+    }
+</script>
+
+</body>
+</html>

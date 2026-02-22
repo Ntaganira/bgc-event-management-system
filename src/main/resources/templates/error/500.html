@@ -1,0 +1,253 @@
+<!-- error/500.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Server Error | BGC Events</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-container {
+            text-align: center;
+            z-index: 10;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .server-icon {
+            font-size: 100px;
+            color: white;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .error-code {
+            font-size: 120px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            font-size: 18px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+
+        .error-details {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+            max-width: 600px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .error-details h3 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .error-details pre {
+            color: #fee;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #f5576c;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: #f5576c;
+        }
+
+        .btn-refresh {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-refresh:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .gears {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            opacity: 0.1;
+            font-size: 200px;
+            color: white;
+            transform: rotate(30deg);
+        }
+
+        .timestamp {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 80px;
+            }
+            
+            .error-title {
+                font-size: 24px;
+            }
+            
+            .server-icon {
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="gears">
+        <i class="fas fa-cogs"></i>
+    </div>
+
+    <div class="timestamp" th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">
+        2026-02-21 15:30:00
+    </div>
+
+    <div class="error-container">
+        <div class="server-icon">
+            <i class="fas fa-server"></i>
+        </div>
+        
+        <div class="error-code">500</div>
+        <h1 class="error-title">Internal Server Error</h1>
+        <p class="error-message" th:text="${message} ?: 'Something went wrong on our end. Our team has been notified and is working on it.'">
+            Something went wrong on our end. Our team has been notified and is working on it.
+        </p>
+
+        <!-- Error Details (shown to admin only) -->
+        <div th:if="${#authorization.expression('hasRole(''ADMIN'')')}" class="error-details">
+            <h3><i class="fas fa-bug"></i> Error Details (Admin Only)</h3>
+            <pre th:text="${trace} ?: 'No stack trace available'">Error stack trace here</pre>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-home"></i>
+                Go to Homepage
+            </a>
+            <button onclick="location.reload()" class="btn btn-refresh">
+                <i class="fas fa-sync-alt"></i>
+                Try Again
+            </button>
+            <a href="/contact" class="btn btn-outline">
+                <i class="fas fa-headset"></i>
+                Contact Support
+            </a>
+        </div>
+
+        <!-- Status Message -->
+        <div style="margin-top: 40px;">
+            <p style="color: rgba(255,255,255,0.7); font-size: 14px;">
+                <i class="fas fa-clock"></i>
+                Expected resolution time: <span id="eta">Calculating...</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Calculate ETA (random for demo)
+        const minutes = Math.floor(Math.random() * 30) + 15;
+        document.getElementById('eta').textContent = `~${minutes} minutes`;
+
+        // Auto-refresh countdown (optional)
+        let seconds = 30;
+        const interval = setInterval(() => {
+            seconds--;
+            if (seconds <= 0) {
+                clearInterval(interval);
+                location.reload();
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

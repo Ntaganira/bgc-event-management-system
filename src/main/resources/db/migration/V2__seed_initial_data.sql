@@ -72,7 +72,7 @@ INSERT INTO users (
 ) VALUES (
     'admin',
     'admin@bgc.event',
-    '$2a$10$N.zmJ9CFsC7XTZ5QkQxqQO5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5',
+    '$2a$10$xaiXz6Yz/kO3oMTX56vXwe4ljgyRDw4EEroaAN2y/NxNr13FCWYRu',
     'System',
     'Administrator',
     true,
@@ -87,7 +87,7 @@ INSERT INTO users (
 ) VALUES (
     'organizer1',
     'organizer1@bgc.event',
-    '$2a$10$N.zmJ9CFsC7XTZ5QkQxqQO5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5',
+    '$2a$10$xaiXz6Yz/kO3oMTX56vXwe4ljgyRDw4EEroaAN2y/NxNr13FCWYRu',
     'John',
     'Organizer',
     true,
