@@ -5,7 +5,7 @@ package com.bgc.event.service.impl;
  * - Project    : BGC EVENT
  * - Package    : com.bgc.event.service.impl
  * - File       : AuthServiceImpl.java
- * - Date       : 2026. 02. 21.
+ * - Date       : 2026. 02. 22.
  * - User       : NTAGANIRA H.
  * - Desc       : Implementation of authentication and authorization service
  * </pre>
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;  // Changed from BCryptPasswordEncoder
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;  // Changed to interface
     
     // In-memory token blacklist (in production, use Redis)
     private final Set<String> tokenBlacklist = ConcurrentHashMap.newKeySet();

@@ -4635,3 +4635,105 @@ Action:
 
 Consider defining a bean of type 'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder' in your configuration.
 
+2026-02-22 19:35:00 [restartedMain] INFO  c.b.e.BgcEventManagementSystemApplication - Starting BgcEventManagementSystemApplication using Java 17.0.0.1 with PID 21700 (E:\ERC\BGC Event Management\bgc-event-management-system\target\classes started by ntaga in E:\ERC\BGC Event Management\bgc-event-management-system)
+2026-02-22 19:35:00 [restartedMain] DEBUG c.b.e.BgcEventManagementSystemApplication - Running with Spring Boot v3.3.3, Spring v6.1.12
+2026-02-22 19:35:00 [restartedMain] INFO  c.b.e.BgcEventManagementSystemApplication - The following 1 profile is active: "dev"
+2026-02-22 19:35:00 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-02-22 19:35:00 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 135 ms. Found 7 JPA repository interfaces.
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.AnalyticsRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.AttendanceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.AuditLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.EventRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.RegistrationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.RoleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:35:01 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 10 ms. Found 0 Redis repository interfaces.
+2026-02-22 19:35:01 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - BgcEventHikariCP - Starting...
+2026-02-22 19:35:01 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - BgcEventHikariCP - Added connection org.postgresql.jdbc.PgConnection@3169a091
+2026-02-22 19:35:01 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - BgcEventHikariCP - Start completed.
+2026-02-22 19:35:01 [restartedMain] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/bgc_event_db (PostgreSQL 16.11)
+2026-02-22 19:35:01 [restartedMain] INFO  o.f.core.internal.command.DbValidate - Successfully validated 9 migrations (execution time 00:00.036s)
+2026-02-22 19:35:01 [restartedMain] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 9
+2026-02-22 19:35:01 [restartedMain] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-02-22 19:35:02 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-22 19:35:02 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-02-22 19:35:03 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-22 19:35:03 [restartedMain] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-22 19:35:04 [restartedMain] WARN  o.s.c.a.AnnotationConfigApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'calendarController' defined in file [E:\ERC\BGC Event Management\bgc-event-management-system\target\classes\com\bgc\event\controller\CalendarController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'calendarServiceImpl' defined in file [E:\ERC\BGC Event Management\bgc-event-management-system\target\classes\com\bgc\event\service\impl\CalendarServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 2: Error creating bean with name 'userServiceImpl' defined in file [E:\ERC\BGC Event Management\bgc-event-management-system\target\classes\com\bgc\event\service\impl\UserServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 2: No qualifying bean of type 'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2026-02-22 19:35:04 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-22 19:35:04 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - BgcEventHikariCP - Shutdown initiated...
+2026-02-22 19:35:04 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - BgcEventHikariCP - Shutdown completed.
+2026-02-22 19:35:04 [restartedMain] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-02-22 19:35:04 [restartedMain] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 2 of constructor in com.bgc.event.service.impl.UserServiceImpl required a bean of type 'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder' in your configuration.
+
+2026-02-22 19:39:03 [restartedMain] INFO  c.b.e.BgcEventManagementSystemApplication - Starting BgcEventManagementSystemApplication using Java 17.0.0.1 with PID 26492 (E:\ERC\BGC Event Management\bgc-event-management-system\target\classes started by ntaga in E:\ERC\BGC Event Management\bgc-event-management-system)
+2026-02-22 19:39:03 [restartedMain] DEBUG c.b.e.BgcEventManagementSystemApplication - Running with Spring Boot v3.3.3, Spring v6.1.12
+2026-02-22 19:39:03 [restartedMain] INFO  c.b.e.BgcEventManagementSystemApplication - The following 1 profile is active: "dev"
+2026-02-22 19:39:03 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-02-22 19:39:03 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 133 ms. Found 7 JPA repository interfaces.
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.AnalyticsRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.AttendanceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.AuditLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.EventRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.RegistrationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.RoleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.bgc.event.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-22 19:39:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 11 ms. Found 0 Redis repository interfaces.
+2026-02-22 19:39:04 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - BgcEventHikariCP - Starting...
+2026-02-22 19:39:04 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - BgcEventHikariCP - Added connection org.postgresql.jdbc.PgConnection@62a267bc
+2026-02-22 19:39:04 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - BgcEventHikariCP - Start completed.
+2026-02-22 19:39:04 [restartedMain] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/bgc_event_db (PostgreSQL 16.11)
+2026-02-22 19:39:04 [restartedMain] INFO  o.f.core.internal.command.DbValidate - Successfully validated 9 migrations (execution time 00:00.050s)
+2026-02-22 19:39:04 [restartedMain] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 9
+2026-02-22 19:39:04 [restartedMain] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-02-22 19:39:05 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-22 19:39:05 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-02-22 19:39:06 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-22 19:39:06 [restartedMain] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-22 19:39:07 [restartedMain] WARN  o.s.c.a.AnnotationConfigApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'calendarController' defined in file [E:\ERC\BGC Event Management\bgc-event-management-system\target\classes\com\bgc\event\controller\CalendarController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'calendarServiceImpl' defined in file [E:\ERC\BGC Event Management\bgc-event-management-system\target\classes\com\bgc\event\service\impl\CalendarServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 2: Error creating bean with name 'userServiceImpl' defined in file [E:\ERC\BGC Event Management\bgc-event-management-system\target\classes\com\bgc\event\service\impl\UserServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 2: No qualifying bean of type 'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2026-02-22 19:39:07 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-22 19:39:07 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - BgcEventHikariCP - Shutdown initiated...
+2026-02-22 19:39:07 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - BgcEventHikariCP - Shutdown completed.
+2026-02-22 19:39:07 [restartedMain] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-02-22 19:39:07 [restartedMain] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 2 of constructor in com.bgc.event.service.impl.UserServiceImpl required a bean of type 'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder' in your configuration.
+
