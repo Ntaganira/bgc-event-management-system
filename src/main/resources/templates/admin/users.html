@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+
+<head>
+    <title th:text="${pageTitle} ?: 'Users'">Users</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Users skeleton -->
+        <div class="page-skeleton visible" id="sk-users">
+            <div style="display:flex;gap:10px;margin-bottom:22px">
+                <div class="sk sk-line h40" style="width:110px;border-radius:8px"></div>
+                <div class="sk sk-line h40" style="width:90px;border-radius:8px"></div>
+                <div class="sk sk-line h40" style="width:200px;border-radius:10px;margin-left:auto"></div>
+            </div>
+            <div class="sk-card" style="padding:0;overflow:hidden">
+                <div style="display:flex;gap:16px;padding:12px 16px;border-bottom:1px solid var(--border)">
+                    <div class="sk sk-line" style="height:11px;width:120px"></div>
+                    <div class="sk sk-line" style="height:11px;width:150px"></div>
+                    <div class="sk sk-line" style="height:11px;width:70px"></div>
+                    <div class="sk sk-line" style="height:11px;width:70px"></div>
+                    <div class="sk sk-line" style="height:11px;width:80px"></div>
+                </div>
+                <div class="sk-table-row"><div class="sk sk-u-av"></div><div class="sk sk-col-md"></div><div style="margin-left:auto;display:flex;gap:40px"><div class="sk sk-chip"></div><div class="sk sk-chip"></div><div class="sk sk-col-sm"></div></div></div>
+                <div class="sk-table-row"><div class="sk sk-u-av"></div><div class="sk sk-col-md"></div><div style="margin-left:auto;display:flex;gap:40px"><div class="sk sk-chip"></div><div class="sk sk-chip"></div><div class="sk sk-col-sm"></div></div></div>
+                <div class="sk-table-row"><div class="sk sk-u-av"></div><div class="sk sk-col-md"></div><div style="margin-left:auto;display:flex;gap:40px"><div class="sk sk-chip"></div><div class="sk sk-chip"></div><div class="sk sk-col-sm"></div></div></div>
+                <div class="sk-table-row"><div class="sk sk-u-av"></div><div class="sk sk-col-md"></div><div style="margin-left:auto;display:flex;gap:40px"><div class="sk sk-chip"></div><div class="sk sk-chip"></div><div class="sk sk-col-sm"></div></div></div>
+                <div class="sk-table-row"><div class="sk sk-u-av"></div><div class="sk sk-col-md"></div><div style="margin-left:auto;display:flex;gap:40px"><div class="sk sk-chip"></div><div class="sk sk-chip"></div><div class="sk sk-col-sm"></div></div></div>
+                <div class="sk-table-row" style="border:none"><div class="sk sk-u-av"></div><div class="sk sk-col-md"></div><div style="margin-left:auto;display:flex;gap:40px"><div class="sk sk-chip"></div><div class="sk sk-chip"></div><div class="sk sk-col-sm"></div></div></div>
+            </div>
+        </div>
+
+        <!-- Actual Users Content -->
+        <div class="page" id="page-users">
+            <div class="page-actions">
+                <button class="btn-primary" onclick="openModal('addUser')">+ Add User</button>
+                <button class="btn-ghost">Export ↓</button>
+                <div class="search-box" style="margin-left:auto">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" placeholder="Search users…" oninput="filterUsers(this.value)" style="width:150px"/>
+                </div>
+            </div>
+            
+            <div class="card">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersBody">
+                        <!-- Users will be rendered here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize users if not already done
+            if (typeof window.users === 'undefined') {
+                window.users = /*[[${users}]]*/ [
+                    {name:'Alex Morgan',  email:'alex@company.com',  role:'Admin',  status:'Active',  joined:'Jan 5, 2023',  color:'#3b82f6'},
+                    {name:'Sara Chen',    email:'sara@company.com',  role:'Manager',status:'Active',  joined:'Mar 12, 2023', color:'#06b6d4'},
+                    {name:'Tom Walker',   email:'tom@company.com',   role:'Editor', status:'Active',  joined:'Jun 1, 2023',  color:'#14b8a6'},
+                    {name:'Priya Nair',   email:'priya@company.com', role:'Viewer', status:'Inactive',joined:'Aug 20, 2023', color:'#8b5cf6'},
+                    {name:'James Liu',    email:'james@company.com', role:'Manager',status:'Active',  joined:'Sep 9, 2023',  color:'#f97316'},
+                    {name:'Emma Davis',   email:'emma@company.com',  role:'Editor', status:'Active',  joined:'Nov 3, 2023',  color:'#ec4899'},
+                ];
+            }
+            
+            // Render users
+            renderUsers(window.users);
+        });
+
+        // User data
+        const rmap = {Admin:'admin', Manager:'manager', Editor:'editor', Viewer:'viewer'};
+
+        function renderUsers(list) {
+            const usersBody = document.getElementById('usersBody');
+            if (!usersBody) return;
+            
+            usersBody.innerHTML = list.map((u, i) => `
+                <tr>
+                    <td><div class="u-cell"><div class="u-av" style="background:${u.color}22;color:${u.color}">${u.name.charAt(0)}</div><div style="font-weight:600">${u.name}</div></div></td>
+                    <td style="color:var(--muted)">${u.email}</td>
+                    <td><span class="role-chip ${rmap[u.role]}">${u.role}</span></td>
+                    <td><span class="status-badge ${u.status === 'Active' ? 'approved' : 'rejected'}">● ${u.status}</span></td>
+                    <td style="color:var(--muted)">${u.joined}</td>
+                    <td>
+                        <button class="act-btn" onclick="editUser(${i})" title="Edit">✏</button>
+                        <button class="act-btn" style="color:var(--red)" onclick="deleteUser(${i})" title="Delete">🗑</button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Update user count in badge if exists
+            const badge = document.getElementById('ev-badge');
+            if (badge) badge.textContent = list.length;
+        }
+
+        function filterUsers(q) {
+            const filtered = window.users.filter(u => 
+                u.name.toLowerCase().includes(q.toLowerCase()) || 
+                u.email.toLowerCase().includes(q.toLowerCase()) || 
+                u.role.toLowerCase().includes(q.toLowerCase())
+            );
+            renderUsers(filtered);
+        }
+        
+        function deleteUser(i) {
+            if (confirm('Are you sure you want to remove this user?')) {
+                window.users.splice(i, 1);
+                renderUsers(window.users);
+            }
+        }
+        
+        function editUser(i) {
+            const user = window.users[i];
+            // Pre-fill modal with user data
+            document.getElementById('u-name').value = user.name;
+            document.getElementById('u-email').value = user.email;
+            document.getElementById('u-role').value = user.role;
+            
+            // Change modal title and button for edit mode
+            const modalTitle = document.querySelector('#modal-addUser .modal-title');
+            const saveButton = document.querySelector('#modal-addUser .btn-primary');
+            
+            modalTitle.textContent = 'Edit User';
+            saveButton.textContent = 'Update User';
+            saveButton.setAttribute('onclick', `updateUser(${i})`);
+            
+            openModal('addUser');
+        }
+        
+        function addUser() {
+            const name = document.getElementById('u-name').value.trim();
+            const email = document.getElementById('u-email').value.trim();
+            const role = document.getElementById('u-role').value;
+            
+            if (!name || !email) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Email validation
+            if (!email.includes('@') || !email.includes('.')) {
+                alert('Please enter a valid email address');
+                return;
+            }
+            
+            const colors = ['#3b82f6', '#06b6d4', '#14b8a6', '#8b5cf6', '#f97316', '#ec4899'];
+            const newUser = {
+                name: name,
+                email: email,
+                role: role,
+                status: 'Active',
+                joined: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}),
+                color: colors[Math.floor(Math.random() * colors.length)]
+            };
+            
+            window.users.push(newUser);
+            renderUsers(window.users);
+            resetUserModal();
+            closeModal('addUser');
+        }
+        
+        function updateUser(index) {
+            const name = document.getElementById('u-name').value.trim();
+            const email = document.getElementById('u-email').value.trim();
+            const role = document.getElementById('u-role').value;
+            
+            if (!name || !email) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            window.users[index] = {
+                ...window.users[index],
+                name: name,
+                email: email,
+                role: role
+            };
+            
+            renderUsers(window.users);
+            resetUserModal();
+            closeModal('addUser');
+        }
+        
+        function resetUserModal() {
+            // Reset form
+            document.getElementById('u-name').value = '';
+            document.getElementById('u-email').value = '';
+            document.getElementById('u-role').value = 'Admin';
+            
+            // Reset modal title and button
+            const modalTitle = document.querySelector('#modal-addUser .modal-title');
+            const saveButton = document.querySelector('#modal-addUser .btn-primary');
+            
+            modalTitle.textContent = 'Add New User';
+            saveButton.textContent = 'Add User';
+            saveButton.setAttribute('onclick', 'addUser()');
+        }
+        /*]]>*/
+    </script>
+</body>
+</html>

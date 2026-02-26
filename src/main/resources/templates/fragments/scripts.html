@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="scripts">
+    <!-- FullCalendar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.11/index.global.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // ============================================
+        // BGC GLOBAL NAMESPACE - DEFINE FIRST!
+        // ============================================
+        window.BGC = window.BGC || {};
+
+        // ============================================
+        // CSRF TOKEN - Now BGC exists!
+        // ============================================
+        BGC.csrf = {
+            token: document.querySelector('meta[name="_csrf"]')?.content || '',
+            header: document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN'
+        };
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        BGC.utils = {
+            formatDate: function (date) {
+                if (!date) return 'TBD';
+                const d = new Date(date);
+                if (isNaN(d)) return date;
+                return d.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            },
+
+            formatDateShort: function (date) {
+                if (!date) return 'TBD';
+                const d = new Date(date);
+                if (isNaN(d)) return date;
+                return d.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                });
+            },
+
+            showNotification: function (message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    background: ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    z-index: 9999;
+                    animation: slideIn 0.3s ease;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            },
+
+            debounce: function (func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            },
+
+            getElement: function (id) {
+                return document.getElementById(id);
+            }
+        };
+
+        // // Add animation styles
+        // const bgcAnimationStyles = document.createElement('style');
+        // bgcAnimationStyles.textContent = `
+        //     @keyframes slideIn {
+        //         from { transform: translateX(100%); opacity: 0; }
+        //         to { transform: translateX(0); opacity: 1; }
+        //     }
+        //     @keyframes slideOut {
+        //         from { transform: translateX(0); opacity: 1; }
+        //         to { transform: translateX(100%); opacity: 0; }
+        //     }
+        // `;
+        // document.head.appendChild(bgcAnimationStyles);
+
+        // ============================================
+        // MODAL MANAGEMENT
+        // ============================================
+        BGC.modal = {
+            open: function (id) {
+                const modal = document.getElementById('modal-' + id);
+                if (modal) modal.classList.add('open');
+            },
+
+            close: function (id) {
+                const modal = document.getElementById('modal-' + id);
+                if (modal) modal.classList.remove('open');
+            },
+
+            openWithData: function (id, data) {
+                const modal = document.getElementById('modal-' + id);
+                if (modal && data) {
+                    for (const [key, value] of Object.entries(data)) {
+                        const el = modal.querySelector(`[data-field="${key}"]`);
+                        if (el) el.textContent = value;
+                    }
+                }
+                this.open(id);
+            }
+        };
+
+        // Close modals when clicking overlay
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.modal-overlay').forEach(o => {
+                o.addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        this.classList.remove('open');
+                    }
+                });
+            });
+        });
+
+        // ============================================
+        // SIDEBAR / NAVIGATION
+        // ============================================
+        BGC.sidebar = {
+            toggle: function () {
+                ['sidebar', 'topbar', 'main'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.toggle('collapsed');
+                });
+                localStorage.setItem('sidebarCollapsed',
+                    document.getElementById('sidebar')?.classList.contains('collapsed') || false);
+            },
+
+            init: function () {
+                // Load saved state
+                if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                    ['sidebar', 'topbar', 'main'].forEach(id => {
+                        document.getElementById(id)?.classList.add('collapsed');
+                    });
+                }
+            }
+        };
+
+        // Global toggle function for onclick
+        window.toggleSidebar = function () { BGC.sidebar.toggle(); };
+
+        // ============================================
+        // PAGE METADATA
+        // ============================================
+        var pageMeta = {
+            dashboard: { title: 'Dashboard', crumb: 'Home / Dashboard' },
+            events: { title: 'Events', crumb: 'Home / Events' },
+            calendar: { title: 'Calendar', crumb: 'Home / Calendar' },
+            users: { title: 'Users', crumb: 'Administration / Users' },
+            roles: { title: 'Roles & Permissions', crumb: 'Administration / Roles' },
+        };
+
+        // ============================================
+        // UI HELPER FUNCTIONS
+        // ============================================
+        BGC.ui = {
+            selectSwatch: function (element, groupId) {
+                const container = document.getElementById(groupId);
+                if (!container) return;
+                container.querySelectorAll('.swatch').forEach(s => s.classList.remove('sel'));
+                element.classList.add('sel');
+            },
+
+            getSelectedSwatch: function (groupId) {
+                const swatch = document.querySelector(`#${groupId} .swatch.sel`);
+                return swatch ? swatch.dataset.color : '#3b82f6';
+            },
+
+            updatePageTitle: function (page) {
+                const titleEl = document.getElementById('pg-title');
+                const crumbEl = document.getElementById('pg-crumb');
+                if (titleEl) titleEl.textContent = pageMeta[page]?.title || 'BGC Events';
+                if (crumbEl) crumbEl.textContent = pageMeta[page]?.crumb || 'Home';
+            }
+        };
+
+        // ============================================
+        // NAVIGATION FUNCTION
+        // ============================================
+        window.navigate = function (el, page) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+
+            BGC.ui.updatePageTitle(page);
+
+            const targetPage = document.getElementById('page-' + page);
+            if (targetPage) targetPage.classList.add('active');
+
+            if (page === 'calendar' && typeof initCalendar === 'function') setTimeout(initCalendar, 60);
+            if (page === 'roles' && typeof renderRoles === 'function') renderRoles();
+            if (page === 'events' && typeof renderEventCards === 'function') renderEventCards();
+            if (page === 'users' && typeof users !== 'undefined') renderUsers(users);
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            BGC.sidebar.init();
+
+            // Set initial page if not dashboard
+            const activePage = document.querySelector('.page.active');
+            if (!activePage) {
+                const dashboardPage = document.getElementById('page-dashboard');
+                if (dashboardPage) dashboardPage.classList.add('active');
+            }
+        });
+
+        // ============================================
+        // CHART CONFIGURATION
+        // ============================================
+        var gridCfg = { color: 'rgba(255,255,255,0.05)' };
+        var tickCfg = { color: '#94a3b8', font: { size: 11, family: 'Plus Jakarta Sans' } };
+
+        // Initialize charts if elements exist
+        document.addEventListener('DOMContentLoaded', function () {
+            // Salary Chart
+            const salaryCtx = document.getElementById('salaryChart')?.getContext('2d');
+            if (salaryCtx) {
+                new Chart(salaryCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['22 Jun', '23 Jun', '24 Jun', '25 Jun', '26 Jun', '27 Jun', '28 Jun'],
+                        datasets: [
+                            { data: [14000, 15200, 21017, 13800, 13200, 15400, 16100], borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.09)', tension: .5, fill: true, pointRadius: 3, pointBackgroundColor: '#06b6d4', pointBorderColor: 'transparent' },
+                            { data: [10200, 11000, 11800, 12100, 10600, 12300, 14200], borderColor: '#6366f1', backgroundColor: 'transparent', tension: .5, fill: false, pointRadius: 0 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: gridCfg, ticks: tickCfg },
+                            y: { grid: gridCfg, ticks: { ...tickCfg, callback: v => (v / 1000) + 'k' } }
+                        }
+                    }
+                });
+            }
+
+            // Donut Chart
+            const donutCtx = document.getElementById('donutChart')?.getContext('2d');
+            if (donutCtx) {
+                new Chart(donutCtx, {
+                    type: 'doughnut',
+                    data: { datasets: [{ data: [40, 30, 20, 10], backgroundColor: ['#06b6d4', '#6366f1', '#f59e0b', '#ef4444'], borderWidth: 4, borderColor: '#1e2a47', hoverOffset: 6 }] },
+                    options: { cutout: '73%', plugins: { legend: { display: false } } }
+                });
+            }
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart')?.getContext('2d');
+            if (revenueCtx) {
+                new Chart(revenueCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [
+                            { data: [170, 150, 210, 125, 160, 130, 185, 112, 178, 142, 120, 158], backgroundColor: '#3b82f6', borderRadius: 4, barPercentage: .5 },
+                            { data: [110, 92, 122, 82, 102, 130, 88, 97, 112, 78, 92, 167], backgroundColor: '#f97316', borderRadius: 4, barPercentage: .5 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10, family: 'Plus Jakarta Sans' } } },
+                            y: { grid: gridCfg, ticks: { color: '#94a3b8', font: { size: 10, family: 'Plus Jakarta Sans' } } }
+                        }
+                    }
+                });
+            }
+        });
+
+        // ============================================
+        // EVENTS MODULE (placeholder - will be replaced by real data)
+        // ============================================
+        let events = [
+            { id: 1, title: 'Q1 Strategy Review', start: '2025-03-15T10:00', end: '2025-03-15T12:00', color: '#3b82f6', cat: 'Business', desc: 'Quarterly business review', att: 12 },
+            { id: 2, title: 'UX Design Workshop', start: '2025-03-18T14:00', end: '2025-03-18T17:00', color: '#06b6d4', cat: 'Design', desc: 'Interactive workshop', att: 8 }
+        ];
+        let nextEvId = 3;
+
+        function renderEventCards() {
+            const grid = document.getElementById('eventsGrid');
+            const lbl = document.getElementById('ev-count-lbl');
+            if (!grid || !lbl) return;
+
+            lbl.textContent = `${events.length} event${events.length !== 1 ? 's' : ''}`;
+            grid.innerHTML = events.map(e => {
+                const d = new Date(e.start);
+                const ds = isNaN(d) ? '' : BGC.utils.formatDateShort(d);
+                return `<div class="ev-card" style="border-top:3px solid ${e.color}">
+                    <div class="ev-date">📅 ${ds}</div>
+                    <div class="ev-title">${e.title}</div>
+                    <div class="ev-desc">${e.desc || 'No description provided.'}</div>
+                    <div class="ev-footer">
+                        <span class="ev-tag" style="background:${e.color}22;color:${e.color}">${e.cat}</span>
+                        <span class="ev-att">${e.att ? '👤 ' + e.att + ' attendee' + (e.att !== 1 ? 's' : '') : ''}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function updateBadge() {
+            const badge = document.getElementById('ev-badge');
+            if (badge) badge.textContent = events.length;
+        }
+
+        // ============================================
+        // FULLCALENDAR INITIALIZATION
+        // ============================================
+        window.initCalendar = function () {
+            const calendarEl = document.getElementById('fullcalendar');
+            if (!calendarEl) return;
+
+            if (window.fcCalendar) {
+                window.fcCalendar.render();
+                refreshUpcoming();
+                return;
+            }
+
+            window.fcCalendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                initialDate: '2025-03-01',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listMonth' },
+                height: 'auto',
+                events: events.map(e => ({
+                    id: String(e.id), title: e.title,
+                    start: e.start, end: e.end,
+                    backgroundColor: e.color, borderColor: 'transparent',
+                    extendedProps: { cat: e.cat, desc: e.desc, att: e.att }
+                })),
+                eventClick: function (info) {
+                    const ev = info.event;
+                    document.getElementById('evd-dot').style.background = ev.backgroundColor;
+                    document.getElementById('evd-title').textContent = ev.title;
+
+                    const d = new Date(ev.start);
+                    const de = ev.end ? new Date(ev.end) : null;
+                    const p = ev.extendedProps;
+
+                    document.getElementById('evd-body').innerHTML = `
+                        <div style="margin-bottom:8px"><strong style="color:var(--text)">Category:</strong> ${p.cat || '—'}</div>
+                        <div style="margin-bottom:8px"><strong style="color:var(--text)">Start:</strong> ${BGC.utils.formatDate(d)}</div>
+                        ${de ? `<div style="margin-bottom:8px"><strong style="color:var(--text)">End:</strong> ${BGC.utils.formatDate(de)}</div>` : ''}
+                        ${p.att ? `<div style="margin-bottom:8px"><strong style="color:var(--text)">Attendees:</strong> ${p.att}</div>` : ''}
+                        ${p.desc ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">${p.desc}</div>` : ''}
+                    `;
+                    BGC.modal.open('evDetail');
+                },
+                dateClick: function (info) {
+                    const dateInput = document.getElementById('qa-date');
+                    if (dateInput) dateInput.value = info.dateStr;
+                },
+                dayCellDidMount: function (info) {
+                    info.el.style.cursor = 'pointer';
+                }
+            });
+
+            window.fcCalendar.render();
+            refreshUpcoming();
+        };
+
+        function refreshUpcoming() {
+            const list = document.getElementById('upcoming-list');
+            if (!list) return;
+
+            const sorted = [...events].sort((a, b) => new Date(a.start) - new Date(b.start)).slice(0, 6);
+            if (!sorted.length) {
+                list.innerHTML = '<div style="font-size:13px;color:var(--muted)">No events yet.</div>';
+                return;
+            }
+
+            list.innerHTML = sorted.map(e => {
+                const d = new Date(e.start);
+                const ds = isNaN(d) ? e.start : BGC.utils.formatDateShort(d);
+                const ts = (e.start.includes('T') && !isNaN(d)) ? d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '';
+                return `<div class="ue-item" style="border-left-color:${e.color}">
+                    <div class="ue-date">${ds}</div>
+                    <div><div class="ue-name">${e.title}</div>${ts ? `<div class="ue-time">${ts}</div>` : ''}</div>
+                </div>`;
+            }).join('');
+        }
+
+        // ============================================
+        // USERS MODULE (placeholder)
+        // ============================================
+        let users = [
+            { name: 'Alex Morgan', email: 'alex@company.com', role: 'Admin', status: 'Active', joined: 'Jan 5, 2023', color: '#3b82f6' },
+            { name: 'Sara Chen', email: 'sara@company.com', role: 'Manager', status: 'Active', joined: 'Mar 12, 2023', color: '#06b6d4' }
+        ];
+        const rmap = { Admin: 'admin', Manager: 'manager', Editor: 'editor', Viewer: 'viewer' };
+
+        window.renderUsers = function (list) {
+            const tbody = document.getElementById('usersBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = list.map((u, i) => `
+                <tr>
+                    <td><div class="u-cell"><div class="u-av" style="background:${u.color}22;color:${u.color}">${u.name[0]}</div><div style="font-weight:600">${u.name}</div></div></td>
+                    <td style="color:var(--muted)">${u.email}</td>
+                    <td><span class="role-chip ${rmap[u.role]}">${u.role}</span></td>
+                    <td><span class="status-badge ${u.status === 'Active' ? 'approved' : 'rejected'}">● ${u.status}</span></td>
+                    <td style="color:var(--muted)">${u.joined}</td>
+                    <td>
+                        <button class="act-btn" onclick="BGC.Users.edit(${i})">✏</button>
+                        <button class="act-btn" style="color:var(--red)" onclick="BGC.Users.delete(${i})">🗑</button>
+                    </td>
+                </tr>`).join('');
+        };
+
+        window.filterUsers = function (q) {
+            if (typeof users !== 'undefined') {
+                renderUsers(users.filter(u =>
+                    u.name.toLowerCase().includes(q.toLowerCase()) ||
+                    u.email.toLowerCase().includes(q.toLowerCase()) ||
+                    u.role.toLowerCase().includes(q.toLowerCase())
+                ));
+            }
+        };
+
+        // Initialize on page load
+        if (document.getElementById('usersBody')) renderUsers(users);
+        if (document.getElementById('eventsGrid')) renderEventCards();
+        updateBadge();
+
+        // ============================================
+        // MODULE NAMESPACES (don't overwrite existing)
+        // ============================================
+        // Only create if they don't exist - but don't overwrite!
+        window.BGC.Events = window.BGC.Events || {};
+        window.BGC.Users = window.BGC.Users || {};
+        window.BGC.Roles = window.BGC.Roles || {};
+
+
+
+
+
+
+
+        // ============================================
+        // USERS MODULE
+        // ============================================
+        BGC.Users = BGC.Users || {};
+
+        BGC.Users.create = function () {
+            const formData = {
+                firstName: document.getElementById('u-firstname')?.value,
+                lastName: document.getElementById('u-lastname')?.value,
+                email: document.getElementById('u-email')?.value,
+                username: document.getElementById('u-username')?.value,
+                password: document.getElementById('u-password')?.value,
+                phoneNumber: document.getElementById('u-phone')?.value,
+                roleIds: Array.from(document.getElementById('u-role')?.selectedOptions || []).map(opt => opt.value)
+            };
+
+            // Validate required fields
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.username || !formData.password) {
+                BGC.utils.showNotification('Please fill in all required fields', 'warning');
+                return;
+            }
+
+            fetch('/api/admin/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [BGC.csrf.header]: BGC.csrf.token
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to create user');
+                    return response.json();
+                })
+                .then(user => {
+                    BGC.modal.close('addUser');
+                    BGC.utils.showNotification('User created successfully!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                })
+                .catch(error => {
+                    BGC.utils.showNotification(error.message, 'error');
+                });
+        };
+
+        BGC.Users.update = function () {
+            const userId = document.getElementById('edit-user-id')?.value;
+            const formData = {
+                firstName: document.getElementById('edit-firstname')?.value,
+                lastName: document.getElementById('edit-lastname')?.value,
+                phoneNumber: document.getElementById('edit-phone')?.value,
+                enabled: document.getElementById('edit-enabled')?.value === 'true',
+                roleIds: Array.from(document.getElementById('edit-role')?.selectedOptions || []).map(opt => opt.value)
+            };
+
+            fetch(`/api/admin/users/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [BGC.csrf.header]: BGC.csrf.token
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to update user');
+                    return response.json();
+                })
+                .then(user => {
+                    BGC.modal.close('editUser');
+                    BGC.utils.showNotification('User updated successfully!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                })
+                .catch(error => {
+                    BGC.utils.showNotification(error.message, 'error');
+                });
+        };
+
+
+        /*]]>*/
+    </script>
+</div>
+
+</html>

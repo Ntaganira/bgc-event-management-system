@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+
+<head>
+    <title th:text="${event.title}">Event Details</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div style="max-width: 1000px; margin: 0 auto;">
+            <!-- Header -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+                <div>
+                    <a th:href="@{/events}" class="back-link" style="display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; margin-bottom: 12px;">
+                        <i class="fas fa-arrow-left"></i> Back to Events
+                    </a>
+                    <h1 style="font-size: 28px; font-weight: 700; color: var(--text);" th:text="${event.title}">Event Title</h1>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a th:href="@{'/events/' + ${event.id} + '/edit'}" class="btn-primary">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <button class="btn-ghost" th:onclick="'BGC.Events.confirmDelete(' + ${event.id} + ')'">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+
+            <!-- Event Details Grid -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                <!-- Main Content -->
+                <div class="card">
+                    <!-- Status Bar -->
+                    <div style="display: flex; align-items: center; gap: 16px; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--border);">
+                        <span class="status-badge" th:style="'background:' + (${event.colorCode} ?: '#3b82f6') + '22; color:' + (${event.colorCode} ?: '#3b82f6')" 
+                              th:text="${event.status}">OPEN</span>
+                        <span class="status-badge" th:if="${event.allowWaitlist}" style="background:rgba(34,197,94,0.12); color:#22c55e;">Waitlist Enabled</span>
+                        <span class="status-badge" th:if="${event.requireApproval}" style="background:rgba(245,158,11,0.12); color:#f59e0b;">Approval Required</span>
+                    </div>
+
+                    <!-- Description -->
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="color: var(--text); margin-bottom: 12px; font-size: 16px;">Description</h3>
+                        <p style="color: var(--muted); line-height: 1.6; white-space: pre-wrap;" th:text="${event.description}">Event description here...</p>
+                    </div>
+
+                    <!-- Short Description (if exists) -->
+                    <div style="margin-bottom: 24px;" th:if="${event.shortDescription}">
+                        <h3 style="color: var(--text); margin-bottom: 12px; font-size: 16px;">Short Description</h3>
+                        <p style="color: var(--muted);" th:text="${event.shortDescription}">Short description...</p>
+                    </div>
+
+                    <!-- Tags -->
+                    <div style="margin-bottom: 24px;" th:if="${not #lists.isEmpty(event.tags)}">
+                        <h3 style="color: var(--text); margin-bottom: 12px; font-size: 16px;">Tags</h3>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <span class="ev-tag" th:each="tag : ${event.tags}" 
+                                  th:style="'background:' + (${event.colorCode} ?: '#3b82f6') + '22; color:' + (${event.colorCode} ?: '#3b82f6')" 
+                                  th:text="${tag}">tag</span>
+                        </div>
+                    </div>
+
+                    <!-- Terms & Conditions -->
+                    <div th:if="${event.termsAndConditions}">
+                        <h3 style="color: var(--text); margin-bottom: 12px; font-size: 16px;">Terms & Conditions</h3>
+                        <div style="background: var(--surface-2); padding: 16px; border-radius: 8px; color: var(--muted); font-size: 13px; white-space: pre-wrap;" 
+                             th:text="${event.termsAndConditions}">Terms here...</div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Info -->
+                <div>
+                    <!-- Date & Time Card -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h3 style="color: var(--text); margin-bottom: 16px; font-size: 16px;">Date & Time</h3>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="color: var(--muted); font-size: 12px; margin-bottom: 4px;">Start</div>
+                            <div style="color: var(--text); font-weight: 500;" 
+                                 th:text="${#temporals.format(event.startDate, 'EEEE, MMMM d, yyyy · h:mm a')}">
+                                Monday, March 15, 2025 · 10:00 AM
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="color: var(--muted); font-size: 12px; margin-bottom: 4px;">End</div>
+                            <div style="color: var(--text); font-weight: 500;" 
+                                 th:text="${#temporals.format(event.endDate, 'EEEE, MMMM d, yyyy · h:mm a')}">
+                                Monday, March 15, 2025 · 6:00 PM
+                            </div>
+                        </div>
+                        
+                        <div th:if="${event.registrationDeadline}">
+                            <div style="color: var(--muted); font-size: 12px; margin-bottom: 4px;">Registration Deadline</div>
+                            <div style="color: var(--warning-color); font-weight: 500;" 
+                                 th:text="${#temporals.format(event.registrationDeadline, 'EEEE, MMMM d, yyyy · h:mm a')}">
+                                Monday, March 14, 2025 · 11:59 PM
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location Card -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h3 style="color: var(--text); margin-bottom: 16px; font-size: 16px;">Location</h3>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="color: var(--muted); font-size: 12px; margin-bottom: 4px;">Venue</div>
+                            <div style="color: var(--text); font-weight: 500;" th:text="${event.venue}">BGC Convention Center</div>
+                        </div>
+                        
+                        <div th:if="${event.address}" style="margin-bottom: 12px;">
+                            <div style="color: var(--muted); font-size: 12px; margin-bottom: 4px;">Address</div>
+                            <div style="color: var(--text);" th:text="${event.address}">123 Business Ave</div>
+                        </div>
+                        
+                        <div th:if="${event.city}">
+                            <div style="color: var(--muted); font-size: 12px; margin-bottom: 4px;">City</div>
+                            <div style="color: var(--text);" th:text="${event.city}">Taguig City</div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Card -->
+                    <div class="card">
+                        <h3 style="color: var(--text); margin-bottom: 16px; font-size: 16px;">Statistics</h3>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="color: var(--muted);">Registrations</span>
+                                <span style="color: var(--text); font-weight: 600;" 
+                                      th:text="${event.currentRegistrations} + ' / ' + (${event.capacity} ?: '∞')">45 / 500</span>
+                            </div>
+                            <div style="height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden;">
+                                <div style="height: 100%; width: ${event.capacity ? (event.currentRegistrations / event.capacity * 100) : 0}%; 
+                                            background: ${event.currentRegistrations >= event.capacity ? '#ef4444' : event.currentRegistrations >= event.capacity * 0.9 ? '#f59e0b' : '#22c55e'};">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div>
+                                <div style="color: var(--muted); font-size: 12px;">Checked In</div>
+                                <div style="color: var(--text); font-size: 18px; font-weight: 600;" th:text="${event.attendances?.size() ?: 0}">32</div>
+                            </div>
+                            <div>
+                                <div style="color: var(--muted); font-size: 12px;">Waitlist</div>
+                                <div style="color: var(--text); font-size: 18px; font-weight: 600;" th:text="${event.currentWaitlist ?: 0}">5</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 16px;">
+                            <a th:href="@{'/events/' + ${event.id} + '/registrations'}" class="btn-primary" style="width: 100%; text-align: center;">
+                                View Registrations
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+
+<head>
+    <title>Calendar - BGC Events</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.11/index.global.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="cal-layout">
+            <!-- Calendar -->
+            <div class="card" style="padding: 20px;">
+                <div id="fullcalendar"></div>
+            </div>
+
+            <!-- Side Panel -->
+            <div class="cal-side">
+                <!-- Upcoming Events -->
+                <div class="card">
+                    <div class="card-hd">
+                        <div class="card-title">Upcoming Events</div>
+                        <a th:href="@{/events}" class="btn-ghost" style="padding:5px 12px; font-size:12px;">View All</a>
+                    </div>
+                    <div id="upcoming-list" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="font-size:13px; color:var(--muted); text-align:center; padding:20px;">
+                            Loading events...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Add -->
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:14px">Quick Add</div>
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input class="form-input" id="qa-title" placeholder="Event title"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input class="form-input" id="qa-date" type="date" style="color-scheme:dark"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time (optional)</label>
+                        <input class="form-input" id="qa-time" type="time" style="color-scheme:dark"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Color</label>
+                        <div class="swatches" id="qa-swatches">
+                            <div class="swatch sel" data-color="#3b82f6" style="background:#3b82f6" onclick="BGC.ui.selectSwatch(this, 'qa-swatches')"></div>
+                            <div class="swatch" data-color="#06b6d4" style="background:#06b6d4" onclick="BGC.ui.selectSwatch(this, 'qa-swatches')"></div>
+                            <div class="swatch" data-color="#f97316" style="background:#f97316" onclick="BGC.ui.selectSwatch(this, 'qa-swatches')"></div>
+                            <div class="swatch" data-color="#6366f1" style="background:#6366f1" onclick="BGC.ui.selectSwatch(this, 'qa-swatches')"></div>
+                            <div class="swatch" data-color="#22c55e" style="background:#22c55e" onclick="BGC.ui.selectSwatch(this, 'qa-swatches')"></div>
+                            <div class="swatch" data-color="#ef4444" style="background:#ef4444" onclick="BGC.ui.selectSwatch(this, 'qa-swatches')"></div>
+                        </div>
+                    </div>
+                    <button class="btn-primary" style="width:100%" onclick="BGC.Calendar.quickAdd()">Add to Calendar</button>
+                </div>
+
+                <!-- Legend -->
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:14px">Legend</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 12px; height: 12px; border-radius: 3px; background: #3b82f6;"></div>
+                            <span style="font-size: 13px;">Business</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 12px; height: 12px; border-radius: 3px; background: #06b6d4;"></div>
+                            <span style="font-size: 13px;">Tech</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 12px; height: 12px; border-radius: 3px; background: #f97316;"></div>
+                            <span style="font-size: 13px;">Social</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 12px; height: 12px; border-radius: 3px; background: #6366f1;"></div>
+                            <span style="font-size: 13px;">Design</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 12px; height: 12px; border-radius: 3px; background: #22c55e;"></div>
+                            <span style="font-size: 13px;">Client</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script layout:fragment="scripts">
+        /*<![CDATA[*/
+        BGC.Calendar = BGC.Calendar || {};
+
+        // Initialize calendar when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof initCalendar === 'function') {
+                initCalendar();
+            }
+        });
+
+        BGC.Calendar.quickAdd = function() {
+            const title = document.getElementById('qa-title').value.trim();
+            const date = document.getElementById('qa-date').value;
+            const time = document.getElementById('qa-time').value;
+            const color = BGC.ui.getSelectedSwatch('qa-swatches');
+
+            if (!title || !date) {
+                BGC.utils.showNotification('Please enter a title and date', 'warning');
+                return;
+            }
+
+            const startDateTime = time ? `${date}T${time}` : `${date}T12:00:00`;
+            
+            const formData = {
+                title: title,
+                startDate: startDateTime,
+                endDate: startDateTime,
+                venue: 'Quick Add',
+                status: 'DRAFT',
+                colorCode: color
+            };
+
+            fetch('/api/events', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to create event');
+                return response.json();
+            })
+            .then(event => {
+                BGC.utils.showNotification('Event created successfully!', 'success');
+                document.getElementById('qa-title').value = '';
+                document.getElementById('qa-date').value = '';
+                document.getElementById('qa-time').value = '';
+                
+                // Refresh calendar
+                if (window.fcCalendar) {
+                    window.fcCalendar.refetchEvents();
+                }
+                if (typeof refreshUpcoming === 'function') {
+                    refreshUpcoming();
+                }
+            })
+            .catch(error => {
+                BGC.utils.showNotification(error.message, 'error');
+            });
+        };
+        /*]]>*/
+    </script>
+</body>
+</html>

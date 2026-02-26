@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+
+<head>
+    <title>Users - BGC Events</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Page Actions -->
+        <div class="page-actions">
+            <a th:href="@{/admin/users/create}" class="btn-primary">
+                <i class="fas fa-plus"></i> Add User
+            </a>
+            <button class="btn-ghost" onclick="BGC.Users.openFilter()">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+            <div style="margin-left:auto; font-size:13px; color:var(--muted)" th:text="${totalUsers + ' users'}">
+                0 users
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar" id="filterBar" style="display: none; margin-bottom: 20px;">
+            <div class="card" style="padding: 16px;">
+                <div class="form-row" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" id="filterRole">
+                            <option value="">All Roles</option>
+                            <option value="ADMIN">Admin</option>
+                            <option value="ORGANIZER">Organizer</option>
+                            <option value="PUBLIC">Public</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="filterStatus">
+                            <option value="">All</option>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="display: flex; gap: 10px; align-items: flex-end;">
+                        <button class="btn-primary" onclick="BGC.Users.applyFilters()">Apply</button>
+                        <button class="btn-ghost" onclick="BGC.Users.resetFilters()">Reset</button>
+                        <button class="btn-ghost" onclick="BGC.Users.closeFilter()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="card" th:if="${not #lists.isEmpty(users.content)}">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users.content}">
+                        <td>
+                            <div class="u-cell">
+                                <div class="u-av" th:style="'background:' + (${user?.firstName?.charAt(0)?.toLowerCase() == 'a' ? '#3b82f6' : '#06b6d4'}) + '22; color:' + (${user?.firstName?.charAt(0)?.toLowerCase() == 'a' ? '#3b82f6' : '#06b6d4'})" 
+                                     th:text="${user?.firstName?.charAt(0) ?: '?'}">A</div>
+                                <div style="font-weight:600" th:text="${user?.firstName + ' ' + user?.lastName}">Alex Morgan</div>
+                            </div>
+                        </td>
+                        <td style="color:var(--muted)" th:text="${user.email}">alex@company.com</td>
+                        <td>
+                            <span class="role-chip" th:each="role : ${user.roles}" 
+                                  th:classappend="'role-' + ${role.toLowerCase()}"
+                                  th:text="${role}" style="margin-right:4px">Admin</span>
+                        </td>
+                        <td>
+                            <span class="status-badge" th:classappend="${user.enabled} ? 'approved' : 'rejected'"
+                                  th:text="${user.enabled} ? 'Active' : 'Inactive'">● Active</span>
+                        </td>
+                        <td style="color:var(--muted)" th:text="${#temporals.format(user.createdAt, 'MMM d, yyyy')}">Jan 5, 2023</td>
+                        <td>
+                            <button class="btn-icon" th:onclick="'BGC.Users.view(' + ${user.id} + ')'" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-icon" th:onclick="'BGC.Users.edit(' + ${user.id} + ')'" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon" style="color: var(--red)" th:onclick="'BGC.Users.confirmDelete(' + ${user.id} + ')'" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" th:if="${#lists.isEmpty(users.content)}">
+            <div style="text-align: center; padding: 60px 20px; color: var(--muted);">
+                <div style="font-size: 48px; margin-bottom: 20px;">👥</div>
+                <h3 style="color: var(--text); margin-bottom: 10px;">No Users Found</h3>
+                <p style="margin-bottom: 20px;">Get started by adding your first user.</p>
+                <a th:href="@{/admin/users/create}" class="btn-primary">Add User</a>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" th:if="${users.totalPages > 1}">
+            <div style="display: flex; justify-content: center; gap: 8px; margin-top: 30px;">
+                <a th:each="i : ${#numbers.sequence(0, users.totalPages - 1)}" 
+                   th:href="@{/admin/users(page=${i}, size=${users.size})}" 
+                   class="pagination-btn"
+                   th:classappend="${i == users.number} ? 'active' : ''"
+                   th:text="${i + 1}">1</a>
+            </div>
+        </div>
+    </div>
+
+    <script layout:fragment="page-scripts">
+        /*<![CDATA[*/
+        // ============================================
+        // USERS MODULE
+        // ============================================
+        BGC.Users = BGC.Users || {};
+
+        BGC.Users.view = function(id) {
+            window.location.href = '/admin/users/' + id;
+        };
+
+        BGC.Users.edit = function(id) {
+            window.location.href = '/admin/users/' + id + '/edit';
+        };
+
+        BGC.Users.confirmDelete = function(id) {
+            window.currentDeleteId = id;
+            window.currentDeleteType = 'user';
+            BGC.modal.open('confirmDelete');
+        };
+
+        BGC.Users.openFilter = function() {
+            document.getElementById('filterBar').style.display = 'block';
+        };
+
+        BGC.Users.closeFilter = function() {
+            document.getElementById('filterBar').style.display = 'none';
+        };
+
+        BGC.Users.applyFilters = function() {
+            BGC.utils.showNotification('Filters applied', 'success');
+            this.closeFilter();
+        };
+
+        BGC.Users.resetFilters = function() {
+            document.getElementById('filterRole').value = '';
+            document.getElementById('filterStatus').value = '';
+        };
+
+        // ============================================
+        // AUTO-OPEN MODAL FROM URL PARAMETER
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.get('openModal') === 'addUser') {
+                setTimeout(() => {
+                    BGC.modal.open('addUser');
+                }, 200);
+            }
+            
+            if (urlParams.get('openModal') === 'editUser') {
+                const userId = urlParams.get('userId');
+                if (userId) {
+                    // Fetch user data and open edit modal
+                    fetch(`/api/admin/users/${userId}`)
+                        .then(response => response.json())
+                        .then(user => {
+                            document.getElementById('edit-user-id').value = user.id;
+                            document.getElementById('edit-firstname').value = user.firstName || '';
+                            document.getElementById('edit-lastname').value = user.lastName || '';
+                            document.getElementById('edit-phone').value = user.phoneNumber || '';
+                            document.getElementById('edit-enabled').value = user.enabled ? 'true' : 'false';
+                            
+                            // Select roles
+                            const roleSelect = document.getElementById('edit-role');
+                            if (roleSelect && user.roles) {
+                                Array.from(roleSelect.options).forEach(opt => {
+                                    opt.selected = user.roles.includes(opt.text);
+                                });
+                            }
+                            
+                            setTimeout(() => {
+                                BGC.modal.open('editUser');
+                            }, 200);
+                        });
+                }
+            }
+            
+            if (urlParams.get('error') === 'notfound') {
+                BGC.utils.showNotification('User not found', 'error');
+            }
+        });
+
+        // Override delete confirmation for users
+        const originalDelete = BGC.deleteConfirmed;
+        BGC.deleteConfirmed = function() {
+            if (window.currentDeleteType === 'user') {
+                const id = window.currentDeleteId;
+                fetch(`/api/admin/users/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        [BGC.csrf.header]: BGC.csrf.token
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        BGC.modal.close('confirmDelete');
+                        BGC.utils.showNotification('User deleted successfully', 'success');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        throw new Error('Delete failed');
+                    }
+                })
+                .catch(error => {
+                    BGC.utils.showNotification(error.message, 'error');
+                });
+            } else {
+                if (originalDelete) originalDelete();
+            }
+        };
+        /*]]>*/
+    </script>
+</body>
+</html>

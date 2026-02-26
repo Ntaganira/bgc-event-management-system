@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+
+<head>
+    <title th:text="${user.firstName + ' ' + user.lastName}">User Details</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <!-- Header -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+                <div>
+                    <a th:href="@{/admin/users}" class="back-link" style="display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; margin-bottom: 12px;">
+                        <i class="fas fa-arrow-left"></i> Back to Users
+                    </a>
+                    <h1 style="font-size: 28px; font-weight: 700; color: var(--text);" th:text="${user.firstName + ' ' + user.lastName}">Alex Morgan</h1>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a th:href="@{'/admin/users/' + ${user.id} + '/edit'}" class="btn-primary">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <button class="btn-ghost" th:onclick="'BGC.Users.confirmDelete(' + ${user.id} + ')'">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+
+            <!-- User Details Card -->
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 24px;">
+                    <div class="u-av" style="width: 80px; height: 80px; font-size: 32px; background: #3b82f6; color: white;"
+                         th:text="${user.firstName?.charAt(0) ?: '?'}">A</div>
+                    <div>
+                        <h2 style="font-size: 24px; margin-bottom: 4px;" th:text="${user.firstName + ' ' + user.lastName}">Alex Morgan</h2>
+                        <p style="color: var(--muted);" th:text="${user.email}">alex@company.com</p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h3 style="color: var(--text); margin-bottom: 16px; font-size: 16px;">Personal Information</h3>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="color: var(--muted); font-size: 12px;">Username</div>
+                            <div style="color: var(--text);" th:text="${user.username}">alexm</div>
+                        </div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="color: var(--muted); font-size: 12px;">Phone</div>
+                            <div style="color: var(--text);" th:text="${user.phoneNumber ?: 'Not provided'}">+1234567890</div>
+                        </div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="color: var(--muted); font-size: 12px;">Status</div>
+                            <div>
+                                <span class="status-badge" th:classappend="${user.enabled} ? 'approved' : 'rejected'"
+                                      th:text="${user.enabled} ? 'Active' : 'Inactive'">● Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="color: var(--text); margin-bottom: 16px; font-size: 16px;">Account Information</h3>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="color: var(--muted); font-size: 12px;">Roles</div>
+                            <div style="display: flex; gap: 8px; margin-top: 4px;">
+                                <span class="role-chip" th:each="role : ${user.roles}" 
+                                      th:classappend="'role-' + ${role.toLowerCase()}"
+                                      th:text="${role}">Admin</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="color: var(--muted); font-size: 12px;">Member Since</div>
+                            <div style="color: var(--text);" th:text="${#temporals.format(user.createdAt, 'MMMM d, yyyy')}">January 5, 2023</div>
+                        </div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="color: var(--muted); font-size: 12px;">Last Login</div>
+                            <div style="color: var(--text);" th:text="${user.lastLoginAt ? #temporals.format(user.lastLoginAt, 'MMMM d, yyyy · h:mm a') : 'Never'}">March 15, 2025 · 10:30 AM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

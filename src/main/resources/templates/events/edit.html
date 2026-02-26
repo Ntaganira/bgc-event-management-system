@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+
+<head>
+    <title th:text="'Edit ' + ${event.title}">Edit Event</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="card">
+                <div style="margin-bottom: 24px;">
+                    <a th:href="@{'/events/' + ${event.id}}" class="back-link" style="display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none;">
+                        <i class="fas fa-arrow-left"></i> Back to Event
+                    </a>
+                </div>
+
+                <div class="modal-title" style="font-size: 24px; margin-bottom: 24px;" th:text="'Edit: ' + ${event.title}">Edit Event</div>
+
+                <form id="editEventForm" onsubmit="return false;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <input type="hidden" id="edit-event-id" th:value="${event.id}"/>
+
+                    <!-- Same form fields as create.html but with th:value pre-filled -->
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="color: var(--text); margin-bottom: 16px; font-size: 16px;">Basic Information</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">Event Title</label>
+                            <input class="form-input" id="edit-title" name="title" th:value="${event.title}" required/>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Short Description</label>
+                            <input class="form-input" id="edit-short-desc" name="shortDescription" th:value="${event.shortDescription}"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required">Full Description</label>
+                            <textarea class="form-textarea" id="edit-desc" name="description" rows="4" th:text="${event.description}" required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Date & Time -->
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="color: var(--text); margin-bottom: 16px; font-size: 16px;">Date & Time</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label required">Start Date & Time</label>
+                                <input class="form-input" id="edit-start" name="startDate" type="datetime-local" 
+                                       th:value="${#temporals.format(event.startDate, 'yyyy-MM-dd') + 'T' + #temporals.format(event.startDate, 'HH:mm')}" 
+                                       style="color-scheme:dark" required/>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">End Date & Time</label>
+                                <input class="form-input" id="edit-end" name="endDate" type="datetime-local" 
+                                       th:value="${#temporals.format(event.endDate, 'yyyy-MM-dd') + 'T' + #temporals.format(event.endDate, 'HH:mm')}" 
+                                       style="color-scheme:dark" required/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="color: var(--text); margin-bottom: 16px; font-size: 16px;">Location</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">Venue</label>
+                            <input class="form-input" id="edit-venue" name="venue" th:value="${event.venue}" required/>
+                        </div>
+                    </div>
+
+                    <!-- Capacity & Settings -->
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="color: var(--text); margin-bottom: 16px; font-size: 16px;">Capacity & Settings</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Capacity</label>
+                            <input class="form-input" id="edit-capacity" name="capacity" type="number" th:value="${event.capacity}"/>
+                        </div>
+
+                        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="edit-status-open" name="status" value="OPEN" th:checked="${event.status == 'OPEN'}">
+                            <label for="edit-status-open" style="margin-bottom: 0; cursor: pointer;">Publish Event (Open for registration)</label>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer" style="padding: 20px 0 0;">
+                        <a th:href="@{'/events/' + ${event.id}}" class="btn-ghost">Cancel</a>
+                        <button type="submit" class="btn-primary" onclick="BGC.Events.update()">Update Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script layout:fragment="page-scripts">
+        /*<![CDATA[*/
+        BGC.Events.update = function() {
+            const eventId = document.getElementById('edit-event-id').value;
+            const formData = {
+                title: document.getElementById('edit-title').value,
+                shortDescription: document.getElementById('edit-short-desc').value,
+                description: document.getElementById('edit-desc').value,
+                venue: document.getElementById('edit-venue').value,
+                startDate: document.getElementById('edit-start').value,
+                endDate: document.getElementById('edit-end').value,
+                capacity: document.getElementById('edit-capacity').value ? parseInt(document.getElementById('edit-capacity').value) : null,
+                status: document.getElementById('edit-status-open').checked ? 'OPEN' : 'DRAFT'
+            };
+
+            fetch(`/api/events/${eventId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to update event');
+                return response.json();
+            })
+            .then(event => {
+                BGC.utils.showNotification('Event updated successfully!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/events/' + event.id;
+                }, 1500);
+            })
+            .catch(error => {
+                BGC.utils.showNotification(error.message, 'error');
+            });
+        };
+        /*]]>*/
+    </script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="modals(csrfToken, csrfParam)">
+    <!-- Add Event Modal -->
+    <div class="modal-overlay" id="modal-addEvent">
+        <div class="modal">
+            <div class="modal-title">Create New Event</div>
+            <form id="createEventForm" onsubmit="return false;">
+                <!-- CSRF Token (only if available) -->
+                <input type="hidden" th:if="${csrfToken != null and csrfToken != ''}" th:name="${csrfParam}"
+                    th:value="${csrfToken}" />
+
+                <div class="form-group">
+                    <label class="form-label">Event Title *</label>
+                    <input class="form-input" id="ev-title" name="title" placeholder="e.g. Tech Conference 2026"
+                        required />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Start Date & Time *</label>
+                        <input class="form-input" id="ev-start" name="startDate" type="datetime-local"
+                            style="color-scheme:dark" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Date & Time *</label>
+                        <input class="form-input" id="ev-end" name="endDate" type="datetime-local"
+                            style="color-scheme:dark" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Venue</label>
+                        <input class="form-input" id="ev-venue" name="venue" placeholder="Event location" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Capacity</label>
+                        <input class="form-input" id="ev-capacity" name="capacity" type="number" min="1"
+                            placeholder="Max attendees" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="ev-desc" name="description" rows="3"
+                        placeholder="Event description…"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Color</label>
+                    <div class="swatches" id="ev-swatches">
+                        <div class="swatch sel" data-color="#3b82f6" style="background:#3b82f6"
+                            onclick="BGC.ui.selectSwatch(this, 'ev-swatches')"></div>
+                        <div class="swatch" data-color="#06b6d4" style="background:#06b6d4"
+                            onclick="BGC.ui.selectSwatch(this, 'ev-swatches')"></div>
+                        <div class="swatch" data-color="#f97316" style="background:#f97316"
+                            onclick="BGC.ui.selectSwatch(this, 'ev-swatches')"></div>
+                        <div class="swatch" data-color="#6366f1" style="background:#6366f1"
+                            onclick="BGC.ui.selectSwatch(this, 'ev-swatches')"></div>
+                        <div class="swatch" data-color="#22c55e" style="background:#22c55e"
+                            onclick="BGC.ui.selectSwatch(this, 'ev-swatches')"></div>
+                        <div class="swatch" data-color="#ef4444" style="background:#ef4444"
+                            onclick="BGC.ui.selectSwatch(this, 'ev-swatches')"></div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-ghost" onclick="BGC.modal.close('addEvent')">Cancel</button>
+                    <button type="submit" class="btn-primary" onclick="BGC.Events.create()">Create Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div class="modal-overlay" id="modal-editEvent">
+        <div class="modal">
+            <div class="modal-title">Edit Event</div>
+            <form id="editEventForm" onsubmit="return false;">
+                <!-- CSRF Token (only if available) -->
+                <input type="hidden" th:if="${csrfToken != null and csrfToken != ''}" th:name="${csrfParam}"
+                    th:value="${csrfToken}" />
+                <input type="hidden" id="edit-event-id" />
+
+                <div class="form-group">
+                    <label class="form-label">Event Title *</label>
+                    <input class="form-input" id="edit-title" name="title" required />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Start Date & Time *</label>
+                        <input class="form-input" id="edit-start" name="startDate" type="datetime-local"
+                            style="color-scheme:dark" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Date & Time *</label>
+                        <input class="form-input" id="edit-end" name="endDate" type="datetime-local"
+                            style="color-scheme:dark" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Venue</label>
+                    <input class="form-input" id="edit-venue" name="venue" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="edit-desc" name="description" rows="3"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-ghost" onclick="BGC.modal.close('editEvent')">Cancel</button>
+                    <button type="submit" class="btn-primary" onclick="BGC.Events.update()">Update Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal-overlay" id="modal-addUser">
+        <div class="modal">
+            <div class="modal-title">Add New User</div>
+            <form id="createUserForm" onsubmit="return false;">
+                <!-- CSRF Token (only if available) -->
+                <input type="hidden" th:if="${csrfToken != null and csrfToken != ''}" th:name="${csrfParam}"
+                    th:value="${csrfToken}" />
+
+                <div class="form-group">
+                    <label class="form-label">First Name *</label>
+                    <input class="form-input" id="u-firstname" name="firstName" placeholder="John" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Last Name *</label>
+                    <input class="form-input" id="u-lastname" name="lastName" placeholder="Doe" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input class="form-input" id="u-email" name="email" type="email" placeholder="john@company.com"
+                        required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Username *</label>
+                    <input class="form-input" id="u-username" name="username" placeholder="johndoe" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <input class="form-input" id="u-password" name="password" type="password" placeholder="••••••••"
+                        required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" id="u-role" name="roleIds" multiple size="3">
+                        <option value="1">Admin</option>
+                        <option value="2">Organizer</option>
+                        <option value="3">Public</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-ghost" onclick="BGC.modal.close('addUser')">Cancel</button>
+                    <button type="submit" class="btn-primary" onclick="BGC.Users.create()">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal-overlay" id="modal-editUser">
+        <div class="modal">
+            <div class="modal-title">Edit User</div>
+            <form id="editUserForm" onsubmit="return false;">
+                <!-- CSRF Token (only if available) -->
+                <input type="hidden" th:if="${csrfToken != null and csrfToken != ''}" th:name="${csrfParam}"
+                    th:value="${csrfToken}" />
+                <input type="hidden" id="edit-user-id" />
+
+                <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    <input class="form-input" id="edit-firstname" name="firstName" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input class="form-input" id="edit-lastname" name="lastName" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input class="form-input" id="edit-phone" name="phoneNumber" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" id="edit-role" name="roleIds" multiple size="3">
+                        <option value="1">Admin</option>
+                        <option value="2">Organizer</option>
+                        <option value="3">Public</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Enabled</label>
+                    <select class="form-select" id="edit-enabled" name="enabled">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-ghost" onclick="BGC.modal.close('editUser')">Cancel</button>
+                    <button type="submit" class="btn-primary" onclick="BGC.Users.update()">Update User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Role Modal -->
+    <div class="modal-overlay" id="modal-addRole">
+        <div class="modal">
+            <div class="modal-title">Create New Role</div>
+            <form id="createRoleForm" onsubmit="return false;">
+                <!-- CSRF Token (only if available) -->
+                <input type="hidden" th:if="${csrfToken != null and csrfToken != ''}" th:name="${csrfParam}"
+                    th:value="${csrfToken}" />
+
+                <div class="form-group">
+                    <label class="form-label">Role Name *</label>
+                    <input class="form-input" id="r-name" name="name" placeholder="e.g. Auditor" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <input class="form-input" id="r-desc" name="description" placeholder="Brief description" />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-ghost" onclick="BGC.modal.close('addRole')">Cancel</button>
+                    <button type="submit" class="btn-primary" onclick="BGC.Roles.create()">Create Role</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal (no form, doesn't need CSRF) -->
+    <div class="modal-overlay" id="modal-confirmDelete">
+        <div class="modal" style="width:380px">
+            <div class="modal-title">Confirm Delete</div>
+            <div style="color:var(--muted);font-size:14px;margin:20px 0;text-align:center">
+                Are you sure you want to delete this item? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button class="btn-ghost" onclick="BGC.modal.close('confirmDelete')">Cancel</button>
+                <button class="btn-primary" style="background:var(--red)" id="confirmDeleteBtn"
+                    onclick="BGC.deleteConfirmed()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Detail Modal (no form, doesn't need CSRF) -->
+    <div class="modal-overlay" id="modal-evDetail">
+        <div class="modal" style="width:420px">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+                <div id="evd-dot" style="width:14px;height:14px;border-radius:4px;flex-shrink:0"></div>
+                <div class="modal-title" id="evd-title" style="margin-bottom:0"></div>
+            </div>
+            <div id="evd-body" style="color:var(--muted);font-size:13px;line-height:1.7"></div>
+            <div class="modal-footer" style="margin-top:18px">
+                <button class="btn-ghost" onclick="BGC.modal.close('evDetail')">Close</button>
+                <button class="btn-primary" id="evd-edit" style="display:none"
+                    onclick="BGC.Events.editFromDetail()">Edit Event</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
