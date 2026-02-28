@@ -44,7 +44,7 @@ SELECT r.id, p.id FROM roles r JOIN permissions p
   ON p.name IN ('VIEW_DASHBOARD','VIEW_EVENT')
 WHERE r.name = 'ROLE_USER';
 
--- Default admin user (password: Admin@123 - BCrypt)
+-- Default admin user (password: password123 - BCrypt)
 INSERT INTO users (first_name, last_name, email, phone_number, branch, title, password, enabled, email_confirmed)
 VALUES ('System', 'Admin', 'admin@bgc.com', '+250780000000', 'HQ', 'Administrator',
         '$2a$10$u29/avQnlNTuD49LrIiizOw8WHmj8JIml8VZpnsLrK6cpJcNzEZtS', TRUE, TRUE);

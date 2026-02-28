@@ -71,6 +71,9 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "office_id")
+    private BccOffice office;
     /**
      * LAZY: roles are only fetched when explicitly accessed.
      * Spring Security's CustomUserDetailsService calls getRoles() inside

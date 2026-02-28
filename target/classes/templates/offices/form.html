@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><title>Office Form</title></head>
+<body>
+<div th:replace="~{fragments/layout :: layout(~{::section#content}, #{office.new})}">
+<section id="content">
+<div class="content">
+
+  <div class="page-header">
+    <h2 th:text="${officeDto.id != null} ? #{office.edit} : #{office.new}">Office</h2>
+    <a th:href="@{/offices}" class="btn btn-outline">← <span th:text="#{common.back}">Back</span></a>
+  </div>
+
+  <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
+
+  <div class="dashboard-grid">
+
+    <!-- Form -->
+    <div class="card" style="grid-column: span 2;">
+      <form th:action="${officeDto.id != null}
+                        ? @{/offices/{id}/edit(id=${officeDto.id})}
+                        : @{/offices/new}"
+            th:object="${officeDto}" method="post" class="auth-form">
+
+        <div class="form-row">
+          <!-- Code -->
+          <div class="form-group">
+            <label th:text="#{office.code}">Code</label>
+            <input type="text" th:field="*{code}" class="form-control"
+                   placeholder="e.g. NBI" maxlength="20"
+                   style="text-transform:uppercase;"
+                   th:readonly="${officeDto.id != null}">
+            <small class="text-muted" th:text="#{office.codeHint}">Short unique code</small>
+            <span class="field-error" th:errors="*{code}"></span>
+          </div>
+          <!-- Active toggle -->
+          <div class="form-group" style="align-self:flex-end; padding-bottom:8px;">
+            <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+              <input type="checkbox" th:field="*{active}" style="accent-color:#2563eb; width:18px; height:18px;">
+              <span th:text="#{office.active}">Active</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Name -->
+        <div class="form-group">
+          <label th:text="#{office.name}">Name</label>
+          <input type="text" th:field="*{name}" class="form-control"
+                 placeholder="e.g. BCC Nairobi Office" required>
+          <span class="field-error" th:errors="*{name}"></span>
+        </div>
+
+        <div class="form-row">
+          <!-- Country -->
+          <div class="form-group">
+            <label th:text="#{office.country}">Country</label>
+            <input type="text" th:field="*{country}" class="form-control"
+                   placeholder="e.g. Kenya" required>
+            <span class="field-error" th:errors="*{country}"></span>
+          </div>
+          <!-- City -->
+          <div class="form-group">
+            <label th:text="#{office.city}">City</label>
+            <input type="text" th:field="*{city}" class="form-control"
+                   placeholder="e.g. Nairobi" required>
+            <span class="field-error" th:errors="*{city}"></span>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="form-group">
+          <label th:text="#{office.address}">Address</label>
+          <input type="text" th:field="*{address}" class="form-control"
+                 placeholder="Street address">
+        </div>
+
+        <div class="form-row">
+          <!-- Phone -->
+          <div class="form-group">
+            <label th:text="#{office.phone}">Phone</label>
+            <input type="text" th:field="*{phone}" class="form-control"
+                   placeholder="+254 20 000 001">
+          </div>
+          <!-- Email -->
+          <div class="form-group">
+            <label th:text="#{office.email}">Email</label>
+            <input type="email" th:field="*{email}" class="form-control"
+                   placeholder="office@bgc.rw">
+            <span class="field-error" th:errors="*{email}"></span>
+          </div>
+        </div>
+
+        <!-- Head of Office -->
+        <div class="form-group">
+          <label th:text="#{office.head}">Head of Office</label>
+          <input type="text" th:field="*{headOfOffice}" class="form-control"
+                 placeholder="Full name of head of office">
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary"
+                  th:text="${officeDto.id != null} ? #{common.save} : #{office.new}">Save</button>
+          <a th:href="@{/offices}" class="btn btn-outline" th:text="#{common.cancel}">Cancel</a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+</section>
+</div>
+</body>
+</html>

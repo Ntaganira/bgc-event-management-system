@@ -16,3 +16,4 @@ UPDATE permissions SET description = 'View the user list'                       
 UPDATE permissions SET description = 'Create, edit, and delete roles and permissions'    WHERE name = 'MANAGE_ROLES';
 UPDATE permissions SET description = 'View the full system audit log'                    WHERE name = 'VIEW_AUDIT_LOGS';
 UPDATE permissions SET description = 'Send notifications to users or groups'             WHERE name = 'SEND_NOTIFICATION';
+-- Note: MANAGE_OFFICES is added in V11; description set there

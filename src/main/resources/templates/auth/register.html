@@ -10,12 +10,14 @@
 <body class="auth-body">
 <div class="auth-container">
     <div class="auth-card" style="max-width:560px;">
+
         <div class="auth-logo">
             <div class="logo-icon">BGC</div>
         </div>
         <h2 class="auth-title"    th:text="#{auth.register.title}">Create account</h2>
-        <p  class="auth-subtitle" th:text="#{auth.register.subtitle}">Register</p>
+        <p  class="auth-subtitle" th:text="#{auth.register.subtitle}">Register for BGC Event</p>
 
+        <!-- Language switcher -->
         <div class="lang-switcher" style="justify-content:center; margin-bottom:16px;">
             <a th:href="@{/register(lang=en)}" th:classappend="${#locale.language=='en'}?' active'" class="lang-btn">EN</a>
             <span class="lang-sep">|</span>
@@ -25,37 +27,61 @@
         <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
 
         <form th:action="@{/register}" th:object="${registerDto}" method="post" class="auth-form">
+
+            <!-- Name row -->
             <div class="form-row">
                 <div class="form-group">
                     <label th:text="#{auth.register.firstName}">First Name</label>
-                    <input type="text" th:field="*{firstName}" class="form-control">
+                    <input type="text" th:field="*{firstName}" class="form-control" required>
                     <span class="field-error" th:errors="*{firstName}"></span>
                 </div>
                 <div class="form-group">
                     <label th:text="#{auth.register.lastName}">Last Name</label>
-                    <input type="text" th:field="*{lastName}" class="form-control">
+                    <input type="text" th:field="*{lastName}" class="form-control" required>
                     <span class="field-error" th:errors="*{lastName}"></span>
                 </div>
             </div>
+
+            <!-- Email -->
             <div class="form-group">
                 <label th:text="#{auth.register.email}">Email</label>
-                <input type="email" th:field="*{email}" class="form-control">
+                <input type="email" th:field="*{email}" class="form-control" required>
                 <span class="field-error" th:errors="*{email}"></span>
             </div>
+
+            <!-- Phone + Title row -->
             <div class="form-row">
                 <div class="form-group">
                     <label th:text="#{auth.register.phone}">Phone</label>
                     <input type="text" th:field="*{phoneNumber}" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label th:text="#{auth.register.branch}">Branch</label>
-                    <input type="text" th:field="*{branch}" class="form-control">
+                    <label th:text="#{auth.register.title2}">Title / Position</label>
+                    <input type="text" th:field="*{title}" class="form-control">
                 </div>
             </div>
+
+            <!-- BCC Office dropdown -->
             <div class="form-group">
-                <label th:text="#{auth.register.title2}">Title</label>
-                <input type="text" th:field="*{title}" class="form-control">
+                <label th:text="#{auth.register.branch}">BCC Office / Branch</label>
+                <select th:field="*{officeId}" class="form-control">
+                    <option value="" th:text="#{auth.register.branchPlaceholder}">-- Select your office --</option>
+                    <!-- Group by country -->
+                    <th:block th:with="grouped=${#maps.of()}">
+                        <th:block th:each="office : ${offices}">
+                            <option th:value="${office.id}"
+                                    th:text="${office.name + ' (' + office.city + ', ' + office.country + ')'}">
+                                Office
+                            </option>
+                        </th:block>
+                    </th:block>
+                </select>
+                <small class="text-muted" th:text="#{auth.register.branchHint}">
+                    Select the BCC office you are associated with.
+                </small>
             </div>
+
+            <!-- Arrival / Return dates row -->
             <div class="form-row">
                 <div class="form-group">
                     <label th:text="#{auth.register.arrivalDate}">Arrival Date</label>
@@ -66,18 +92,55 @@
                     <input type="date" th:field="*{returnDate}" class="form-control">
                 </div>
             </div>
+
+            <!-- Password -->
             <div class="form-group">
                 <label th:text="#{auth.register.password}">Password</label>
-                <input type="password" th:field="*{password}" class="form-control">
+                <div class="password-input-wrap">
+                    <input type="password" th:field="*{password}" id="regPassword"
+                           class="form-control" required>
+                    <button type="button" class="toggle-pw" onclick="togglePw('regPassword')">👁</button>
+                </div>
+                <div class="pw-strength-bar"><div class="pw-strength-fill" id="regStrengthFill"></div></div>
+                <small class="text-muted" id="regStrengthLabel"></small>
                 <span class="field-error" th:errors="*{password}"></span>
             </div>
+
             <button type="submit" class="btn btn-primary btn-full"
                     th:text="#{auth.register.submit}">Create Account</button>
         </form>
+
         <p class="auth-footer">
             <a th:href="@{/login}" th:text="#{auth.register.login}">Already have an account?</a>
         </p>
     </div>
 </div>
+
+<script>
+function togglePw(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+const pwInput = document.getElementById('regPassword');
+const fill    = document.getElementById('regStrengthFill');
+const label   = document.getElementById('regStrengthLabel');
+if (pwInput) {
+    pwInput.addEventListener('input', function() {
+        const v = this.value;
+        let s = 0;
+        if (v.length >= 6)  s++;
+        if (v.length >= 10) s++;
+        if (/[A-Z]/.test(v)) s++;
+        if (/[0-9]/.test(v)) s++;
+        if (/[^A-Za-z0-9]/.test(v)) s++;
+        const labels = ['','Weak','Fair','Good','Strong','Very Strong'];
+        const colors = ['','#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
+        fill.style.width  = (s/5*100) + '%';
+        fill.style.background = colors[s]||'#e2e8f0';
+        label.textContent = labels[s]||'';
+        label.style.color = colors[s]||'';
+    });
+}
+</script>
 </body>
 </html>
