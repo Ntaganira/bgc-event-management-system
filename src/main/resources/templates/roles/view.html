@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><title>Role Detail</title></head>
+<body>
+<div th:replace="~{fragments/layout :: layout(~{::section#content}, #{role.title})}">
+<section id="content">
+<div class="content">
+
+    <div class="page-header">
+        <h2 th:text="${role.name}">Role</h2>
+        <div class="page-actions">
+            <a th:href="@{/roles}" class="btn btn-outline">← <span th:text="#{common.back}">Back</span></a>
+            <a th:href="@{/roles/{id}/edit(id=${role.id})}" class="btn btn-primary"
+               th:text="#{common.edit}">Edit</a>
+        </div>
+    </div>
+
+    <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+
+    <div class="dashboard-grid">
+
+        <!-- Role Info -->
+        <div class="card">
+            <h3 class="card-title" th:text="#{role.title}">Role Info</h3>
+            <div class="detail-row">
+                <span class="detail-label" th:text="#{role.name}">Name</span>
+                <span class="badge badge-blue" th:text="${role.name}">ROLE</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label" th:text="#{role.description}">Description</span>
+                <span th:text="${role.description ?: '—'}">desc</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label" th:text="#{role.permissions}">Permissions</span>
+                <span th:text="${allPermissions.size()}">0</span>
+            </div>
+        </div>
+
+        <!-- Permission Management -->
+        <div class="card">
+            <h3 class="card-title" th:text="#{role.permissions}">Permissions</h3>
+
+            <!-- Current permissions -->
+            <div style="margin-bottom:16px; display:flex; flex-wrap:wrap; gap:6px;"
+                 th:if="${not #sets.isEmpty(allPermissions)}">
+                <span th:each="perm : ${allPermissions}"
+                      class="badge badge-green perm-badge">
+                    <span th:text="#{|permission.${perm.name}|}">P</span>
+                    <form th:action="@{/roles/{id}/permission/remove(id=${role.id})}"
+                          method="post" style="display:inline">
+                        <input type="hidden" name="permissionId" th:value="${perm.id}">
+                        <button type="submit"
+                                style="background:none;border:none;color:#166534;cursor:pointer;padding:0 2px;font-size:11px;">✕</button>
+                    </form>
+                </span>
+            </div>
+            <p th:if="${#sets.isEmpty(allPermissions)}" class="empty-state">No permissions assigned.</p>
+
+            <!-- Add permission -->
+            <form th:action="@{/roles/{id}/permission/add(id=${role.id})}"
+                  method="post" class="form-inline">
+                <select name="permissionId" class="form-control" style="flex:1;">
+                    <option value="" th:text="#{role.addPermission}">Add Permission</option>
+                    <option th:each="perm : ${allPermissions}"
+                            th:if="${not allPermissions.contains(perm)}"
+                            th:value="${perm.id}"
+                            th:text="#{|permission.${perm.name}|}">P</option>
+                </select>
+                <button type="submit" class="btn btn-primary" th:text="#{common.save}">Add</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+</section>
+</div>
+</body>
+</html>

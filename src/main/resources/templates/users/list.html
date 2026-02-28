@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><title>Users</title></head>
+<body>
+<div th:replace="~{fragments/layout :: layout(~{::section#content}, #{user.title})}">
+<section id="content">
+<div class="content">
+  <div class="page-header">
+    <h2 th:text="#{user.title}">Users</h2>
+  </div>
+  <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+  <div class="card">
+    <table class="table" th:if="${not #lists.isEmpty(users)}">
+      <thead><tr>
+        <th th:text="#{user.name}">Name</th>
+        <th th:text="#{user.email}">Email</th>
+        <th th:text="#{user.branch}">Branch</th>
+        <th th:text="#{user.roles}">Roles</th>
+        <th th:text="#{user.status}">Status</th>
+        <th th:text="#{common.actions}">Actions</th>
+      </tr></thead>
+      <tbody>
+        <tr th:each="u : ${users}">
+          <td th:text="${u.firstName + ' ' + u.lastName}">Name</td>
+          <td th:text="${u.email}">Email</td>
+          <td th:text="${u.branch ?: '—'}">Branch</td>
+          <td>
+            <span th:each="r : ${u.roles}" class="badge badge-blue"
+                  th:text="${r.name.replace('ROLE_','')}">ROLE</span>
+          </td>
+          <td>
+            <span class="badge" th:classappend="${u.enabled} ? 'badge-green' : 'badge-red'"
+                  th:text="${u.enabled} ? #{user.active} : #{user.disabled}">Active</span>
+          </td>
+          <td class="action-btns" sec:authorize="hasAuthority('MANAGE_USERS')">
+            <a th:href="@{/users/{id}(id=${u.id})}" class="btn btn-sm btn-outline" th:text="#{user.manage}">Manage</a>
+            <form th:action="@{/users/{id}/toggle(id=${u.id})}" method="post" style="display:inline">
+              <button type="submit" class="btn btn-sm btn-outline"
+                      th:text="${u.enabled} ? #{user.disable} : #{user.enable}">Toggle</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+</div>
+</body>
+</html>

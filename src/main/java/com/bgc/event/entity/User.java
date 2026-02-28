@@ -5,75 +5,92 @@ package com.bgc.event.entity;
  * - Project    : BGC EVENT
  * - Package    : com.bgc.event.entity
  * - File       : User.java
- * - Date       : 2026. 02. 21.
- * - User       : NTAGANIRA H.
- * - Desc       : User entity for system authentication
+ * - Date       : 2026-02-27
+ * - Author     : NTAGANIRA Heritier
+ * - Desc       : User entity with roles and audit info
  * </pre>
  */
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.*;
-
 @Entity
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email"),
-        @UniqueConstraint(columnNames = "username")
-})
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-public class User extends BaseEntity {
+@Table(name = "users")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+public class User {
 
-    @Column(name = "username", nullable = false, length = 50)
-    private String username;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "email", nullable = false, length = 100)
-    private String email;
-
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Column(name = "first_name", length = 50)
+    @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
 
-    @Column(name = "last_name", length = 50)
+    @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
 
-    @Column(name = "phone_number", length = 20)
+    @Column(nullable = false, unique = true, length = 255)
+    private String email;
+
+    @Column(name = "phone_number", length = 30)
     private String phoneNumber;
+
+    @Column(length = 100)
+    private String branch;
+
+    @Column(length = 100)
+    private String title;
+
+    @Column(name = "arrival_date")
+    private LocalDate arrivalDate;
+
+    @Column(name = "return_date")
+    private LocalDate returnDate;
+
+    @Column(nullable = false)
+    private String password;
+
     @Builder.Default
-    @Column(name = "enabled")
+    @Column(nullable = false)
     private boolean enabled = true;
 
-    @Column(name = "last_login_at")
-    private LocalDateTime lastLoginAt;
-
-    @Column(name = "password_changed_at")
-    private LocalDateTime passwordChangedAt;
-
     @Builder.Default
-    @Column(name = "failed_attempts")
-    private int failedAttempts = 0;
+    @Column(name = "email_confirmed")
+    private boolean emailConfirmed = false;
 
-    @Column(name = "locked_until")
-    private LocalDateTime lockedUntil;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    /**
+     * LAZY: roles are only fetched when explicitly accessed.
+     * Spring Security's CustomUserDetailsService calls getRoles() inside
+     * a @Transactional method, so the session is still open at that point.
+     * Use JOIN FETCH in queries when you need roles loaded upfront.
+     */
     @Builder.Default
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     private Set<Role> roles = new HashSet<>();
+
     @Builder.Default
-    @OneToMany(mappedBy = "organizer", fetch = FetchType.LAZY)
-    private Set<Event> organizedEvents = new HashSet<>();
+    @ManyToMany(mappedBy = "attendees", fetch = FetchType.LAZY)
+    private Set<Event> events = new HashSet<>();
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }

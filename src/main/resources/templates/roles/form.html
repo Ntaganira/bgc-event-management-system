@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><title>Role Form</title></head>
+<body>
+<div th:replace="~{fragments/layout :: layout(~{::section#content}, #{role.new})}">
+<section id="content">
+<div class="content">
+
+    <div class="page-header">
+        <h2 th:text="${roleDto.id != null} ? #{role.edit} : #{role.new}">Role</h2>
+        <a th:href="@{/roles}" class="btn btn-outline">← <span th:text="#{common.back}">Back</span></a>
+    </div>
+
+    <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
+
+    <div class="dashboard-grid">
+
+        <!-- Form Card -->
+        <div class="card">
+            <form th:action="${roleDto.id != null} ? @{/roles/{id}/edit(id=${roleDto.id})} : @{/roles/new}"
+                  th:object="${roleDto}" method="post" class="auth-form">
+
+                <div class="form-group">
+                    <label th:text="#{role.name}">Role Name</label>
+                    <input type="text" th:field="*{name}" class="form-control"
+                           placeholder="e.g. MODERATOR"
+                           th:readonly="${roleDto.id != null and roleDto.name == 'ROLE_ADMIN'}">
+                    <small class="text-muted" th:text="#{role.nameHint}">Will be prefixed with ROLE_</small>
+                    <span class="field-error" th:errors="*{name}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label th:text="#{role.description}">Description</label>
+                    <input type="text" th:field="*{description}" class="form-control"
+                           placeholder="Describe this role...">
+                </div>
+
+                <!-- Permission checkboxes -->
+                <div class="form-group">
+                    <label th:text="#{role.permissions}">Permissions</label>
+                    <div class="permission-grid">
+                        <label th:each="perm : ${allPermissions}" class="perm-check-label">
+                            <input type="checkbox" name="permissionIds"
+                                   th:value="${perm.id}"
+                                   th:checked="${roleDto.permissionIds != null and roleDto.permissionIds.contains(perm.id)}">
+                            <span th:text="#{|permission.${perm.name}|}">Permission</span>
+                            <small class="perm-code" th:text="${perm.name}">CODE</small>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary"
+                            th:text="${roleDto.id != null} ? #{role.update} : #{role.create}">Save</button>
+                    <a th:href="@{/roles}" class="btn btn-outline" th:text="#{common.cancel}">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Help Card -->
+        <div class="card" style="align-self:start;">
+            <h3 class="card-title" th:text="#{role.permissions}">Permissions</h3>
+            <p class="text-muted" style="font-size:13px;margin-bottom:12px;">
+                Select which permissions users with this role will have.
+                Each permission grants access to specific system features.
+            </p>
+            <div th:each="perm : ${allPermissions}" style="margin-bottom:6px;">
+                <span class="badge badge-green" th:text="${perm.name}">PERM</span>
+                <small class="text-muted" style="margin-left:6px;"
+                       th:text="${perm.description ?: ''}"></small>
+            </div>
+        </div>
+
+    </div>
+</div>
+</section>
+</div>
+</body>
+</html>

@@ -1,225 +1,176 @@
-BGC Events Management System
-A comprehensive event management platform built with Spring Boot, featuring public registration, QR code check-ins, real-time analytics, and role-based access control.
-
-https://via.placeholder.com/800x400?text=BGC+Events+Dashboard
-
-📋 Table of Contents
-Features
-
-Tech Stack
-
-Quick Start
-
-System Architecture
-
-Installation Guide
-
-Configuration
-
-API Documentation
-
-Database Schema
-
-User Roles
-
-Screenshots
-
-Deployment
-
-Monitoring
-
-Contributing
-
-License
-
-Support
-
-✨ Features
-For Public Users
-✅ Browse events without login
-
-✅ Register for events with one click
-
-✅ Receive QR code ticket via email
-
-✅ Cancel registration anytime
-
-✅ View event calendar
-
-For Organizers
-✅ Create and manage events
-
-✅ Set capacity and deadlines
-
-✅ Track registrations in real-time
-
-✅ Check-in attendees via QR code
-
-✅ Export attendance reports (PDF/Excel)
-
-✅ View analytics dashboard
-
-For Administrators
-✅ Full system control
-
-✅ User management
-
-✅ Audit logs
-
-✅ System health monitoring
-
-✅ Role-based permissions
-
-✅ Advanced analytics
-
-Technical Features
-✅ JWT Authentication
-
-✅ Role-based access control (RBAC)
-
-✅ Redis caching for performance
-
-✅ PostgreSQL with Flyway migrations
-
-✅ QR code generation
-
-✅ Email notifications
-
-✅ RESTful API
-
-✅ WebSocket for real-time updates
-
-✅ FullCalendar integration
-
-✅ Responsive UI with Bootstrap
-
-✅ Dark/Light theme sidebar
-
-✅ Skeleton loading
-
-✅ Comprehensive error handling
-
-🛠 Tech Stack
-Backend
-Java 17 - Core language
-
-Spring Boot 3.x - Application framework
-
-Spring Security - Authentication & authorization
-
-Spring Data JPA - Database operations
-
-PostgreSQL - Primary database
-
-Redis - Caching layer
-
-Flyway - Database migrations
-
-JWT - Token-based authentication
-
-Lombok - Boilerplate code reduction
-
-MapStruct - Object mapping
-
-iText - PDF generation
-
-Apache POI - Excel export
-
-ZXing - QR code generation
-
-Thymeleaf - Server-side templating
-
-Frontend
-Thymeleaf - Template engine
-
-Bootstrap 5 - CSS framework
-
-FullCalendar - Calendar views
-
-Chart.js - Analytics charts
-
-DataTables - Advanced tables
-
-Font Awesome - Icons
-
-HTML5 QR Scanner - QR code scanning
-
-Flatpickr - Date/time picker
-
-Tagify - Tag input
-
-DevOps
-Docker - Containerization
-
-Docker Compose - Multi-container orchestration
-
-Nginx - Reverse proxy
-
-Prometheus - Metrics collection
-
-Grafana - Visualization
-
-GitHub Actions - CI/CD
-
-🚀 Quick Start
-Prerequisites
-Docker and Docker Compose
-
-Java 17 (for local development)
-
-Maven 3.8+
-
-Node.js 16+ (for frontend assets)
-
-5-Minute Setup
-bash
-# Clone the repository
-git clone https://github.com/yourusername/bgc-events.git
-cd bgc-events
-
-# Copy environment variables
-cp .env.example .env
-
-# Start with Docker
-docker-compose -f docker-compose.prod.yml up -d
-
-# Access the application
-open http://localhost:8080
-
-# Default credentials
-# Admin: admin@bgc.event / password123
-# Organizer: organizer@bgc.event / password123
-🏗 System Architecture
-text
-┌─────────────────────────────────────────────────────────────┐
-│                         Nginx (Reverse Proxy)                │
-│                         Ports: 80, 443                       │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Spring Boot Application                    │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │                   Controllers Layer                    │   │
-│  │  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐       │   │
-│  │  │ Auth   │ │ Event  │ │Registration│Calendar│       │   │
-│  │  └────────┘ └────────┘ └────────┘ └────────┘       │   │
-│  ├──────────────────────────────────────────────────────┤   │
-│  │                   Service Layer                        │   │
-│  │  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐       │   │
-│  │  │ User   │ │Event   │ │Registration│Analytics│       │   │
-│  │  └────────┘ └────────┘ └────────┘ └────────┘       │   │
-│  ├──────────────────────────────────────────────────────┤   │
-│  │                   Repository Layer                     │   │
-│  │  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐       │   │
-│  │  │ User   │ │Event   │ │Registration│Audit   │       │   │
-│  │  └────────┘ └────────┘ └────────┘ └────────┘       │   │
-│  └──────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-                              │
-              ┌───────────────┼───────────────┐
-              ▼               ▼               ▼
-    ┌───────────────┐ ┌───────────────┐ ┌───────────────┐
-    │   PostgreSQL  │ │     Redis     │ │     Redis     │
-    │   (Primary)   │ │   (Cache)     │ │  (Sessions)   │
-    └───────────────┘ └───────────────┘ └───────────────┘
+# 🎯 BGC Event Management System
+
+**Author:** NTAGANIRA Heritier  
+**Date:** 2026-02-27  
+**Stack:** Spring Boot 3.2 · Thymeleaf · Spring Security · JPA · Flyway · H2 / PostgreSQL
+
+---
+
+## ✅ Features
+
+| Feature | Status |
+|---|---|
+| Public Registration | ✅ |
+| Session-based Login | ✅ |
+| Dynamic RBAC (Roles & Permissions) | ✅ |
+| Method-level `@PreAuthorize` security | ✅ |
+| Event CRUD | ✅ |
+| FullCalendar Integration | ✅ |
+| QR / Manual Code Attendance | ✅ |
+| User Management (enable/disable, roles) | ✅ |
+| Audit Logs (with pagination & search) | ✅ |
+| Flyway DB Migrations (V1–V8) | ✅ |
+| H2 Dev Mode (zero setup) | ✅ |
+| PostgreSQL Production Mode | ✅ |
+| Docker + Docker Compose | ✅ |
+| Fully Responsive UI | ✅ |
+
+---
+
+## 🚀 Quick Start (Dev Mode — No DB Setup Needed)
+
+```bash
+# 1. Clone / extract the project
+cd bgc-event
+
+# 2. Run with Maven (Java 17+ required)
+./mvnw spring-boot:run
+
+# OR with Maven installed:
+mvn spring-boot:run
+```
+
+**App URL:** http://localhost:8080  
+**H2 Console:** http://localhost:8080/h2-console (JDBC URL: `jdbc:h2:mem:bgceventdb`)
+
+### Default Admin Account
+| Email | Password |
+|---|---|
+| admin@bgc.com | Admin@123 |
+
+---
+
+## 🐳 Docker (Production with PostgreSQL)
+
+```bash
+# Build and run everything
+docker-compose up --build
+
+# App available at:
+http://localhost:8080
+```
+
+---
+
+## 🗂️ Project Structure
+
+```
+bgc-event/
+├── src/main/java/com/bgc/event/
+│   ├── BgcEventApplication.java          # Main class
+│   ├── config/
+│   │   └── SecurityConfig.java           # Spring Security + RBAC
+│   ├── controller/
+│   │   ├── AuthController.java           # /login /register
+│   │   ├── DashboardController.java      # /dashboard
+│   │   ├── EventController.java          # /events + /api/events/calendar
+│   │   ├── AttendanceController.java     # /attendance
+│   │   ├── UserController.java           # /users
+│   │   └── AuditLogController.java       # /audit
+│   ├── entity/
+│   │   ├── User.java
+│   │   ├── Role.java
+│   │   ├── Permission.java
+│   │   ├── Event.java
+│   │   ├── Attendance.java
+│   │   └── AuditLog.java
+│   ├── repository/                        # Spring Data JPA repos
+│   ├── service/                          # Service interfaces
+│   │   └── impl/                        # Implementations
+│   ├── dto/                             # RegisterDto, EventDto, CalendarEventDto...
+│   └── security/
+│       └── CustomUserDetailsService.java # Loads user + roles + permissions
+│
+├── src/main/resources/
+│   ├── application.properties            # Base config
+│   ├── application-dev.properties        # H2 in-memory
+│   ├── application-prod.properties       # PostgreSQL
+│   ├── db/migration/                     # Flyway V1–V8
+│   │   ├── V1__init_schema.sql
+│   │   ├── V2__add_roles_table.sql
+│   │   ├── V3__add_permissions_table.sql
+│   │   ├── V4__role_permission_mapping.sql
+│   │   ├── V5__user_role_mapping.sql
+│   │   ├── V6__events_and_attendance.sql
+│   │   ├── V7__audit_log.sql
+│   │   └── V8__seed_data.sql             # Default admin + permissions + events
+│   ├── templates/
+│   │   ├── auth/login.html
+│   │   ├── auth/register.html
+│   │   ├── fragments/layout.html         # Shared sidebar + topbar
+│   │   ├── dashboard.html
+│   │   ├── events/{list,calendar,form,view}.html
+│   │   ├── attendance/{index,event-detail}.html
+│   │   ├── users/{list,view}.html
+│   │   └── audit/list.html
+│   └── static/
+│       ├── css/main.css
+│       └── js/main.js
+│
+├── Dockerfile
+├── docker-compose.yml
+└── pom.xml
+```
+
+---
+
+## 🔐 RBAC Permissions
+
+| Permission | Description |
+|---|---|
+| `VIEW_DASHBOARD` | See the dashboard |
+| `CREATE_EVENT` | Create new events |
+| `EDIT_EVENT` | Edit existing events |
+| `DELETE_EVENT` | Delete events |
+| `VIEW_EVENT` | View events & calendar |
+| `MARK_ATTENDANCE` | Check in via QR or code |
+| `VIEW_ATTENDANCE` | View attendance records |
+| `MANAGE_USERS` | Enable/disable/delete users |
+| `VIEW_USERS` | View user list |
+| `MANAGE_ROLES` | Assign/remove roles |
+| `VIEW_AUDIT_LOGS` | View audit trail |
+| `SEND_NOTIFICATION` | Send email notifications |
+
+---
+
+## 📋 Default Roles
+
+| Role | Permissions |
+|---|---|
+| `ROLE_ADMIN` | All permissions |
+| `ROLE_ORGANIZER` | VIEW, CREATE, EDIT events; view users |
+| `ROLE_STAFF` | View events, mark & view attendance |
+| `ROLE_USER` | View dashboard & events |
+
+---
+
+## 🔧 Switching to PostgreSQL
+
+```bash
+# Set profile to prod
+export SPRING_PROFILES_ACTIVE=prod
+export DB_USERNAME=youruser
+export DB_PASSWORD=yourpassword
+
+# Or update application-prod.properties
+mvn spring-boot:run
+```
+
+---
+
+## 📦 Build JAR
+
+```bash
+mvn clean package -DskipTests
+java -jar target/bgc-event-1.0.0.jar
+```

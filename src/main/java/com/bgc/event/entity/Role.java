@@ -5,46 +5,53 @@ package com.bgc.event.entity;
  * - Project    : BGC EVENT
  * - Package    : com.bgc.event.entity
  * - File       : Role.java
- * - Date       : 2026. 02. 21.
- * - User       : NTAGANIRA H.
- * - Desc       : Role entity for RBAC
+ * - Date       : 2026-02-27
+ * - Author     : NTAGANIRA Heritier
+ * - Desc       : Role entity - dynamic RBAC
  * </pre>
  */
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
-public class Role extends BaseEntity {
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+public class Role {
 
-    public static final String ROLE_ADMIN = "ADMIN";
-    public static final String ROLE_ORGANIZER = "ORGANIZER";
-    public static final String ROLE_PUBLIC = "PUBLIC";
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "name", unique = true, nullable = false, length = 50)
+    @Column(nullable = false, unique = true, length = 100)
     private String name;
-    @Column(name = "description", length = 200)
+
+    @Column(length = 255)
     private String description;
 
-    @Builder.Default
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    /**
+     * LAZY: permissions loaded only when accessed.
+     * CustomUserDetailsService iterates permissions inside @Transactional,
+     * so no LazyInitializationException occurs there.
+     */
     @Builder.Default
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "role_permissions",
+        joinColumns = @JoinColumn(name = "role_id"),
+        inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
     private Set<Permission> permissions = new HashSet<>();
 }

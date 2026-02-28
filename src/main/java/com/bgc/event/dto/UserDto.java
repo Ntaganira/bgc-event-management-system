@@ -1,37 +1,45 @@
 package com.bgc.event.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.bgc.event.entity.Role;
+import com.bgc.event.entity.User;
+
 /**
  * <pre>
  * - Project    : BGC EVENT
  * - Package    : com.bgc.event.dto
  * - File       : UserDto.java
- * - Date       : 2026. 02. 21.
- * - User       : NTAGANIRA H.
+ * - Date       : 2026-02-27
+ * - Author     : NTAGANIRA Heritier
  * - Desc       : Data Transfer Object for User entity
  * </pre>
  */
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.Set;
-
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserDto {
     private Long id;
-    private String username;
-    private String email;
     private String firstName;
     private String lastName;
-    private String phoneNumber;
+    private String email;
+    private String branch;
+    private String title;
     private boolean enabled;
-    private LocalDateTime lastLoginAt;
-    private Set<String> roles;
-    private LocalDateTime createdAt;
+    private List<String> roles;
+
+    public UserDto(User user) {
+        this.id = user.getId();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.roles = user.getRoles().stream()
+                         .map(Role::getName)
+                         .collect(Collectors.toList());
+    }
 }
