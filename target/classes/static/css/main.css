@@ -16,7 +16,7 @@
     --text-muted: #64748b;
     --border: #e2e8f0;
     --card-bg: #ffffff;
-    --bg: #f8fafc;
+    --bg: #f4f4f4;
     --radius: 12px;
     --shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
@@ -90,7 +90,12 @@ a { text-decoration: none; color: inherit; }
 .card-title { font-size: 14px; font-weight: 700; }
 .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .card-link { font-size: 12px; font-weight: 600; color: var(--primary); }
-.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 5px; }
+.dashboard-grid-1 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dashboard-grid-2 { display: grid; grid-template-columns: 1fr 3fr; gap: 10px; }
+.dashboard-grid-1 .card{border: 0; border-radius: 0;}
+.dashboard-grid-2 .card{border: 0; border-radius: 0;}
+.dashboard-grid .card{border: 0; border-radius: 0;}
 @media(max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
 
 /* ---- EVENTS ---- */

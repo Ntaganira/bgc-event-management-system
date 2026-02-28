@@ -1,95 +1,120 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head><title>Dashboard</title></head>
+
+<head>
+  <title>Dashboard</title>
+</head>
+
 <body>
-<div th:replace="~{fragments/layout :: layout(~{::section#content}, #{dashboard.title})}">
-<section id="content">
-<div class="content">
+  <div th:replace="~{fragments/layout :: layout(~{::section#content}, #{dashboard.title})}">
+    <section id="content">
+      <div class="content">
 
-<div class="stats-row">
-  <div class="stat-card">
-    <div class="stat-icon">📅</div>
-    <div class="stat-info">
-      <span class="stat-value" th:text="${totalEvents}">0</span>
-      <span class="stat-label" th:text="#{dashboard.totalEvents}">Total Events</span>
-    </div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon">✅</div>
-    <div class="stat-info">
-      <span class="stat-value" th:text="${totalAttendance}">0</span>
-      <span class="stat-label" th:text="#{dashboard.totalAttendance}">Attendance</span>
-    </div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon">👥</div>
-    <div class="stat-info">
-      <span class="stat-value" th:text="${totalUsers}">0</span>
-      <span class="stat-label" th:text="#{dashboard.totalUsers}">Users</span>
-    </div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon">📊</div>
-    <div class="stat-info">
-      <span class="stat-value" th:text="${upcomingCount}">0</span>
-      <span class="stat-label" th:text="#{dashboard.upcomingEvents}">Upcoming</span>
-    </div>
-  </div>
-</div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-info">
+              <span class="stat-value" th:text="${totalEvents}">0</span>
+              <span class="stat-label" th:text="#{dashboard.totalEvents}">Total Events</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <span class="stat-value" th:text="${totalAttendance}">0</span>
+              <span class="stat-label" th:text="#{dashboard.totalAttendance}">Attendance</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <span class="stat-value" th:text="${totalUsers}">0</span>
+              <span class="stat-label" th:text="#{dashboard.totalUsers}">Users</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-info">
+              <span class="stat-value" th:text="${upcomingCount}">0</span>
+              <span class="stat-label" th:text="#{dashboard.upcomingEvents}">Upcoming</span>
+            </div>
+          </div>
+        </div>
 
-  <div class="dashboard-grid">
+        <div class="dashboard-grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title" th:text="#{dashboard.totalEvents}">Event</h3>
+            </div>
+            <span class="stat-value" th:text="${totalEvents}">0</span>
+          </div>
 
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title" th:text="#{dashboard.upcomingEvents}">Upcoming Events</h3>
-        <a th:href="@{/events}" class="btn btn-sm btn-outline" th:text="#{dashboard.viewAll}">View all</a>
-      </div>
-      <div th:if="${#lists.isEmpty(upcomingEvents)}" class="empty-state" th:text="#{event.none}">No events.</div>
-      <table class="table" th:if="${not #lists.isEmpty(upcomingEvents)}">
-        <thead><tr>
-          <th th:text="#{event.title}">Title</th>
-          <th th:text="#{event.location}">Location</th>
-          <th th:text="#{event.startDate}">Start</th>
-          <th></th>
-        </tr></thead>
-        <tbody>
-          <tr th:each="event : ${upcomingEvents}">
-            <td th:text="${event.title}">Event</td>
-            <td th:text="${event.location ?: '—'}">Location</td>
-            <td th:text="${#temporals.format(event.startDateTime,'dd MMM, HH:mm')}">Date</td>
-            <td><a th:href="@{/events/{id}(id=${event.id})}"
-                   class="btn btn-sm btn-outline" th:text="#{event.view}">View</a></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title" th:text="#{dashboard.recentAttendance}">Recent Attendance</h3>
+            </div>
+            <div class="empty-state">No check-ins yet.</div>
+          </div>
+        </div>
 
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title" th:text="#{dashboard.recentAttendance}">Recent Attendance</h3>
-      </div>
-      <div th:if="${#lists.isEmpty(recentAttendance)}" class="empty-state">No check-ins yet.</div>
-      <table class="table" th:if="${not #lists.isEmpty(recentAttendance)}">
-        <thead><tr>
-          <th th:text="#{user.name}">Name</th>
-          <th th:text="#{nav.events}">Event</th>
-          <th th:text="#{attendance.method}">Method</th>
-        </tr></thead>
-        <tbody>
-          <tr th:each="a : ${recentAttendance}">
-            <td th:text="${a?.user?.fullName}">Name</td>
-            <td th:text="${a?.event?.title}">Event</td>
-            <td><span class="badge"
-                      th:classappend="${a?.method?.name() == 'QR'} ? 'badge-blue' : 'badge-green'"
+        <div class="dashboard-grid-1">
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title" th:text="#{dashboard.upcomingEvents}">Upcoming Events</h3>
+              <a th:href="@{/events}" class="btn btn-sm btn-outline" th:text="#{dashboard.viewAll}">View all</a>
+            </div>
+            <div th:if="${#lists.isEmpty(upcomingEvents)}" class="empty-state" th:text="#{event.none}">No events.</div>
+            <table class="table" th:if="${not #lists.isEmpty(upcomingEvents)}">
+              <thead>
+                <tr>
+                  <th th:text="#{event.title}">Title</th>
+                  <th th:text="#{event.location}">Location</th>
+                  <th th:text="#{event.startDate}">Start</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="event : ${upcomingEvents}">
+                  <td th:text="${event.title}">Event</td>
+                  <td th:text="${event.location ?: '—'}">Location</td>
+                  <td th:text="${#temporals.format(event.startDateTime,'dd MMM, HH:mm')}">Date</td>
+                  <td><a th:href="@{/events/{id}(id=${event.id})}" class="btn btn-sm btn-outline"
+                      th:text="#{event.view}">View</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title" th:text="#{dashboard.recentAttendance}">Recent Attendance</h3>
+            </div>
+            <div th:if="${#lists.isEmpty(recentAttendance)}" class="empty-state">No check-ins yet.</div>
+            <table class="table" th:if="${not #lists.isEmpty(recentAttendance)}">
+              <thead>
+                <tr>
+                  <th th:text="#{user.name}">Name</th>
+                  <th th:text="#{nav.events}">Event</th>
+                  <th th:text="#{attendance.method}">Method</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="a : ${recentAttendance}">
+                  <td th:text="${a?.user?.fullName}">Name</td>
+                  <td th:text="${a?.event?.title}">Event</td>
+                  <td><span class="badge" th:classappend="${a?.method?.name() == 'QR'} ? 'badge-blue' : 'badge-green'"
                       th:text="${a.method}">QR</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
+        </div>
+
+      </div>
+    </section>
   </div>
-</div>
-</section>
-</div>
 </body>
+
 </html>
