@@ -19,6 +19,4 @@ public interface RoleService {
     void assignPermission(Long roleId, Long permissionId);
 
     void removePermission(Long roleId, Long permissionId);
-
-    List<Role> getAllRolesWithPermissions();
 }

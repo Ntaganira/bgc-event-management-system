@@ -1,11 +1,5 @@
 package com.bgc.event.dto;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.bgc.event.entity.Role;
-import com.bgc.event.entity.User;
-
 /**
  * <pre>
  * - Project    : BGC EVENT
@@ -19,11 +13,7 @@ import com.bgc.event.entity.User;
 
 import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class UserDto {
     private Long id;
     private String firstName;
@@ -32,14 +22,4 @@ public class UserDto {
     private String branch;
     private String title;
     private boolean enabled;
-    private List<String> roles;
-
-    public UserDto(User user) {
-        this.id = user.getId();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.roles = user.getRoles().stream()
-                         .map(Role::getName)
-                         .collect(Collectors.toList());
-    }
 }

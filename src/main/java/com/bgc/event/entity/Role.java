@@ -20,7 +20,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Role {
 
     @Id
@@ -41,17 +45,8 @@ public class Role {
         this.createdAt = LocalDateTime.now();
     }
 
-    /**
-     * LAZY: permissions loaded only when accessed.
-     * CustomUserDetailsService iterates permissions inside @Transactional,
-     * so no LazyInitializationException occurs there.
-     */
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "role_permissions",
-        joinColumns = @JoinColumn(name = "role_id"),
-        inverseJoinColumns = @JoinColumn(name = "permission_id")
-    )
+    @JoinTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private Set<Permission> permissions = new HashSet<>();
 }

@@ -24,4 +24,34 @@ public interface EventService {
     List<CalendarEventDto> findAllAsCalendarEvents();
 
     long count();
+        
+    /**
+     * Find event by ID with attendance records loaded (for attendance marking)
+     */
+    Optional<Event> findByIdWithAttendance(Long id);
+    
+    /**
+     * Find event by ID with all relations loaded (for detailed view)
+     */
+    Optional<Event> findByIdWithAll(Long id);
+    
+    /**
+     * Find all events with attendance records loaded (for dashboard)
+     */
+    List<Event> findAllWithAttendance();
+    
+    /**
+     * Find upcoming events with attendance records loaded
+     */
+    List<Event> findUpcomingWithAttendance();
+    
+    /**
+     * Get attendance count for an event without loading the collection
+     */
+    int getAttendanceCount(Long eventId);
+    
+    /**
+     * Get total attendees count across all events (for dashboard stats)
+     */
+    long getTotalAttendanceCount();
 }

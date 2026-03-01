@@ -21,7 +21,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id
@@ -74,19 +78,10 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "office_id")
     private BccOffice office;
-    /**
-     * LAZY: roles are only fetched when explicitly accessed.
-     * Spring Security's CustomUserDetailsService calls getRoles() inside
-     * a @Transactional method, so the session is still open at that point.
-     * Use JOIN FETCH in queries when you need roles loaded upfront.
-     */
+
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
     @Builder.Default

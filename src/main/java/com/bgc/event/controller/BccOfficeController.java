@@ -7,10 +7,10 @@ package com.bgc.event.controller;
  * - File       : BccOfficeController.java
  * - Date       : 2026-02-27
  * - Author     : NTAGANIRA Heritier
- * - Desc       : BCC Office CRUD — top-level section, MANAGE_OFFICES permission
  * </pre>
  */
 
+import com.bgc.event.audit.Auditable;
 import com.bgc.event.dto.BccOfficeDto;
 import com.bgc.event.repository.UserRepository;
 import com.bgc.event.service.BccOfficeService;
@@ -35,7 +35,6 @@ public class BccOfficeController {
     private final UserRepository   userRepository;
     private final MessageSource    messageSource;
 
-    // ── List ─────────────────────────────────────────────────────────────────
     @GetMapping
     @PreAuthorize("hasAuthority('MANAGE_OFFICES')")
     public String list(Model model) {
@@ -44,7 +43,6 @@ public class BccOfficeController {
         return "offices/list";
     }
 
-    // ── Create ───────────────────────────────────────────────────────────────
     @GetMapping("/new")
     @PreAuthorize("hasAuthority('MANAGE_OFFICES')")
     public String newForm(Model model) {
@@ -52,12 +50,11 @@ public class BccOfficeController {
         return "offices/form";
     }
 
+    @Auditable(action = "CREATE_OFFICE", entity = "BccOffice", idExpression = "#officeDto.code")
     @PostMapping("/new")
     @PreAuthorize("hasAuthority('MANAGE_OFFICES')")
     public String create(@Valid @ModelAttribute BccOfficeDto officeDto,
-                         BindingResult result,
-                         RedirectAttributes ra,
-                         Locale locale) {
+                         BindingResult result, RedirectAttributes ra, Locale locale) {
         if (result.hasErrors()) return "offices/form";
         try {
             officeService.create(officeDto);
@@ -69,7 +66,6 @@ public class BccOfficeController {
         return "redirect:/offices";
     }
 
-    // ── View / Staff ─────────────────────────────────────────────────────────
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('MANAGE_OFFICES')")
     public String view(@PathVariable Long id, Model model) {
@@ -78,38 +74,31 @@ public class BccOfficeController {
         model.addAttribute("staff",      officeService.findStaffByOffice(id));
         model.addAttribute("staffCount", officeService.countStaff(id));
         model.addAttribute("allUsers",   userRepository.findAll().stream()
-            .filter(u -> u.getOffice() == null || !u.getOffice().getId().equals(id))
-            .toList());
+            .filter(u -> u.getOffice() == null || !u.getOffice().getId().equals(id)).toList());
         return "offices/view";
     }
 
-    // ── Edit ─────────────────────────────────────────────────────────────────
     @GetMapping("/{id}/edit")
     @PreAuthorize("hasAuthority('MANAGE_OFFICES')")
     public String editForm(@PathVariable Long id, Model model) {
         var office = officeService.findById(id).orElseThrow();
-        var dto = new BccOfficeDto();
-        dto.setId(office.getId());
-        dto.setCode(office.getCode());
-        dto.setName(office.getName());
-        dto.setCountry(office.getCountry());
-        dto.setCity(office.getCity());
-        dto.setAddress(office.getAddress());
-        dto.setPhone(office.getPhone());
-        dto.setEmail(office.getEmail());
+        var dto    = new BccOfficeDto();
+        dto.setId(office.getId());       dto.setCode(office.getCode());
+        dto.setName(office.getName());   dto.setCountry(office.getCountry());
+        dto.setCity(office.getCity());   dto.setAddress(office.getAddress());
+        dto.setPhone(office.getPhone()); dto.setEmail(office.getEmail());
         dto.setHeadOfOffice(office.getHeadOfOffice());
         dto.setActive(office.isActive());
         model.addAttribute("officeDto", dto);
         return "offices/form";
     }
 
+    @Auditable(action = "UPDATE_OFFICE", entity = "BccOffice", idExpression = "#id")
     @PostMapping("/{id}/edit")
     @PreAuthorize("hasAuthority('MANAGE_OFFICES')")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute BccOfficeDto officeDto,
-                         BindingResult result,
-                         RedirectAttributes ra,
-                         Locale locale) {
+                         BindingResult result, RedirectAttributes ra, Locale locale) {
         if (result.hasErrors()) return "offices/form";
         try {
             officeService.update(id, officeDto);
@@ -121,7 +110,7 @@ public class BccOfficeController {
         return "redirect:/offices/" + id;
     }
 
-    // ── Toggle active ─────────────────────────────────────────────────────────
+    @Auditable(action = "TOGGLE_OFFICE", entity = "BccOffice", idExpression = "#id")
     @PostMapping("/{id}/toggle")
     @PreAuthorize("hasAuthority('MANAGE_OFFICES')")
     public String toggle(@PathVariable Long id, RedirectAttributes ra, Locale locale) {
@@ -131,7 +120,7 @@ public class BccOfficeController {
         return "redirect:/offices";
     }
 
-    // ── Delete ───────────────────────────────────────────────────────────────
+    @Auditable(action = "DELETE_OFFICE", entity = "BccOffice", idExpression = "#id")
     @PostMapping("/{id}/delete")
     @PreAuthorize("hasAuthority('MANAGE_OFFICES')")
     public String delete(@PathVariable Long id, RedirectAttributes ra, Locale locale) {
@@ -145,11 +134,10 @@ public class BccOfficeController {
         return "redirect:/offices";
     }
 
-    // ── Assign / Remove staff ─────────────────────────────────────────────────
+    @Auditable(action = "ASSIGN_STAFF", entity = "BccOffice", idExpression = "#id")
     @PostMapping("/{id}/staff/add")
     @PreAuthorize("hasAuthority('MANAGE_OFFICES')")
-    public String addStaff(@PathVariable Long id,
-                           @RequestParam Long userId,
+    public String addStaff(@PathVariable Long id, @RequestParam Long userId,
                            RedirectAttributes ra, Locale locale) {
         officeService.assignUserToOffice(userId, id);
         ra.addFlashAttribute("successMsg",
@@ -157,10 +145,10 @@ public class BccOfficeController {
         return "redirect:/offices/" + id;
     }
 
+    @Auditable(action = "REMOVE_STAFF", entity = "BccOffice", idExpression = "#id")
     @PostMapping("/{id}/staff/remove")
     @PreAuthorize("hasAuthority('MANAGE_OFFICES')")
-    public String removeStaff(@PathVariable Long id,
-                              @RequestParam Long userId,
+    public String removeStaff(@PathVariable Long id, @RequestParam Long userId,
                               RedirectAttributes ra, Locale locale) {
         officeService.removeUserFromOffice(userId);
         ra.addFlashAttribute("successMsg",

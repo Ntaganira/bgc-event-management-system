@@ -10,8 +10,9 @@ package com.bgc.event.controller;
  * </pre>
  */
 
-import com.bgc.event.service.UserService;
+import com.bgc.event.audit.Auditable;
 import com.bgc.event.repository.RoleRepository;
+import com.bgc.event.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,9 +28,9 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
-    private final RoleRepository roleRepository;
-    private final MessageSource messageSource;
+    private final UserService       userService;
+    private final RoleRepository    roleRepository;
+    private final MessageSource     messageSource;
 
     @GetMapping
     @PreAuthorize("hasAuthority('VIEW_USERS')")
@@ -41,11 +42,12 @@ public class UserController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('MANAGE_USERS')")
     public String viewUser(@PathVariable Long id, Model model) {
-        model.addAttribute("user", userService.findById(id).orElseThrow());
+        model.addAttribute("user",     userService.findById(id).orElseThrow());
         model.addAttribute("allRoles", roleRepository.findAll());
         return "users/view";
     }
 
+    @Auditable(action = "TOGGLE_USER", entity = "User", idExpression = "#id")
     @PostMapping("/{id}/toggle")
     @PreAuthorize("hasAuthority('MANAGE_USERS')")
     public String toggleUser(@PathVariable Long id, RedirectAttributes ra, Locale locale) {
@@ -55,6 +57,7 @@ public class UserController {
         return "redirect:/users";
     }
 
+    @Auditable(action = "ASSIGN_ROLE", entity = "User", idExpression = "#id")
     @PostMapping("/{id}/role/add")
     @PreAuthorize("hasAuthority('MANAGE_ROLES')")
     public String addRole(@PathVariable Long id, @RequestParam Long roleId,
@@ -65,6 +68,7 @@ public class UserController {
         return "redirect:/users/" + id;
     }
 
+    @Auditable(action = "REMOVE_ROLE", entity = "User", idExpression = "#id")
     @PostMapping("/{id}/role/remove")
     @PreAuthorize("hasAuthority('MANAGE_ROLES')")
     public String removeRole(@PathVariable Long id, @RequestParam Long roleId,
@@ -75,6 +79,7 @@ public class UserController {
         return "redirect:/users/" + id;
     }
 
+    @Auditable(action = "DELETE_USER", entity = "User", idExpression = "#id")
     @PostMapping("/{id}/delete")
     @PreAuthorize("hasAuthority('MANAGE_USERS')")
     public String deleteUser(@PathVariable Long id, RedirectAttributes ra, Locale locale) {

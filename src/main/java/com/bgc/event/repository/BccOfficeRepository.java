@@ -11,6 +11,8 @@ package com.bgc.event.repository;
  */
 
 import com.bgc.event.entity.BccOffice;
+
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,10 +24,12 @@ import java.util.Optional;
 public interface BccOfficeRepository extends JpaRepository<BccOffice, Long> {
 
     boolean existsByCode(String code);
+
     boolean existsByCodeAndIdNot(String code, Long id);
 
     Optional<BccOffice> findByCode(String code);
 
+    @EntityGraph(attributePaths = "staff")
     List<BccOffice> findAllByOrderByCountryAscNameAsc();
 
     List<BccOffice> findByActiveTrue();
@@ -37,4 +41,6 @@ public interface BccOfficeRepository extends JpaRepository<BccOffice, Long> {
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.office.id = :officeId")
     long countStaffByOfficeId(Long officeId);
+
+    List<BccOffice> findAll();
 }

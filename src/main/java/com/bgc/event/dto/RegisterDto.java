@@ -7,7 +7,7 @@ package com.bgc.event.dto;
  * - File       : RegisterDto.java
  * - Date       : 2026-02-27
  * - Author     : NTAGANIRA Heritier
- * - Desc       : DTO for public user registration form
+ * - Desc       : DTO for public user registration — officeId links to BccOffice
  * </pre>
  */
 
@@ -30,7 +30,10 @@ public class RegisterDto {
     private String email;
 
     private String phoneNumber;
-    private String branch;
+
+    /** Linked BCC office (from dropdown — replaces free-text branch) */
+    private Long officeId;
+
     private String title;
     private LocalDate arrivalDate;
     private LocalDate returnDate;

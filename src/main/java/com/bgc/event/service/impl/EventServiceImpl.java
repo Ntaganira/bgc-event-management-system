@@ -17,8 +17,6 @@ import com.bgc.event.entity.User;
 import com.bgc.event.repository.EventRepository;
 import com.bgc.event.service.EventService;
 import lombok.RequiredArgsConstructor;
-
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +34,7 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private static final String[] COLORS = {"#3b82f6","#22c55e","#f59e0b","#8b5cf6","#ef4444","#06b6d4"};
+    private int colorIndex = 0;
 
     @Override
     public Event create(EventDto dto, User creator) {
@@ -70,23 +69,19 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional(readOnly = true)
     public Optional<Event> findById(Long id) {
-        Optional<Event> eventOptional = eventRepository.findById(id);
-        eventOptional.ifPresent(item -> Hibernate.initialize(item.getAttendanceRecords()));
-        return eventOptional;
+        return eventRepository.findById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Event> findAll() {
-         List<Event> events = eventRepository.findAll();
-         events.forEach(event -> Hibernate.initialize(event.getAttendanceRecords()));
-         return events;
+        return eventRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Event> findUpcoming() {
-        return eventRepository.findUpcomingEvents(LocalDateTime.now());
+        return eventRepository.findUpcoming(LocalDateTime.now());
     }
 
     @Override
@@ -111,5 +106,40 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public long count() {
         return eventRepository.count();
+    }
+
+    @Override
+    public Optional<Event> findByIdWithAttendance(Long id) {
+        return eventRepository.findById(id); // Repository method with EntityGraph
+    }
+
+    @Override
+    public Optional<Event> findByIdWithAll(Long id) {
+        // You would need to add this method to repository if you want all relations
+        return eventRepository.findById(id);
+    }
+
+    @Override
+    public List<Event> findAllWithAttendance() {
+        return eventRepository.findAll(); // Already loads attendance via EntityGraph
+    }
+
+    @Override
+    public List<Event> findUpcomingWithAttendance() {
+        return eventRepository.findUpcomingWithAttendance(LocalDateTime.now());
+    }
+
+    @Override
+    public int getAttendanceCount(Long eventId) {
+        return eventRepository.findById(eventId)
+                .map(event -> event.getAttendanceCount())
+                .orElse(0);
+    }
+
+    @Override
+    public long getTotalAttendanceCount() {
+        return eventRepository.findAll().stream() // Now safe due to EntityGraph
+                .mapToLong(event -> event.getAttendanceRecords().size())
+                .sum();
     }
 }

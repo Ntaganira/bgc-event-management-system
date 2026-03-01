@@ -85,7 +85,7 @@
                 <td th:text="${office.city}">City</td>
                 <td th:text="${office.headOfOffice ?: '—'}">Head</td>
                 <td>
-                  <span class="badge badge-green" th:text="${office.staffCount}">0</span>
+                  <span class="badge badge-green" th:text="${office.staff.size()}">0</span>
                 </td>
                 <td>
                   <form th:action="@{/offices/{id}/toggle(id=${office.id})}" method="post" style="display:inline">

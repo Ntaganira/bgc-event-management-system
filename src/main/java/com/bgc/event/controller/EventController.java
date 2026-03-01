@@ -7,10 +7,10 @@ package com.bgc.event.controller;
  * - File       : EventController.java
  * - Date       : 2026-02-27
  * - Author     : NTAGANIRA Heritier
- * - Desc       : CRUD for events + FullCalendar REST API
  * </pre>
  */
 
+import com.bgc.event.audit.Auditable;
 import com.bgc.event.dto.CalendarEventDto;
 import com.bgc.event.dto.EventDto;
 import com.bgc.event.entity.Event;
@@ -34,10 +34,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventController {
 
-    private final EventService eventService;
+    private final EventService   eventService;
     private final UserRepository userRepository;
 
-    // -- REST endpoint for FullCalendar --
     @GetMapping("/api/events/calendar")
     @ResponseBody
     public ResponseEntity<List<CalendarEventDto>> calendarEvents() {
@@ -53,9 +52,7 @@ public class EventController {
 
     @GetMapping("/events/calendar")
     @PreAuthorize("hasAuthority('VIEW_EVENT')")
-    public String calendarPage() {
-        return "events/calendar";
-    }
+    public String calendarPage() { return "events/calendar"; }
 
     @GetMapping("/events/{id}")
     @PreAuthorize("hasAuthority('VIEW_EVENT')")
@@ -73,16 +70,17 @@ public class EventController {
         return "events/form";
     }
 
+    @Auditable(action = "CREATE_EVENT", entity = "Event", idExpression = "#dto.title")
     @PostMapping("/events/new")
     @PreAuthorize("hasAuthority('CREATE_EVENT')")
     public String createEvent(@Valid @ModelAttribute EventDto dto,
                               BindingResult result,
                               Authentication auth,
-                              RedirectAttributes redirectAttributes) {
+                              RedirectAttributes ra) {
         if (result.hasErrors()) return "events/form";
         User user = userRepository.findByEmail(auth.getName()).orElseThrow();
         eventService.create(dto, user);
-        redirectAttributes.addFlashAttribute("successMsg", "Event created successfully!");
+        ra.addFlashAttribute("successMsg", "Event created successfully!");
         return "redirect:/events";
     }
 
@@ -90,29 +88,30 @@ public class EventController {
     @PreAuthorize("hasAuthority('EDIT_EVENT')")
     public String editEventForm(@PathVariable Long id, Model model) {
         Event e = eventService.findById(id).orElseThrow();
-        EventDto dto = new EventDto(e.getId(), e.getTitle(), e.getDescription(),
-            e.getLocation(), e.getStartDateTime(), e.getEndDateTime());
-        model.addAttribute("eventDto", dto);
+        model.addAttribute("eventDto", new EventDto(e.getId(), e.getTitle(),
+            e.getDescription(), e.getLocation(), e.getStartDateTime(), e.getEndDateTime()));
         return "events/form";
     }
 
+    @Auditable(action = "UPDATE_EVENT", entity = "Event", idExpression = "#id")
     @PostMapping("/events/{id}/edit")
     @PreAuthorize("hasAuthority('EDIT_EVENT')")
     public String updateEvent(@PathVariable Long id,
                               @Valid @ModelAttribute EventDto dto,
                               BindingResult result,
-                              RedirectAttributes redirectAttributes) {
+                              RedirectAttributes ra) {
         if (result.hasErrors()) return "events/form";
         eventService.update(id, dto);
-        redirectAttributes.addFlashAttribute("successMsg", "Event updated successfully!");
+        ra.addFlashAttribute("successMsg", "Event updated successfully!");
         return "redirect:/events";
     }
 
+    @Auditable(action = "DELETE_EVENT", entity = "Event", idExpression = "#id")
     @PostMapping("/events/{id}/delete")
     @PreAuthorize("hasAuthority('DELETE_EVENT')")
-    public String deleteEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteEvent(@PathVariable Long id, RedirectAttributes ra) {
         eventService.delete(id);
-        redirectAttributes.addFlashAttribute("successMsg", "Event deleted.");
+        ra.addFlashAttribute("successMsg", "Event deleted.");
         return "redirect:/events";
     }
 }

@@ -7,10 +7,10 @@ package com.bgc.event.controller;
  * - File       : AttendanceController.java
  * - Date       : 2026-02-27
  * - Author     : NTAGANIRA Heritier
- * - Desc       : Attendance check-in via QR code or manual code entry
  * </pre>
  */
 
+import com.bgc.event.audit.Auditable;
 import com.bgc.event.entity.User;
 import com.bgc.event.repository.UserRepository;
 import com.bgc.event.service.AttendanceService;
@@ -27,10 +27,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/attendance")
 @RequiredArgsConstructor
 public class AttendanceController {
- 
+
     private final AttendanceService attendanceService;
-    private final EventService eventService;
-    private final UserRepository userRepository;
+    private final EventService      eventService;
+    private final UserRepository    userRepository;
 
     @GetMapping
     @PreAuthorize("hasAuthority('MARK_ATTENDANCE')")
@@ -39,32 +39,34 @@ public class AttendanceController {
         return "attendance/index";
     }
 
+    @Auditable(action = "MARK_ATTENDANCE", entity = "Attendance", idExpression = "#qrValue")
     @PostMapping("/scan-qr")
     @PreAuthorize("hasAuthority('MARK_ATTENDANCE')")
     public String scanQR(@RequestParam String qrValue,
-            Authentication auth,
-            RedirectAttributes redirectAttributes) {
+                         Authentication auth,
+                         RedirectAttributes ra) {
         User user = userRepository.findByEmail(auth.getName()).orElseThrow();
         try {
             attendanceService.markByQR(user, qrValue);
-            redirectAttributes.addFlashAttribute("successMsg", "Attendance recorded via QR code!");
+            ra.addFlashAttribute("successMsg", "Attendance recorded via QR code!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+            ra.addFlashAttribute("errorMsg", e.getMessage());
         }
         return "redirect:/attendance";
     }
 
+    @Auditable(action = "MARK_ATTENDANCE", entity = "Attendance", idExpression = "#eventId")
     @PostMapping("/mark-code")
     @PreAuthorize("hasAuthority('MARK_ATTENDANCE')")
     public String markByCode(@RequestParam Long eventId,
-            Authentication auth,
-            RedirectAttributes redirectAttributes) {
+                             Authentication auth,
+                             RedirectAttributes ra) {
         User user = userRepository.findByEmail(auth.getName()).orElseThrow();
         try {
             attendanceService.markByCode(user, eventId);
-            redirectAttributes.addFlashAttribute("successMsg", "Attendance recorded!");
+            ra.addFlashAttribute("successMsg", "Attendance recorded!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+            ra.addFlashAttribute("errorMsg", e.getMessage());
         }
         return "redirect:/attendance";
     }
@@ -73,9 +75,9 @@ public class AttendanceController {
     @PreAuthorize("hasAuthority('VIEW_ATTENDANCE')")
     public String viewEventAttendance(@PathVariable Long eventId, Model model) {
         var event = eventService.findById(eventId).orElseThrow();
-        model.addAttribute("event", event);
+        model.addAttribute("event",   event);
         model.addAttribute("records", attendanceService.findByEvent(event));
-        model.addAttribute("count", attendanceService.countByEvent(event));
+        model.addAttribute("count",   attendanceService.countByEvent(event));
         return "attendance/event-detail";
     }
 }

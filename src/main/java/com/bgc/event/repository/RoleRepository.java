@@ -1,8 +1,9 @@
 package com.bgc.event.repository;
 
 import com.bgc.event.entity.Role;
+
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,9 +15,9 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     boolean existsByName(String name);
 
-    @Query("""
-                SELECT DISTINCT r FROM Role r
-                LEFT JOIN FETCH r.permissions
-            """)
-    List<Role> findAllWithPermissions();
+    @EntityGraph(attributePaths = "permissions")
+    List<Role> findAll();
+
+    @EntityGraph(attributePaths = "permissions")
+    Optional<Role> findById(Long Id);
 }

@@ -17,9 +17,6 @@ import com.bgc.event.repository.BccOfficeRepository;
 import com.bgc.event.repository.UserRepository;
 import com.bgc.event.service.BccOfficeService;
 import lombok.RequiredArgsConstructor;
-
-import org.hibernate.Hibernate;
-import org.hibernate.HibernateError;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,9 +67,7 @@ public class BccOfficeServiceImpl implements BccOfficeService {
     @Override
     @Transactional(readOnly = true)
     public List<BccOffice> findAll() {
-        List<BccOffice> offices =  officeRepository.findAllByOrderByCountryAscNameAsc();
-        offices.forEach(item -> Hibernate.initialize(item.getStaff()));
-        return offices;
+        return officeRepository.findAllByOrderByCountryAscNameAsc();
     }
 
     @Override
@@ -90,11 +85,9 @@ public class BccOfficeServiceImpl implements BccOfficeService {
     @Override
     @Transactional(readOnly = true)
     public List<User> findStaffByOffice(Long officeId) {
-        List<User> users = userRepository.findAll().stream()
+        return userRepository.findAll().stream()
             .filter(u -> u.getOffice() != null && u.getOffice().getId().equals(officeId))
             .toList();
-        users.forEach(item-> Hibernate.initialize(item.getRoles()));
-        return users;
     }
 
     @Override

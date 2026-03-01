@@ -20,7 +20,20 @@ import java.util.Set;
 
 @Entity
 @Table(name = "events")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "Event.withAttendance", attributeNodes = @NamedAttributeNode("attendanceRecords")),
+        @NamedEntityGraph(name = "Event.withAttendees", attributeNodes = @NamedAttributeNode("attendees")),
+        @NamedEntityGraph(name = "Event.withAll", attributeNodes = {
+                @NamedAttributeNode("attendanceRecords"),
+                @NamedAttributeNode("attendees"),
+                @NamedAttributeNode("createdBy")
+        })
+})
 public class Event {
 
     @Id
@@ -59,14 +72,18 @@ public class Event {
 
     @Builder.Default
     @ManyToMany
-    @JoinTable(
-        name = "event_attendees",
-        joinColumns = @JoinColumn(name = "event_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
+    @JoinTable(name = "event_attendees", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> attendees = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private Set<Attendance> attendanceRecords = new HashSet<>();
+
+    public int getAttendanceCount() {
+        return attendanceRecords != null ? attendanceRecords.size() : 0;
+    }
+
+    public int getAttendeesCount() {
+        return attendees != null ? attendees.size() : 0;
+    }
 }

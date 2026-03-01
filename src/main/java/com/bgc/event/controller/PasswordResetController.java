@@ -7,10 +7,10 @@ package com.bgc.event.controller;
  * - File       : PasswordResetController.java
  * - Date       : 2026-02-27
  * - Author     : NTAGANIRA Heritier
- * - Desc       : Forgot password + reset password endpoints (public)
  * </pre>
  */
 
+import com.bgc.event.audit.Auditable;
 import com.bgc.event.service.PasswordResetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -26,27 +26,22 @@ import java.util.Locale;
 public class PasswordResetController {
 
     private final PasswordResetService passwordResetService;
-    private final MessageSource        messageSource;
-
-    // ── Step 1: Forgot Password form ────────────────────────────────────────
+    private final MessageSource messageSource;
 
     @GetMapping("/forgot-password")
     public String forgotPasswordPage() {
         return "auth/forgot-password";
     }
 
+    @Auditable(action = "PASSWORD_RESET_REQUEST", entity = "User", idExpression = "#email")
     @PostMapping("/forgot-password")
     public String forgotPasswordSubmit(@RequestParam String email,
-                                       RedirectAttributes ra,
-                                       Locale locale) {
-        // Always show the same message (anti-enumeration)
+            RedirectAttributes ra, Locale locale) {
         passwordResetService.requestReset(email);
         ra.addFlashAttribute("successMsg",
-            messageSource.getMessage("auth.forgot.sent", null, locale));
+                messageSource.getMessage("auth.forgot.sent", null, locale));
         return "redirect:/forgot-password?sent=true";
     }
-
-    // ── Step 2: Reset Password form ─────────────────────────────────────────
 
     @GetMapping("/reset-password")
     public String resetPasswordPage(@RequestParam String token, Model model) {
@@ -60,30 +55,26 @@ public class PasswordResetController {
         return "auth/reset-password";
     }
 
+    @Auditable(action = "PASSWORD_RESET", entity = "User", idExpression = "#token")
     @PostMapping("/reset-password")
     public String resetPasswordSubmit(@RequestParam String token,
-                                      @RequestParam String password,
-                                      @RequestParam String confirmPassword,
-                                      Model model,
-                                      RedirectAttributes ra,
-                                      Locale locale) {
-        // Client-side match already checked via JS; double-check server-side
+            @RequestParam String password,
+            @RequestParam String confirmPassword,
+            Model model, RedirectAttributes ra, Locale locale) {
         if (!password.equals(confirmPassword)) {
             model.addAttribute("token", token);
-            model.addAttribute("errorMsg",
-                messageSource.getMessage("auth.reset.mismatch", null, locale));
+            model.addAttribute("errorMsg", messageSource.getMessage("auth.reset.mismatch", null, locale));
             return "auth/reset-password";
         }
         if (password.length() < 6) {
             model.addAttribute("token", token);
-            model.addAttribute("errorMsg",
-                messageSource.getMessage("validation.password.min", null, locale));
+            model.addAttribute("errorMsg", messageSource.getMessage("validation.password.min", null, locale));
             return "auth/reset-password";
         }
         try {
             passwordResetService.resetPassword(token, password);
             ra.addFlashAttribute("successMsg",
-                messageSource.getMessage("auth.reset.success", null, locale));
+                    messageSource.getMessage("auth.reset.success", null, locale));
             return "redirect:/login";
         } catch (Exception e) {
             model.addAttribute("token", token);

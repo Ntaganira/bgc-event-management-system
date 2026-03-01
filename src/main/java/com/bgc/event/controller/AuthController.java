@@ -7,11 +7,12 @@ package com.bgc.event.controller;
  * - File       : AuthController.java
  * - Date       : 2026-02-27
  * - Author     : NTAGANIRA Heritier
- * - Desc       : Login / Register with i18n messages
  * </pre>
  */
 
+import com.bgc.event.audit.Auditable;
 import com.bgc.event.dto.RegisterDto;
+import com.bgc.event.service.BccOfficeService;
 import com.bgc.event.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,42 +29,45 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
-    private final MessageSource messageSource;
+    private final UserService      userService;
+    private final BccOfficeService officeService;
+    private final MessageSource    messageSource;
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(required = false) String error,
                             @RequestParam(required = false) String logout,
                             Model model, Locale locale) {
-        if (error != null)
-            model.addAttribute("errorMsg",
-                messageSource.getMessage("auth.login.error", null, locale));
-        if (logout != null)
-            model.addAttribute("logoutMsg",
-                messageSource.getMessage("auth.login.logout", null, locale));
+        if (error  != null) model.addAttribute("errorMsg",
+            messageSource.getMessage("auth.login.error",  null, locale));
+        if (logout != null) model.addAttribute("logoutMsg",
+            messageSource.getMessage("auth.login.logout", null, locale));
         return "auth/login";
     }
 
     @GetMapping("/register")
     public String registerPage(Model model) {
         model.addAttribute("registerDto", new RegisterDto());
+        model.addAttribute("offices",     officeService.findActive());
         return "auth/register";
     }
 
+    @Auditable(action = "REGISTER", entity = "User", idExpression = "#registerDto.email")
     @PostMapping("/register")
     public String register(@Valid @ModelAttribute RegisterDto registerDto,
-                           BindingResult result,
-                           Model model,
-                           RedirectAttributes ra,
-                           Locale locale) {
-        if (result.hasErrors()) return "auth/register";
+                           BindingResult result, Model model,
+                           RedirectAttributes ra, Locale locale) {
+        if (result.hasErrors()) {
+            model.addAttribute("offices", officeService.findActive());
+            return "auth/register";
+        }
         try {
             userService.register(registerDto);
             ra.addFlashAttribute("successMsg",
-                messageSource.getMessage("auth.register.submit", null, locale));
+                messageSource.getMessage("auth.register.success", null, locale));
             return "redirect:/login";
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("offices",  officeService.findActive());
             return "auth/register";
         }
     }

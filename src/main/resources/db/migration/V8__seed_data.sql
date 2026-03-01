@@ -46,13 +46,13 @@ WHERE r.name = 'ROLE_USER';
 
 -- Default admin user (password: password123 - BCrypt)
 INSERT INTO users (first_name, last_name, email, phone_number, branch, title, password, enabled, email_confirmed)
-VALUES ('System', 'Admin', 'admin@bgc.com', '+250780000000', 'HQ', 'Administrator',
+VALUES ('System', 'Admin', 'ntaganira71@gmail.com', '+250780000000', 'HQ', 'Administrator',
         '$2a$10$u29/avQnlNTuD49LrIiizOw8WHmj8JIml8VZpnsLrK6cpJcNzEZtS', TRUE, TRUE);
 
 -- Assign ADMIN role to admin user
 INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.id FROM users u, roles r
-WHERE u.email = 'admin@bgc.com' AND r.name = 'ROLE_ADMIN';
+WHERE u.email = 'ntaganira71@gmail.com' AND r.name = 'ROLE_ADMIN';
 
 -- Sample events
 INSERT INTO events (title, description, location, start_date_time, end_date_time, created_by) VALUES

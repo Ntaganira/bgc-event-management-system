@@ -13,12 +13,11 @@ package com.bgc.event.service.impl;
 import com.bgc.event.dto.RegisterDto;
 import com.bgc.event.entity.Role;
 import com.bgc.event.entity.User;
+import com.bgc.event.repository.BccOfficeRepository;
 import com.bgc.event.repository.RoleRepository;
 import com.bgc.event.repository.UserRepository;
 import com.bgc.event.service.UserService;
 import lombok.RequiredArgsConstructor;
-
-import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,27 +32,33 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final BccOfficeRepository officeRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public User register(RegisterDto dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
+        if (userRepository.existsByEmail(dto.getEmail()))
             throw new RuntimeException("Email already registered: " + dto.getEmail());
-        }
 
-        User user = User.builder()
+        var builder = User.builder()
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .email(dto.getEmail())
                 .phoneNumber(dto.getPhoneNumber())
-                .branch(dto.getBranch())
                 .title(dto.getTitle())
                 .arrivalDate(dto.getArrivalDate())
                 .returnDate(dto.getReturnDate())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .enabled(true)
-                .emailConfirmed(false)
-                .build();
+                .emailConfirmed(false);
+
+        // Link to BCC office if selected
+        if (dto.getOfficeId() != null) {
+            officeRepository.findById(dto.getOfficeId())
+                    .ifPresent(builder::office);
+        }
+
+        User user = builder.build();
 
         // Assign default ROLE_USER
         roleRepository.findByName("ROLE_USER").ifPresent(role -> user.getRoles().add(role));
@@ -64,19 +69,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<User> findAll() {
-        List<User> users = userRepository.findAll();
-        users.forEach(user -> Hibernate.initialize(user.getRoles()));
-        return users;
+        return userRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<User> findById(Long id) {
-
-        Optional<User> userOptional = userRepository.findById(id);
-        userOptional.ifPresent(user -> Hibernate.initialize(user.getRoles()));
-
-        return userOptional;
+        return userRepository.findById(id);
     }
 
     @Override
@@ -97,9 +96,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void toggleEnabled(Long id) {
-        userRepository.findById(id).ifPresent(user -> {
-            user.setEnabled(!user.isEnabled());
-            userRepository.save(user);
+        userRepository.findById(id).ifPresent(u -> {
+            u.setEnabled(!u.isEnabled());
+            userRepository.save(u);
         });
     }
 

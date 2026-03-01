@@ -7,19 +7,15 @@ package com.bgc.event.controller;
  * - File       : RoleController.java
  * - Date       : 2026-02-27
  * - Author     : NTAGANIRA Heritier
- * - Desc       : Role CRUD + permission assignment controller
  * </pre>
  */
 
+import com.bgc.event.audit.Auditable;
 import com.bgc.event.dto.RoleDto;
 import com.bgc.event.repository.PermissionRepository;
 import com.bgc.event.service.RoleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-import java.security.Permission;
-import java.util.Set;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,30 +28,29 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class RoleController {
 
-    private final RoleService roleService;
+    private final RoleService          roleService;
     private final PermissionRepository permissionRepository;
 
     @GetMapping
     @PreAuthorize("hasAuthority('MANAGE_ROLES')")
     public String listRoles(Model model) {
-        model.addAttribute("roles", roleService.getAllRolesWithPermissions());
+        model.addAttribute("roles", roleService.findAll());
         return "roles/list";
     }
 
     @GetMapping("/new")
     @PreAuthorize("hasAuthority('MANAGE_ROLES')")
     public String newRoleForm(Model model) {
-        model.addAttribute("roleDto", new RoleDto());
+        model.addAttribute("roleDto",       new RoleDto());
         model.addAttribute("allPermissions", permissionRepository.findAll());
         return "roles/form";
     }
 
+    @Auditable(action = "CREATE_ROLE", entity = "Role", idExpression = "#roleDto.name")
     @PostMapping("/new")
     @PreAuthorize("hasAuthority('MANAGE_ROLES')")
     public String createRole(@Valid @ModelAttribute RoleDto roleDto,
-                             BindingResult result,
-                             Model model,
-                             RedirectAttributes ra) {
+                             BindingResult result, Model model, RedirectAttributes ra) {
         if (result.hasErrors()) {
             model.addAttribute("allPermissions", permissionRepository.findAll());
             return "roles/form";
@@ -73,23 +68,22 @@ public class RoleController {
     @PreAuthorize("hasAuthority('MANAGE_ROLES')")
     public String editRoleForm(@PathVariable Long id, Model model) {
         var role = roleService.findById(id).orElseThrow();
-        var dto = new RoleDto();
+        var dto  = new RoleDto();
         dto.setId(role.getId());
         dto.setName(role.getName());
         dto.setDescription(role.getDescription());
-        permissionRepository.findPermissionsByRoleId(role.getId()).forEach(p -> dto.getPermissionIds().add(p.getId()));
-        model.addAttribute("roleDto", dto);
+        role.getPermissions().forEach(p -> dto.getPermissionIds().add(p.getId()));
+        model.addAttribute("roleDto",       dto);
         model.addAttribute("allPermissions", permissionRepository.findAll());
         return "roles/form";
     }
 
+    @Auditable(action = "UPDATE_ROLE", entity = "Role", idExpression = "#id")
     @PostMapping("/{id}/edit")
     @PreAuthorize("hasAuthority('MANAGE_ROLES')")
     public String updateRole(@PathVariable Long id,
                              @Valid @ModelAttribute RoleDto roleDto,
-                             BindingResult result,
-                             Model model,
-                             RedirectAttributes ra) {
+                             BindingResult result, Model model, RedirectAttributes ra) {
         if (result.hasErrors()) {
             model.addAttribute("allPermissions", permissionRepository.findAll());
             return "roles/form";
@@ -103,6 +97,7 @@ public class RoleController {
         return "redirect:/roles";
     }
 
+    @Auditable(action = "DELETE_ROLE", entity = "Role", idExpression = "#id")
     @PostMapping("/{id}/delete")
     @PreAuthorize("hasAuthority('MANAGE_ROLES')")
     public String deleteRole(@PathVariable Long id, RedirectAttributes ra) {
@@ -118,11 +113,12 @@ public class RoleController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('MANAGE_ROLES')")
     public String viewRole(@PathVariable Long id, Model model) {
-        model.addAttribute("role", roleService.findById(id).orElseThrow());
+        model.addAttribute("role",           roleService.findById(id).orElseThrow());
         model.addAttribute("allPermissions", permissionRepository.findAll());
         return "roles/view";
     }
 
+    @Auditable(action = "ASSIGN_PERMISSION", entity = "Role", idExpression = "#id")
     @PostMapping("/{id}/permission/add")
     @PreAuthorize("hasAuthority('MANAGE_ROLES')")
     public String addPermission(@PathVariable Long id, @RequestParam Long permissionId, RedirectAttributes ra) {
@@ -131,6 +127,7 @@ public class RoleController {
         return "redirect:/roles/" + id;
     }
 
+    @Auditable(action = "REMOVE_PERMISSION", entity = "Role", idExpression = "#id")
     @PostMapping("/{id}/permission/remove")
     @PreAuthorize("hasAuthority('MANAGE_ROLES')")
     public String removePermission(@PathVariable Long id, @RequestParam Long permissionId, RedirectAttributes ra) {

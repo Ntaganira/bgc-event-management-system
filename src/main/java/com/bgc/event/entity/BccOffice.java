@@ -21,7 +21,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "bcc_offices")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class BccOffice {
 
     @Id
@@ -82,7 +86,4 @@ public class BccOffice {
     @OneToMany(mappedBy = "office", fetch = FetchType.LAZY)
     private Set<User> staff = new HashSet<>();
 
-    public int getStaffCount() {
-        return staff != null ? staff.size() : 0;
-    }
 }

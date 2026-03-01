@@ -105,10 +105,4 @@ public class RoleServiceImpl implements RoleService {
         role.getPermissions().removeIf(p -> p.getId().equals(permissionId));
         roleRepository.save(role);
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Role> getAllRolesWithPermissions() {
-        return roleRepository.findAllWithPermissions();
-    }
 }
