@@ -23,6 +23,7 @@ E:\ERC\BGC Event Management\bgc-event-management-system\src\main\java\com\bgc\ev
 E:\ERC\BGC Event Management\bgc-event-management-system\src\main\java\com\bgc\event\repository\AuditLogRepository.java
 E:\ERC\BGC Event Management\bgc-event-management-system\src\main\java\com\bgc\event\controller\AuditLogController.java
 E:\ERC\BGC Event Management\bgc-event-management-system\src\main\java\com\bgc\event\entity\AuditLog.java
+E:\ERC\BGC Event Management\bgc-event-management-system\src\main\java\com\bgc\event\config\EmailTemplateConfig.java
 E:\ERC\BGC Event Management\bgc-event-management-system\src\main\java\com\bgc\event\controller\DashboardController.java
 E:\ERC\BGC Event Management\bgc-event-management-system\src\main\java\com\bgc\event\repository\BccOfficeRepository.java
 E:\ERC\BGC Event Management\bgc-event-management-system\src\main\java\com\bgc\event\controller\RoleController.java
