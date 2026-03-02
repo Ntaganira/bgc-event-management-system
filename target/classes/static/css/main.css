@@ -26,7 +26,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 a { text-decoration: none; color: inherit; }
 
 /* Scrollbar styles for main content */
-.main-content {flex: 1;overflow-y: auto;height: calc(100vh - 140px); /* Adjust based on your header height */scroll-behavior: smooth;}
+.main-content {flex: 1;overflow-y: auto;padding: 20px;height: calc(100vh - 140px); /* Adjust based on your header height */scroll-behavior: smooth;}
 /* Custom scrollbar for modern browsers */
 .main-content::-webkit-scrollbar {width: 8px;}
 .main-content::-webkit-scrollbar-track {background: #f1f1f1;border-radius: 10px;}

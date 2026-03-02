@@ -7,286 +7,165 @@ package com.bgc.event.service.impl;
  * - File       : PasswordResetServiceImpl.java
  * - Date       : 2026-02-27
  * - Author     : NTAGANIRA Heritier
- * - Desc       : Forgot/reset password — sends a styled HTML email
- *                using MimeMessage + MimeMessageHelper (not SimpleMailMessage).
- *
- *   Security:
- *   - Anti-enumeration: same response whether email exists or not
- *   - Single-use token, expires in 30 minutes
- *   - Previous tokens invalidated before issuing new one
+ * - Desc       : Forgot/reset password — email rendered via Thymeleaf template.
+ *                MessageSource resolves i18n keys (subject, plain-text fallback).
+ *                TemplateEngine renders the HTML body from password-reset.html.
  * </pre>
  */
 
 import com.bgc.event.entity.PasswordResetToken;
+import com.bgc.event.entity.User;
 import com.bgc.event.repository.PasswordResetTokenRepository;
 import com.bgc.event.repository.UserRepository;
 import com.bgc.event.service.PasswordResetService;
 
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.UUID;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class PasswordResetServiceImpl implements PasswordResetService {
 
-  private final UserRepository userRepository;
-  private final PasswordResetTokenRepository tokenRepository;
-  private final JavaMailSender mailSender;
-  private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordResetTokenRepository tokenRepository;
+    private final JavaMailSender mailSender;
+    private final PasswordEncoder passwordEncoder;
+    private final TemplateEngine emailTemplateEngine;
+    private final MessageSource messageSource; // ← for i18n strings
 
-  @Value("${app.base-url:http://localhost:8080}")
-  private String baseUrl;
+    private static final int TOKEN_EXPIRY_MINUTES = 30;
 
-  @Value("${spring.mail.username:ntaganira71@gmail.com}")
-  private String fromEmail;
+    @Value("${app.base-url:http://localhost:8080}")
+    private String baseUrl;
 
-  private static final int TOKEN_EXPIRY_MINUTES = 30;
-  private static final String BRAND_COLOR = "#2563EB";
-  private static final String BRAND_DARK = "#1E3A5F";
+    @Value("${spring.mail.username:bgcevent@gmail.com}")
+    private String fromEmail;
 
-  // ── Public API ────────────────────────────────────────────────────────
+    public PasswordResetServiceImpl(
+            UserRepository userRepository,
+            PasswordResetTokenRepository tokenRepository,
+            JavaMailSender mailSender,
+            PasswordEncoder passwordEncoder,
+            @Qualifier("emailTemplateEngine") TemplateEngine emailTemplateEngine,
+            MessageSource messageSource) {
+        this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
+        this.mailSender = mailSender;
+        this.passwordEncoder = passwordEncoder;
+        this.emailTemplateEngine = emailTemplateEngine;
+        this.messageSource = messageSource;
+    }
 
-  @Override
-  public void requestReset(String email) {
-    userRepository.findByEmail(email.toLowerCase().trim()).ifPresent(user -> {
-      tokenRepository.invalidateAllForUser(user.getId());
+    // ── Public API ────────────────────────────────────────────────────────
 
-      String token = UUID.randomUUID().toString();
-      tokenRepository.save(PasswordResetToken.builder()
-          .token(token)
-          .user(user)
-          .expiresAt(LocalDateTime.now().plusMinutes(TOKEN_EXPIRY_MINUTES))
-          .build());
+    @Override
+    public void requestReset(String email) {
+        userRepository.findByEmail(email.toLowerCase().trim()).ifPresent(user -> {
+            tokenRepository.invalidateAllForUser(user.getId());
 
-      try {
-        sendHtmlResetEmail(user.getEmail(), user.getFirstName(), token);
-      } catch (Exception e) {
-        log.error("Failed to send password reset email to {}: {}", email, e.getMessage());
-      }
-    });
-  }
+            String token = UUID.randomUUID().toString();
+            tokenRepository.save(PasswordResetToken.builder()
+                    .token(token)
+                    .user(user)
+                    .expiresAt(LocalDateTime.now().plusMinutes(TOKEN_EXPIRY_MINUTES))
+                    .build());
 
-  @Override
-  @Transactional(readOnly = true)
-  public String validateToken(String token) {
-    PasswordResetToken prt = tokenRepository.findByToken(token)
-        .orElseThrow(() -> new RuntimeException("Invalid or expired reset link."));
-    if (!prt.isValid())
-      throw new RuntimeException("This reset link has expired or has already been used.");
-    return prt.getUser().getEmail();
-  }
+            try {
+                sendHtmlEmail(user, token);
+            } catch (Exception e) {
+                log.error("Failed to send reset email to {}: {}", email, e.getMessage());
+            }
+        });
+    }
 
-  @Override
-  public void resetPassword(String token, String newPassword) {
-    PasswordResetToken prt = tokenRepository.findByToken(token)
-        .orElseThrow(() -> new RuntimeException("Invalid reset link."));
-    if (!prt.isValid())
-      throw new RuntimeException("This reset link has expired or has already been used.");
+    @Override
+    @Transactional(readOnly = true)
+    public String validateToken(String token) {
+        PasswordResetToken prt = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid or expired reset link."));
+        if (!prt.isValid())
+            throw new RuntimeException("This reset link has expired or has already been used.");
+        return prt.getUser().getEmail();
+    }
 
-    var user = prt.getUser();
-    user.setPassword(passwordEncoder.encode(newPassword));
-    userRepository.save(user);
+    @Override
+    public void resetPassword(String token, String newPassword) {
+        PasswordResetToken prt = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid reset link."));
+        if (!prt.isValid())
+            throw new RuntimeException("This reset link has expired or has already been used.");
 
-    prt.setUsed(true);
-    tokenRepository.save(prt);
+        prt.getUser().setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(prt.getUser());
+        prt.setUsed(true);
+        tokenRepository.save(prt);
+        log.info("Password reset successfully for: {}", prt.getUser().getEmail());
+    }
 
-    log.info("Password reset successfully for user: {}", user.getEmail());
-  }
+    // ── Email ─────────────────────────────────────────────────────────────
 
-  // ── HTML Email ────────────────────────────────────────────────────────
+    private void sendHtmlEmail(User user, String token) throws Exception {
+        Locale locale = LocaleContextHolder.getLocale();
+        if (locale == null)
+            locale = Locale.ENGLISH;
 
-  private void sendHtmlResetEmail(String toEmail, String firstName, String token)
-      throws Exception {
+        String resetLink = baseUrl + "/reset-password?token=" + token;
 
-    String resetLink = baseUrl + "/reset-password?token=" + token;
+        // ── i18n strings resolved by MessageSource (not TemplateEngine) ──
+        String subject = messageSource.getMessage("email.reset.subject", null, locale);
 
-    MimeMessage mime = mailSender.createMimeMessage();
-    MimeMessageHelper helper = new MimeMessageHelper(mime, true, "UTF-8");
+        // ── Thymeleaf context — variables injected into the template ──────
+        Context ctx = new Context(locale);
+        ctx.setVariable("firstName", user.getFirstName());
+        ctx.setVariable("resetLink", resetLink);
+        ctx.setVariable("expiryMins", TOKEN_EXPIRY_MINUTES);
+        ctx.setVariable("subject", subject);
 
-    helper.setFrom(fromEmail, "BGC Event Management");
-    helper.setTo(toEmail);
-    helper.setSubject("Reset your BGC Event password");
+        // ── Render password-reset.html → HTML String ──────────────────────
+        String htmlBody = emailTemplateEngine.process("password-reset", ctx);
 
-    helper.setText(buildPlainText(firstName, resetLink), false); // fallback
-    helper.setText(buildHtml(firstName, resetLink), true); // HTML (overrides plain)
+        // ── Plain-text fallback ───────────────────────────────────────────
+        String plainBody = buildPlainText(user.getFirstName(), resetLink, locale);
 
-    mailSender.send(mime);
-    log.info("HTML password reset email sent to: {}", toEmail);
-  }
+        // ── Send ──────────────────────────────────────────────────────────
+        MimeMessage mime = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mime, true, "UTF-8");
+        helper.setFrom(fromEmail, "BGC Event Management");
+        helper.setTo(user.getEmail());
+        helper.setSubject(subject);
+        helper.setText(plainBody, false); // plain-text part
+        helper.setText(htmlBody, true); // HTML part (overrides plain in modern clients)
 
-  // ── HTML body ─────────────────────────────────────────────────────────
+        mailSender.send(mime);
+        log.info("Reset email sent to {} [locale={}]", user.getEmail(), locale);
+    }
 
-  private String buildHtml(String firstName, String resetLink) {
-    return """
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Reset your password</title>
-        </head>
-        <body style="margin:0;padding:0;background-color:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif;">
-
-          <!-- Wrapper -->
-          <table width="100%%" cellpadding="0" cellspacing="0" border="0"
-                 style="background-color:#f1f5f9;padding:40px 16px;">
-            <tr>
-              <td align="center">
-
-                <!-- Card -->
-                <table width="100%%" cellpadding="0" cellspacing="0" border="0"
-                       style="max-width:560px;background:#ffffff;border-radius:12px;
-                              box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden;">
-
-                  <!-- Header band -->
-                  <tr>
-                    <td style="background:%s;padding:32px 40px;text-align:center;">
-                      <p style="margin:0;font-size:28px;font-weight:800;
-                                color:#ffffff;letter-spacing:2px;font-family:Arial,sans-serif;">
-                        BGC
-                      </p>
-                      <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,0.75);
-                                letter-spacing:0.5px;text-transform:uppercase;">
-                        Event Management System
-                      </p>
-                    </td>
-                  </tr>
-
-                  <!-- Icon row -->
-                  <tr>
-                    <td style="text-align:center;padding:32px 40px 0;">
-                      <div style="display:inline-block;background:#eff6ff;border-radius:50%%;
-                                  width:64px;height:64px;line-height:64px;font-size:28px;">
-                        🔑
-                      </div>
-                    </td>
-                  </tr>
-
-                  <!-- Body -->
-                  <tr>
-                    <td style="padding:24px 40px 8px;">
-                      <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:%s;">
-                        Password Reset Request
-                      </h1>
-                      <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">
-                        Hello <strong>%s</strong>,
-                      </p>
-                      <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
-                        We received a request to reset the password for your BGC Event account.
-                        Click the button below to choose a new password.
-                      </p>
-                    </td>
-                  </tr>
-
-                  <!-- CTA Button -->
-                  <tr>
-                    <td style="padding:0 40px 24px;text-align:center;">
-                      <a href="%s"
-                         style="display:inline-block;background:%s;color:#ffffff;
-                                text-decoration:none;font-size:15px;font-weight:600;
-                                padding:14px 36px;border-radius:8px;
-                                letter-spacing:0.3px;">
-                        Reset My Password
-                      </a>
-                    </td>
-                  </tr>
-
-                  <!-- Expiry notice -->
-                  <tr>
-                    <td style="padding:0 40px 24px;">
-                      <table width="100%%" cellpadding="0" cellspacing="0" border="0">
-                        <tr>
-                          <td style="background:#fef9c3;border-left:4px solid #f59e0b;
-                                      border-radius:6px;padding:12px 16px;">
-                            <p style="margin:0;font-size:13px;color:#92400e;line-height:1.5;">
-                              ⏱ <strong>This link expires in %d minutes.</strong>
-                              If you did not request a password reset, you can safely ignore this email —
-                              your password will remain unchanged.
-                            </p>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-
-                  <!-- Raw link fallback -->
-                  <tr>
-                    <td style="padding:0 40px 28px;">
-                      <p style="margin:0 0 6px;font-size:12px;color:#9ca3af;">
-                        If the button doesn't work, copy and paste this link into your browser:
-                      </p>
-                      <p style="margin:0;font-size:12px;color:%s;word-break:break-all;">
-                        %s
-                      </p>
-                    </td>
-                  </tr>
-
-                  <!-- Divider -->
-                  <tr>
-                    <td style="padding:0 40px;">
-                      <hr style="border:none;border-top:1px solid #e5e7eb;margin:0;">
-                    </td>
-                  </tr>
-
-                  <!-- Footer -->
-                  <tr>
-                    <td style="padding:20px 40px 32px;text-align:center;">
-                      <p style="margin:0;font-size:12px;color:#9ca3af;line-height:1.6;">
-                        This email was sent by <strong>BGC Event Management System</strong>.<br>
-                        If you have questions, contact your system administrator.
-                      </p>
-                    </td>
-                  </tr>
-
-                </table>
-                <!-- /Card -->
-
-              </td>
-            </tr>
-          </table>
-
-        </body>
-        </html>
-        """.formatted(
-        BRAND_COLOR, // header background
-        BRAND_DARK, // h1 color
-        firstName, // greeting
-        resetLink, // button href
-        BRAND_COLOR, // button background
-        TOKEN_EXPIRY_MINUTES,
-        BRAND_COLOR, // raw link color
-        resetLink // raw link text
-    );
-  }
-
-  // ── Plain-text fallback (for clients that block HTML) ─────────────────
-
-  private String buildPlainText(String firstName, String resetLink) {
-    return """
-        Hello %s,
-
-        We received a request to reset your BGC Event account password.
-
-        Click the link below to set a new password (valid for %d minutes):
-
-        %s
-
-        If you did not request a password reset, please ignore this email.
-        Your password will remain unchanged.
-
-        — BGC Event Management System
-        """.formatted(firstName, TOKEN_EXPIRY_MINUTES, resetLink);
-  }
+    /** Plain-text fallback — all strings from MessageSource */
+    private String buildPlainText(String firstName, String resetLink, Locale locale) {
+        String greeting = messageSource.getMessage("email.reset.greeting", null, locale);
+        String intro = messageSource.getMessage("email.reset.intro", null, locale);
+        String expiry = messageSource.getMessage("email.reset.expiry",
+                new Object[] { TOKEN_EXPIRY_MINUTES }, locale);
+        return greeting + " " + firstName + ",\n\n"
+                + intro + "\n\n"
+                + resetLink + "\n\n"
+                + expiry + "\n\n"
+                + "— BGC Event Management System";
+    }
 }
