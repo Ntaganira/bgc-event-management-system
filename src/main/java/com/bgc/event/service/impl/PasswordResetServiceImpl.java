@@ -54,7 +54,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     @Value("${app.base-url:http://localhost:8080}")
     private String baseUrl;
 
-    @Value("${spring.mail.username:bgcevent@gmail.com}")
+    @Value("${spring.mail.username:ntaganira71@gmail.com}")
     private String fromEmail;
 
     public PasswordResetServiceImpl(
