@@ -106,8 +106,11 @@
         <div th:if="${successMsg}" class="flash flash-success" th:text="${successMsg}"></div>
         <div th:if="${errorMsg}"   class="flash flash-error"   th:text="${errorMsg}"></div>
 
-        <!-- Page content -->
-        <div th:replace="${content}"></div>
+        <div class="main-content">
+            <!-- Page content -->
+            <div th:replace="${content}"></div>
+        </div>
+
     </div>
 </div>
 
