@@ -12,6 +12,90 @@
     <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
+
+<!-- ═══ NAV PROGRESS BAR (top line, fires on every link click) ═══ -->
+<div id="nav-loader"></div>
+
+<!-- ═══ PAGE SKELETON OVERLAY (dismissed on DOMContentLoaded) ════ -->
+<div id="page-skeleton" aria-hidden="true">
+  <!-- Fake topbar -->
+  <div class="sk-topbar">
+    <span class="skeleton skeleton-w25" style="height:28px;border-radius:6px;"></span>
+    <span style="flex:1"></span>
+    <span class="skeleton skeleton-avatar"></span>
+    <span class="skeleton skeleton-w25" style="height:14px;"></span>
+  </div>
+  <!-- Fake body -->
+  <div class="sk-body">
+    <!-- Fake sidebar -->
+    <div class="sk-sidebar">
+      <span class="skeleton skeleton-w75" style="height:16px;"></span>
+      <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
+      <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
+      <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
+      <span class="skeleton skeleton-w60" style="height:14px;margin-top:8px;"></span>
+      <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
+      <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
+    </div>
+    <!-- Fake content -->
+    <div class="sk-content">
+      <!-- Fake stat cards -->
+      <div class="stats-grid">
+        <div class="skeleton-stat-card">
+          <span class="skeleton sk-icon"></span>
+          <div class="sk-info">
+            <span class="skeleton skeleton-title"></span>
+            <span class="skeleton skeleton-text skeleton-w60"></span>
+          </div>
+        </div>
+        <div class="skeleton-stat-card">
+          <span class="skeleton sk-icon"></span>
+          <div class="sk-info">
+            <span class="skeleton skeleton-title"></span>
+            <span class="skeleton skeleton-text skeleton-w60"></span>
+          </div>
+        </div>
+        <div class="skeleton-stat-card">
+          <span class="skeleton sk-icon"></span>
+          <div class="sk-info">
+            <span class="skeleton skeleton-title"></span>
+            <span class="skeleton skeleton-text skeleton-w60"></span>
+          </div>
+        </div>
+        <div class="skeleton-stat-card">
+          <span class="skeleton sk-icon"></span>
+          <div class="sk-info">
+            <span class="skeleton skeleton-title"></span>
+            <span class="skeleton skeleton-text skeleton-w60"></span>
+          </div>
+        </div>
+      </div>
+      <!-- Fake card with table rows -->
+      <div class="card" style="padding:20px;">
+        <span class="skeleton skeleton-title skeleton-w40"></span>
+        <div class="skeleton-row">
+          <span class="skeleton skeleton-w25" style="height:14px;"></span>
+          <span class="skeleton skeleton-w40" style="height:14px;"></span>
+          <span class="skeleton skeleton-w25" style="height:14px;"></span>
+          <span class="skeleton skeleton-badge"></span>
+        </div>
+        <div class="skeleton-row">
+          <span class="skeleton skeleton-w40" style="height:14px;"></span>
+          <span class="skeleton skeleton-w25" style="height:14px;"></span>
+          <span class="skeleton skeleton-w40" style="height:14px;"></span>
+          <span class="skeleton skeleton-badge"></span>
+        </div>
+        <div class="skeleton-row">
+          <span class="skeleton skeleton-w25" style="height:14px;"></span>
+          <span class="skeleton skeleton-w60" style="height:14px;"></span>
+          <span class="skeleton skeleton-w25" style="height:14px;"></span>
+          <span class="skeleton skeleton-badge"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="app-wrapper">
 
     <!-- ═══ SIDEBAR ═══ -->

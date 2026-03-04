@@ -8,6 +8,9 @@ import com.bgc.event.entity.User;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 public interface EventService {
     Event create(EventDto dto, User creator);
 
@@ -54,4 +57,6 @@ public interface EventService {
      * Get total attendees count across all events (for dashboard stats)
      */
     long getTotalAttendanceCount();
+
+    Page<Event> findPaginated(String search, Pageable pageable);
 }

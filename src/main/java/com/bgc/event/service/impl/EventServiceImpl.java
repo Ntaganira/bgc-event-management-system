@@ -17,6 +17,9 @@ import com.bgc.event.entity.User;
 import com.bgc.event.repository.EventRepository;
 import com.bgc.event.service.EventService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +37,6 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private static final String[] COLORS = {"#3b82f6","#22c55e","#f59e0b","#8b5cf6","#ef4444","#06b6d4"};
-    private int colorIndex = 0;
 
     @Override
     public Event create(EventDto dto, User creator) {
@@ -141,5 +143,12 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findAll().stream() // Now safe due to EntityGraph
                 .mapToLong(event -> event.getAttendanceRecords().size())
                 .sum();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Event> findPaginated(String search, Pageable pageable) {
+        return eventRepository.findByTitleOrLocationContaining(
+            (search == null || search.isBlank()) ? null : search, pageable);
     }
 }

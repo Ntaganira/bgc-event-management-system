@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Reusable pagination fragment.
+
+  Usage:
+    <div th:replace="~{fragments/pagination :: pagination(${page}, '/events', 'search=' + ${search})}"></div>
+
+  Parameters:
+    page      — Spring Data Page<T> object
+    baseUrl   — the list URL  e.g. /events
+    extraParams — additional query params to preserve  e.g. 'search=foo'  (pass '' if none)
+-->
+<nav th:fragment="pagination(page, baseUrl, extraParams)"
+     th:if="${page.totalPages > 1}"
+     class="pagination-nav" aria-label="Pagination">
+
+  <div class="pagination-info">
+    <span th:text="#{pagination.showing(
+        ${page.number * page.size + 1},
+        ${T(java.lang.Math).min((page.number + 1) * page.size, page.totalElements)},
+        ${page.totalElements})}">
+      Showing 1–10 of 42
+    </span>
+  </div>
+
+  <div class="pagination-controls">
+
+    <!-- Previous -->
+    <a th:if="${!page.first}"
+       th:href="${baseUrl + '?page=' + (page.number - 1) + (extraParams != '' ? '&' + extraParams : '')}"
+       class="pg-btn" aria-label="Previous">&#8592;</a>
+    <span th:if="${page.first}" class="pg-btn pg-disabled" aria-disabled="true">&#8592;</span>
+
+    <!-- Page numbers — show window of 5 around current -->
+    <th:block th:with="
+        start=${T(java.lang.Math).max(0, page.number - 2)},
+        end=${T(java.lang.Math).min(page.totalPages - 1, page.number + 2)}">
+
+      <!-- First page + ellipsis if needed -->
+      <th:block th:if="${start > 0}">
+        <a th:href="${baseUrl + '?page=0' + (extraParams != '' ? '&' + extraParams : '')}"
+           class="pg-btn">1</a>
+        <span th:if="${start > 1}" class="pg-ellipsis">…</span>
+      </th:block>
+
+      <!-- Window pages -->
+      <th:block th:each="i : ${#numbers.sequence(start, end)}">
+        <a th:if="${i != page.number}"
+           th:href="${baseUrl + '?page=' + i + (extraParams != '' ? '&' + extraParams : '')}"
+           th:text="${i + 1}"
+           class="pg-btn">1</a>
+        <span th:if="${i == page.number}"
+              th:text="${i + 1}"
+              class="pg-btn pg-active" aria-current="page">1</span>
+      </th:block>
+
+      <!-- Last page + ellipsis if needed -->
+      <th:block th:if="${end < page.totalPages - 1}">
+        <span th:if="${end < page.totalPages - 2}" class="pg-ellipsis">…</span>
+        <a th:href="${baseUrl + '?page=' + (page.totalPages - 1) + (extraParams != '' ? '&' + extraParams : '')}"
+           th:text="${page.totalPages}"
+           class="pg-btn">N</a>
+      </th:block>
+
+    </th:block>
+
+    <!-- Next -->
+    <a th:if="${!page.last}"
+       th:href="${baseUrl + '?page=' + (page.number + 1) + (extraParams != '' ? '&' + extraParams : '')}"
+       class="pg-btn" aria-label="Next">&#8594;</a>
+    <span th:if="${page.last}" class="pg-btn pg-disabled" aria-disabled="true">&#8594;</span>
+
+  </div>
+</nav>
+
+</body>
+</html>

@@ -91,4 +91,10 @@ public class User {
     public String getFullName() {
         return firstName + " " + lastName;
     }
+
+    public String getOfficeName() {
+        if (office != null) return office.getName();
+        if (branch != null && !branch.isBlank()) return branch;
+        return "—";
+    }
 }

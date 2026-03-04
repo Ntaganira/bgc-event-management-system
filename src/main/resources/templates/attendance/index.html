@@ -1,73 +1,88 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head><title>Attendance</title></head>
+
+<head>
+  <title>Attendance</title>
+</head>
+
 <body>
-<div th:replace="~{fragments/layout :: layout(~{::section#content}, #{attendance.title})}">
-<section id="content">
-<div class="content">
-  <h2 th:text="#{attendance.title}">Attendance</h2>
-  <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
-  <div th:if="${errorMsg}"   class="alert alert-danger"  th:text="${errorMsg}"></div>
-
-  <div class="dashboard-grid">
-
-    <!-- QR Check-in -->
-    <div class="card">
-      <h3 class="card-title" th:text="#{attendance.qr}">QR Code Check-In</h3>
-      <form th:action="@{/attendance/scan-qr}" method="post" class="auth-form">
-        <div class="form-group">
-          <label th:text="#{attendance.qr.label}">QR Value</label>
-          <input type="text" name="qrCodeValue" class="form-control"
-                 th:placeholder="#{attendance.qr.placeholder}" required>
+  <div th:replace="~{fragments/layout :: layout(~{::section#content}, #{attendance.title})}">
+    <section id="content">
+      <div class="content">
+        <div class="page-header">
+          <h2 th:text="#{attendance.title}">Attendance</h2>
+          <div class="page-actions">
+            <a th:href="@{/export/attendance/excel}" class="btn btn-outline export-btn">
+              📊 <span th:text="#{export.excel}">Excel</span>
+            </a>
+            <a th:href="@{/export/attendance/pdf}" class="btn btn-outline export-btn">
+              📄 <span th:text="#{export.pdf}">PDF</span>
+            </a>
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary" th:text="#{attendance.qr.submit}">Submit</button>
-      </form>
-    </div>
+        <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+        <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
 
-    <!-- Manual Check-in -->
-    <div class="card">
-      <h3 class="card-title" th:text="#{attendance.manual}">Manual Check-In</h3>
-      <form th:action="@{/attendance/mark-code}" method="post" class="auth-form">
-        <div class="form-group">
-          <label th:text="#{attendance.manual.select}">Select Event</label>
-          <select name="eventId" class="form-control" required>
-            <option value="" th:text="#{attendance.manual.placeholder}">-- Choose --</option>
-            <option th:each="event : ${events}"
-                    th:value="${event.id}"
+        <div class="dashboard-grid">
+
+          <!-- QR Check-in -->
+          <div class="card">
+            <h3 class="card-title" th:text="#{attendance.qr}">QR Code Check-In</h3>
+            <form th:action="@{/attendance/scan-qr}" method="post" class="auth-form">
+              <div class="form-group">
+                <label th:text="#{attendance.qr.label}">QR Value</label>
+                <input type="text" name="qrCodeValue" class="form-control" th:placeholder="#{attendance.qr.placeholder}"
+                  required>
+              </div>
+              <button type="submit" class="btn btn-primary" th:text="#{attendance.qr.submit}">Submit</button>
+            </form>
+          </div>
+
+          <!-- Manual Check-in -->
+          <div class="card">
+            <h3 class="card-title" th:text="#{attendance.manual}">Manual Check-In</h3>
+            <form th:action="@{/attendance/mark-code}" method="post" class="auth-form">
+              <div class="form-group">
+                <label th:text="#{attendance.manual.select}">Select Event</label>
+                <select name="eventId" class="form-control" required>
+                  <option value="" th:text="#{attendance.manual.placeholder}">-- Choose --</option>
+                  <option th:each="event : ${events}" th:value="${event.id}"
                     th:text="${event.title + ' — ' + #temporals.format(event.startDateTime,'dd MMM')}">Event</option>
-          </select>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary" th:text="#{attendance.manual.submit}">Check In</button>
+            </form>
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary" th:text="#{attendance.manual.submit}">Check In</button>
-      </form>
-    </div>
-  </div>
 
-  <!-- Attendance by Event -->
-  <div class="card" style="margin-top:24px;">
-    <h3 class="card-title" th:text="#{attendance.by.event}">Attendance by Event</h3>
-    <div th:if="${#lists.isEmpty(events)}" class="empty-state" th:text="#{event.none}">No events.</div>
-    <table class="table" th:if="${not #lists.isEmpty(events)}">
-      <thead><tr>
-        <th th:text="#{event.title}">Event</th>
-        <th th:text="#{event.startDate}">Date</th>
-        <th th:text="#{attendance.total}">Total</th>
-        <th th:text="#{common.actions}">Actions</th>
-      </tr></thead>
-      <tbody>
-        <tr th:each="event : ${events}">
-          <td th:text="${event.title}">Event</td>
-          <td th:text="${#temporals.format(event.startDateTime,'dd MMM yyyy')}">Date</td>
-          <td><span class="badge badge-blue" th:text="${event.attendanceRecords.size()}">0</span></td>
-          <td>
-            <a th:href="@{/attendance/event/{id}(id=${event.id})}"
-               class="btn btn-sm btn-outline">Details</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+        <!-- Attendance by Event -->
+        <div class="card" style="margin-top:24px;">
+          <h3 class="card-title" th:text="#{attendance.by.event}">Attendance by Event</h3>
+          <div th:if="${#lists.isEmpty(events)}" class="empty-state" th:text="#{event.none}">No events.</div>
+          <table class="table" th:if="${not #lists.isEmpty(events)}">
+            <thead>
+              <tr>
+                <th th:text="#{event.title}">Event</th>
+                <th th:text="#{event.startDate}">Date</th>
+                <th th:text="#{attendance.total}">Total</th>
+                <th th:text="#{common.actions}">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="event : ${events}">
+                <td th:text="${event.title}">Event</td>
+                <td th:text="${#temporals.format(event.startDateTime,'dd MMM yyyy')}">Date</td>
+                <td><span class="badge badge-blue" th:text="${event.attendanceRecords.size()}">0</span></td>
+                <td>
+                  <a th:href="@{/attendance/event/{id}(id=${event.id})}" class="btn btn-sm btn-outline">Details</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
-</section>
-</div>
 </body>
+
 </html>
