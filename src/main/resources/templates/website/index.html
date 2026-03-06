@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Hone</title>
+</head>
+
+<body>
+    <div th:replace="~{website/layout :: layout(~{::section#content}, #{dashboard.title})}">
+        <section id="content">
+
+            <!-- ════ HERO ════ -->
+            <section class="home-hero">
+                <div class="home-hero-bg"></div>
+                <div class="home-hero-overlay"></div>
+                <div class="home-hero-content animate-slide-up">
+                    <span class="hero-badge">BCC Global Congress 2026</span>
+                    <h1>BCC Global Congress<br><span class="gold">(BGC) 2026</span></h1>
+                    <p class="subtitle">Bible Communication Center Global Congress</p>
+                    <p class="verse">"So I prophesied as he commanded me, and breath entered them; they came to life and
+                        stood up on their feet—a vast army." (Ezekiel 37:10)</p>
+                    <div class="hero-btns">
+                        <a href="register.html" class="btn-hero-primary">Register Now</a>
+                        <a href="agenda.html" class="btn-hero-outline">View Agenda</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════ INFO STRIP ════ -->
+            <section class="info-strip">
+                <div class="info-strip-inner">
+                    <div class="info-item animate-slide-up delay-1">
+                        <div class="info-icon">📅</div>
+                        <p class="info-label">Date</p>
+                        <p class="info-value">October 15–17, 2026</p>
+                    </div>
+                    <div class="info-item animate-slide-up delay-2">
+                        <div class="info-icon">📍</div>
+                        <p class="info-label">Location</p>
+                        <p class="info-value">Kigali, Rwanda</p>
+                    </div>
+                    <div class="info-item animate-slide-up delay-3">
+                        <div class="info-icon">🏢</div>
+                        <p class="info-label">Venue</p>
+                        <p class="info-value">ERC Masoro</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════ WHY ATTEND ════ -->
+            <section class="section section-gray">
+                <div class="container-lg">
+                    <div class="section-header">
+                        <h2>Why Attend</h2>
+                        <p>Join Bible Communication Center Global Congress, why?</p>
+                    </div>
+                    <div class="why-grid">
+                        <div class="why-card animate-slide-up delay-1">
+                            <div class="why-icon">👤</div>
+                            <h3>Expert Speaker</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor et dolore
+                                magna aliqua.</p>
+                        </div>
+                        <div class="why-card animate-slide-up delay-2">
+                            <div class="why-icon">📋</div>
+                            <h3>Comprehensive Agenda</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor et dolore
+                                magna aliqua.</p>
+                        </div>
+                        <div class="why-card animate-slide-up delay-3">
+                            <div class="why-icon">🌐</div>
+                            <h3>Global Networking</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor et dolore
+                                magna aliqua.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════ AGENDA PREVIEW ════ -->
+            <section class="section section-white">
+                <div class="container-lg">
+                    <div class="section-header">
+                        <h2>Conference Agenda</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                            labore et dolore magna aliqua.</p>
+                    </div>
+
+                    <div class="day-tabs" id="home-tabs"></div>
+                    <div class="agenda-list" id="home-agenda"></div>
+                </div>
+            </section>
+
+            <!-- ════ FEATURED SPEAKERS ════ -->
+            <section class="section section-gray">
+                <div class="container-lg">
+                    <div class="section-header">
+                        <h2>Featured Speakers</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor</p>
+                    </div>
+                    <div class="speakers-grid" id="home-speakers"></div>
+                </div>
+            </section>
+
+            <!-- ════ CTA ════ -->
+            <section class="cta-banner">
+                <h2>JOIN BCC GLOBAL CONGRESS 2026</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                    et dolore magna aliqua.</p>
+                <a href="register.html" class="btn-cta">Register Now</a>
+            </section>
+
+        </section>
+    </div>
+</body>
+
+</html>

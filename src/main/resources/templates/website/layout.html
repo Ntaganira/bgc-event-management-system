@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  th:fragment="layout(content, pageTitle)">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title th:text="${pageTitle} + ' | BGC Event'">BGC Event</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <!-- ═══ NAV PROGRESS BAR (top line, fires on every link click) ═══ -->
+    <div id="nav-loader"></div>
+
+    <!-- ═══ PAGE SKELETON OVERLAY (dismissed on DOMContentLoaded) ════ -->
+    <div id="page-skeleton" aria-hidden="true">
+      <!-- Fake topbar -->
+      <div class="sk-topbar">
+        <span class="skeleton skeleton-w25" style="height:28px;border-radius:6px;"></span>
+        <span style="flex:1"></span>
+        <span class="skeleton skeleton-avatar"></span>
+        <span class="skeleton skeleton-w25" style="height:14px;"></span>
+      </div>
+      <!-- Fake body -->
+      <div class="sk-body">
+        <!-- Fake sidebar -->
+        <div class="sk-sidebar">
+          <span class="skeleton skeleton-w75" style="height:16px;"></span>
+          <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
+          <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
+          <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
+          <span class="skeleton skeleton-w60" style="height:14px;margin-top:8px;"></span>
+          <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
+          <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
+        </div>
+        <!-- Fake content -->
+        <div class="sk-content">
+          <!-- Fake stat cards -->
+          <div class="stats-grid">
+            <div class="skeleton-stat-card">
+              <span class="skeleton sk-icon"></span>
+              <div class="sk-info">
+                <span class="skeleton skeleton-title"></span>
+                <span class="skeleton skeleton-text skeleton-w60"></span>
+              </div>
+            </div>
+            <div class="skeleton-stat-card">
+              <span class="skeleton sk-icon"></span>
+              <div class="sk-info">
+                <span class="skeleton skeleton-title"></span>
+                <span class="skeleton skeleton-text skeleton-w60"></span>
+              </div>
+            </div>
+            <div class="skeleton-stat-card">
+              <span class="skeleton sk-icon"></span>
+              <div class="sk-info">
+                <span class="skeleton skeleton-title"></span>
+                <span class="skeleton skeleton-text skeleton-w60"></span>
+              </div>
+            </div>
+            <div class="skeleton-stat-card">
+              <span class="skeleton sk-icon"></span>
+              <div class="sk-info">
+                <span class="skeleton skeleton-title"></span>
+                <span class="skeleton skeleton-text skeleton-w60"></span>
+              </div>
+            </div>
+          </div>
+          <!-- Fake card with table rows -->
+          <div class="card" style="padding:20px;">
+            <span class="skeleton skeleton-title skeleton-w40"></span>
+            <div class="skeleton-row">
+              <span class="skeleton skeleton-w25" style="height:14px;"></span>
+              <span class="skeleton skeleton-w40" style="height:14px;"></span>
+              <span class="skeleton skeleton-w25" style="height:14px;"></span>
+              <span class="skeleton skeleton-badge"></span>
+            </div>
+            <div class="skeleton-row">
+              <span class="skeleton skeleton-w40" style="height:14px;"></span>
+              <span class="skeleton skeleton-w25" style="height:14px;"></span>
+              <span class="skeleton skeleton-w40" style="height:14px;"></span>
+              <span class="skeleton skeleton-badge"></span>
+            </div>
+            <div class="skeleton-row">
+              <span class="skeleton skeleton-w25" style="height:14px;"></span>
+              <span class="skeleton skeleton-w60" style="height:14px;"></span>
+              <span class="skeleton skeleton-w25" style="height:14px;"></span>
+              <span class="skeleton skeleton-badge"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ NAVBAR ════ -->
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <a th:href="@{/index}" class="navbar-logo">
+          <img src="bcc_logo.png" alt="BCC Logo" onerror="this.style.display='none'" />
+        </a>
+        <ul class="nav-links">
+          <li><a th:href="@{/index}" class="active">Home</a></li>
+          <li><a th:href="@{/agenda}">Agenda</a></li>
+          <li><a th:href="@{/speaker}">Speaker</a></li>
+        </ul>
+        <a th:href="@{/register}" class="btn-nav-cta">Register Now</a>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+      <div class="mobile-menu" id="mobile-menu">
+        <a th:href="@{/index}">Home</a>
+        <a th:href="@{/agenda}">Agenda</a>
+        <a th:href="@{/speaker}">Speaker</a>
+        <a th:href="@{/register}" class="btn-mobile-cta">Register Now</a>
+      </div>
+    </nav>
+
+    <main>
+       <div th:replace="${content}"></div>
+    </main>
+
+    <!-- ════ FOOTER ════ -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <h4>BCC Global Congress (BGC) 2026</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua.</p>
+          </div>
+          <div class="footer-col">
+            <h4>Contact</h4>
+            <ul>
+              <li><strong>Email:</strong> info@bccglobalcongress.org</li>
+              <li><strong>Phone:</strong> +250 780 000 000</li>
+              <li><strong>Location:</strong> Kigali, Rwanda</li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Quick Link</h4>
+            <ul>
+              <li><a th:href="@{/agenda}">Agenda</a></li>
+              <li><a th:href="@{/speaker}">Speaker</a></li>
+              <li><a th:href="@{/register}">Registration</a></li>
+              <li><a href="login.html">Login</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">© 2026 BCC Global Congress (BGC). All rights reserved.</div>
+      </div>
+    </footer>
+
+  </div>
+</body>
+
+<script th:src="@{/js/data.js}"></script>
+<script th:src="@{/js/components.js}"></script>
+<script>
+  // Navbar hamburger
+  const ham = document.getElementById('hamburger');
+  const mob = document.getElementById('mobile-menu');
+  ham.addEventListener('click', () => {
+    ham.classList.toggle('open');
+    mob.classList.toggle('open');
+  });
+
+  // Render home agenda tabs + cards
+  const tabsEl = document.getElementById('home-tabs');
+  const agendaEl = document.getElementById('home-agenda');
+  let activeDay = Object.keys(agendaData)[0];
+
+  function renderHomeTabs() {
+    tabsEl.innerHTML = Object.keys(agendaData).map(day =>
+      `<button class="day-tab ${day === activeDay ? 'active' : ''}" data-day="${day}">${day}</button>`
+    ).join('');
+    tabsEl.querySelectorAll('.day-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeDay = btn.dataset.day;
+        renderHomeTabs();
+        renderHomeAgenda();
+      });
+    });
+  }
+
+  function renderHomeAgenda() {
+    agendaEl.innerHTML = agendaData[activeDay].map(item => agendaCard(item)).join('');
+  }
+
+  renderHomeTabs();
+  renderHomeAgenda();
+
+  // Render speakers
+  document.getElementById('home-speakers').innerHTML =
+    speakers.map(s => speakerCard(s)).join('');
+</script>
+</body>
+
+</html>

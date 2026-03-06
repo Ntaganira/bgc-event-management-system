@@ -37,18 +37,18 @@ public class AuthController {
     private final BccOfficeService officeService;
     private final MessageSource messageSource;
 
-    @GetMapping("/login")
-    public String loginPage(@RequestParam(required = false) String error,
-            @RequestParam(required = false) String logout,
-            Model model, Locale locale) {
-        if (error != null)
-            model.addAttribute("errorMsg",
-                    messageSource.getMessage("auth.login.error", null, locale));
-        if (logout != null)
-            model.addAttribute("logoutMsg",
-                    messageSource.getMessage("auth.login.logout", null, locale));
-        return "auth/login";
-    }
+    // @GetMapping("/login")
+    // public String loginPage(@RequestParam(required = false) String error,
+    //         @RequestParam(required = false) String logout,
+    //         Model model, Locale locale) {
+    //     if (error != null)
+    //         model.addAttribute("errorMsg",
+    //                 messageSource.getMessage("auth.login.error", null, locale));
+    //     if (logout != null)
+    //         model.addAttribute("logoutMsg",
+    //                 messageSource.getMessage("auth.login.logout", null, locale));
+    //     return "auth/login";
+    // }
 
     @GetMapping("/register")
     public String registerPage(Model model) {
