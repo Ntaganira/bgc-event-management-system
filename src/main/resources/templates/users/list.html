@@ -11,22 +11,21 @@
       <div class="content">
 
         <div class="page-header">
-          <h2 th:text="#{user.title}">Users</h2>
+
+          <!-- Search -->
+          <form th:action="@{/users}" method="get" class="search-bar" style="margin-bottom:16px;">
+            <input type="text" name="search" th:value="${search}" th:placeholder="#{common.search}" autocomplete="off">
+            <button type="submit" class="btn btn-outline" th:text="#{common.search}">Search</button>
+            <a th:if="${search != ''}" th:href="@{/users}" class="btn btn-outline" th:text="#{common.clear}">Clear</a>
+          </form>
+
           <div class="page-actions">
-            <a th:href="@{/export/users/excel}" class="btn btn-outline export-btn">📊 <span
-                th:text="#{export.excel}">Excel</span></a>
-            <a th:href="@{/export/users/pdf}" class="btn btn-outline export-btn">📄 <span
-                th:text="#{export.pdf}">PDF</span></a>
+            <a th:href="@{/export/users/excel}" class="btn btn-outline export-btn"><i class="fas fa-file-excel"
+                style="color: #0f172a;"></i> <span th:text="#{export.excel}">Excel</span></a>
+            <a th:href="@{/export/users/pdf}" class="btn btn-outline export-btn"><i class="fas fa-file-pdf"
+                style="color: #0f172a;"></i> <span th:text="#{export.pdf}">PDF</span></a>
           </div>
         </div>
-
-        <!-- Search -->
-        <form th:action="@{/users}" method="get" class="search-bar" style="margin-bottom:16px;">
-          <input type="text" name="search" th:value="${search}" th:placeholder="#{common.search}" autocomplete="off">
-          <button type="submit" class="btn btn-outline" th:text="#{common.search}">Search</button>
-          <a th:if="${search != ''}" th:href="@{/users}" class="btn btn-outline" th:text="#{common.clear}">Clear</a>
-        </form>
-
         <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
 
         <div class="card">

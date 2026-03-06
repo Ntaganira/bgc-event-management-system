@@ -18,6 +18,9 @@ import com.bgc.event.repository.RoleRepository;
 import com.bgc.event.repository.UserRepository;
 import com.bgc.event.service.UserService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,4 +125,16 @@ public class UserServiceImpl implements UserService {
     public long count() {
         return userRepository.count();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<User> findPaginated(String search, Pageable pageable) {
+        if (search == null || search.isBlank()) {
+            return userRepository.findAllByOrderByCreatedAtDesc(pageable);
+        }
+        return userRepository
+            .findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                search, search, search, pageable);
+    }
+    
 }

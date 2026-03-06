@@ -21,9 +21,9 @@
         
           <div class="page-actions">
             <a th:href="@{/events/calendar}" class="btn btn-outline" th:text="#{event.calendar}">Calendar</a>
-            <a th:href="@{/export/events/excel}" class="btn btn-outline export-btn">📊 <span
+            <a th:href="@{/export/events/excel}" class="btn btn-outline export-btn"><i class="fas fa-file-excel" style ="color: #0f172a;"></i> <span
                 th:text="#{export.excel}">Excel</span></a>
-            <a th:href="@{/export/events/pdf}" class="btn btn-outline export-btn">📄 <span
+            <a th:href="@{/export/events/pdf}" class="btn btn-outline export-btn"><i class="fas fa-file-pdf" style ="color: #0f172a;"></i> <span
                 th:text="#{export.pdf}">PDF</span></a>
             <a th:href="@{/events/new}" class="btn btn-primary" sec:authorize="hasAuthority('CREATE_EVENT')">+ <span
                 th:text="#{event.new}">New</span></a>

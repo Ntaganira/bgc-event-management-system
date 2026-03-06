@@ -27,14 +27,14 @@
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">👥</div>
+            <div class="stat-icon"><i class="fas fa-users" style ="color: #0f172a;"></i></div>
             <div class="stat-info">
               <span class="stat-value">0</span>
               <span class="stat-label" th:text="#{dashboard.totalUsers}">Users</span>
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">📊</div>
+            <div class="stat-icon"><i class="fas fa-file-excel" style ="color: #0f172a;"></i></div>
             <div class="stat-info">
               <span class="stat-value">0</span>
               <span class="stat-label" th:text="#{dashboard.upcomingEvents}">Upcoming</span>
@@ -70,7 +70,7 @@
           <!-- Chart 3: Attendance per event (horizontal bar) -->
           <div class="card chart-card">
             <div class="card-header">
-              <h3 class="card-title">📊 <span th:text="#{dashboard.chart.perEvent}">Attendance per Event</span></h3>
+              <h3 class="card-title"><i class="fas fa-file-excel" style ="color: #0f172a;"></i> <span th:text="#{dashboard.chart.perEvent}">Attendance per Event</span></h3>
             </div>
             <div id="chart-events" class="echart-box"></div>
           </div>

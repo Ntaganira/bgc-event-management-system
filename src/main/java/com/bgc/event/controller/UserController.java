@@ -15,6 +15,8 @@ import com.bgc.event.repository.RoleRepository;
 import com.bgc.event.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,11 +33,16 @@ public class UserController {
     private final UserService       userService;
     private final RoleRepository    roleRepository;
     private final MessageSource     messageSource;
+    private static final int PAGE_SIZE = 15;
 
     @GetMapping
     @PreAuthorize("hasAuthority('VIEW_USERS')")
-    public String listUsers(Model model) {
-        model.addAttribute("users", userService.findAll());
+    public String listUsers(@RequestParam(defaultValue = "0")  int    page,
+                            @RequestParam(defaultValue = "")   String search,
+                            Model model) {
+        var pageable  = PageRequest.of(page, PAGE_SIZE, Sort.by("createdAt").descending());
+        model.addAttribute("usersPage", userService.findPaginated(search, pageable));
+        model.addAttribute("search",    search);
         return "users/list";
     }
 

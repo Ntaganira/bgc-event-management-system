@@ -12,6 +12,8 @@ package com.bgc.event.repository;
 
 import com.bgc.event.entity.User;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -32,11 +34,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    /**
-     * Security lookup — JOIN FETCH roles and permissions in one query.
-     * Used exclusively by CustomUserDetailsService to avoid
-     * LazyInitializationException after the session closes.
-     */
+    @EntityGraph(attributePaths = "roles")
+    List<User> findAll();
+
+    @EntityGraph(attributePaths = "roles")
+    Optional<User> findById(Long id);
+
+    @EntityGraph(attributePaths = "roles")
     @Query("SELECT u FROM User u " +
             "LEFT JOIN FETCH u.roles r " +
             "LEFT JOIN FETCH r.permissions " +
@@ -44,8 +48,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailWithRolesAndPermissions(@Param("email") String email);
 
     @EntityGraph(attributePaths = "roles")
-    List<User> findAll();
+    Page<User> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+            String firstName, String lastName, String email, Pageable pageable);
 
     @EntityGraph(attributePaths = "roles")
-    Optional<User> findById(Long id);
+    Page<User> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }

@@ -5,6 +5,8 @@ import com.bgc.event.entity.User;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
     User register(RegisterDto dto);
@@ -26,4 +28,6 @@ public interface UserService {
     void removeRole(Long userId, Long roleId);
 
     long count();
+    
+    Page<User> findPaginated(String search, Pageable pageable);
 }
