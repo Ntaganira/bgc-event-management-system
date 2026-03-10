@@ -6,52 +6,144 @@
 <div th:replace="~{fragments/layout :: layout(~{::section#content}, ${event.title})}">
 <section id="content">
 <div class="content">
+
   <div class="page-header">
     <h2 th:text="${event.title}">Event</h2>
     <div class="page-actions">
       <a th:href="@{/events}" class="btn btn-outline">← <span th:text="#{common.back}">Back</span></a>
       <a th:href="@{/events/{id}/edit(id=${event.id})}"
-         class="btn btn-outline" sec:authorize="hasAuthority('EDIT_EVENT')" th:text="#{common.edit}">Edit</a>
+         class="btn btn-outline" sec:authorize="hasAuthority('EDIT_EVENT')"
+         th:text="#{common.edit}">Edit</a>
     </div>
   </div>
+
   <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+  <div th:if="${errorMsg}"   class="alert alert-danger"  th:text="${errorMsg}"></div>
 
-  <div class="dashboard-grid">
-    <div class="card">
-      <div class="detail-row">
-        <span class="detail-label" th:text="#{event.location}">Location</span>
-        <span th:text="${event.location ?: '—'}">—</span>
+  <div class="event-view-grid">
+
+    <!-- ── Left column: details + QR ── -->
+    <div class="ev-left">
+
+      <!-- Event details card -->
+      <div class="card">
+        <h3 class="card-title" th:text="#{event.details}">Event Details</h3>
+        <div class="detail-row">
+          <span class="detail-label" th:text="#{event.location}">Location</span>
+          <span th:text="${event.location ?: '—'}">—</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label" th:text="#{event.startDate}">Start</span>
+          <span th:text="${#temporals.format(event.startDateTime,'dd MMM yyyy HH:mm')}">—</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label" th:text="#{event.endDate}">End</span>
+          <span th:text="${#temporals.format(event.endDateTime,'dd MMM yyyy HH:mm')}">—</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label" th:text="#{event.attendance}">Attendance</span>
+          <span class="badge badge-blue" th:text="${attendanceCount}">0</span>
+        </div>
+        <div class="detail-row" th:if="${event.description}">
+          <span class="detail-label" th:text="#{event.description}">Description</span>
+          <span th:text="${event.description}">—</span>
+        </div>
       </div>
-      <div class="detail-row">
-        <span class="detail-label" th:text="#{event.startDate}">Start</span>
-        <span th:text="${#temporals.format(event.startDateTime,'dd MMM yyyy HH:mm')}">—</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label" th:text="#{event.endDate}">End</span>
-        <span th:text="${#temporals.format(event.endDateTime,'dd MMM yyyy HH:mm')}">—</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label" th:text="#{event.attendance}">Attendance</span>
-        <span th:text="${event.attendanceRecords.size()}">0</span>
-      </div>
-      <div class="detail-row" th:if="${event.description}">
-        <span class="detail-label" th:text="#{event.description}">Description</span>
-        <span th:text="${event.description}">—</span>
+
+      <!-- QR Code card -->
+      <div class="card" style="margin-top:16px;">
+        <h3 class="card-title" th:text="#{event.qrCode}">QR Code</h3>
+        <code style="display:block;word-break:break-all;font-size:12px;padding:10px;
+                     background:#f8fafc;border-radius:6px;margin-bottom:16px;"
+              th:text="${event.qrCodeValue}">uuid</code>
+        <form th:action="@{/attendance/mark-code}" method="post"
+              sec:authorize="hasAuthority('MARK_ATTENDANCE')">
+          <input type="hidden" name="eventId" th:value="${event.id}">
+          <button type="submit" class="btn btn-primary btn-full"
+                  th:text="#{event.checkIn}">Check In</button>
+        </form>
       </div>
     </div>
 
-    <div class="card" style="align-self:start;">
-      <h3 class="card-title" th:text="#{event.qrCode}">QR Code</h3>
-      <code style="display:block; word-break:break-all; font-size:12px; padding:10px;
-                   background:#f8fafc; border-radius:6px; margin-bottom:16px;"
-            th:text="${event.qrCodeValue}">uuid</code>
-      <form th:action="@{/attendance/mark-code}" method="post"
-            sec:authorize="hasAuthority('MARK_ATTENDANCE')">
-        <input type="hidden" name="eventId" th:value="${event.id}">
-        <button type="submit" class="btn btn-primary btn-full" th:text="#{event.checkIn}">Check In</button>
-      </form>
+    <!-- ── Right column: participants ── -->
+    <div class="ev-right">
+      <div class="card">
+        <div class="participants-header">
+          <h3 class="card-title" th:text="#{event.participants}">Participants</h3>
+        </div>
+
+        <!-- Participant list grouped by role -->
+        <div th:if="${#lists.isEmpty(participants)}" class="participant-empty">
+          <span>👤</span>
+          <p th:text="#{event.participants.none}">No participants assigned yet.</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(participants)}" class="participant-list">
+          <!-- Group by role using a simple iteration + role header trick -->
+          <div th:each="role : ${participantRoles}">
+            <div th:with="roleParticipants=${participants.?[#this.role == role.name()]}"
+                 th:if="${!roleParticipants.isEmpty()}">
+              <div class="participant-role-header">
+                <span th:text="${role.name()}"
+                      th:switch="${role.name()}">
+                  <span th:case="'PREACHER'">🎤 PREACHER</span>
+                  <span th:case="'MC'">🎙️ MC</span>
+                  <span th:case="'SPEAKER'">🗣️ SPEAKER</span>
+                  <span th:case="'WORSHIP'">🎵 WORSHIP</span>
+                  <span th:case="*">✨ OTHER</span>
+                </span>
+              </div>
+              <div th:each="p : ${roleParticipants}" class="participant-card">
+                <div class="pc-avatar"
+                     th:text="${#strings.substring(p.user.firstName,0,1) + #strings.substring(p.user.lastName,0,1)}">JD</div>
+                <div class="pc-info">
+                  <a th:href="@{/users/{id}(id=${p.user.id})}" class="pc-name"
+                     sec:authorize="hasAuthority('MANAGE_USERS')"
+                     th:text="${p.user.fullName}">Name</a>
+                  <span sec:authorize="!hasAuthority('MANAGE_USERS')"
+                        class="pc-name" th:text="${p.user.fullName}">Name</span>
+                  <span class="pc-title" th:if="${p.user.title}"
+                        th:text="${p.user.title}">Pastor</span>
+                  <span class="pc-note" th:if="${p.note}"
+                        th:text="${p.note}">Note</span>
+                </div>
+                <form th:action="@{/events/{eid}/participants/{pid}/remove(eid=${event.id},pid=${p.id})}"
+                      method="post" style="margin-left:auto;"
+                      sec:authorize="hasAuthority('EDIT_EVENT')">
+                  <button type="submit" class="pc-remove-btn" title="Remove">✕</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add participant form -->
+        <div class="add-participant-form" sec:authorize="hasAuthority('EDIT_EVENT')">
+          <div class="apf-title" th:text="#{event.participants.add}">Add Participant</div>
+          <form th:action="@{/events/{id}/participants/add(id=${event.id})}" method="post">
+            <div class="apf-row">
+              <select name="userId" class="filter-select" required>
+                <option value="" th:text="#{event.participants.selectUser}">Select user…</option>
+                <option th:each="u : ${allUsers}"
+                        th:value="${u.id}"
+                        th:text="${u.fullName + (u.title != null ? ' — ' + u.title : '')}">User</option>
+              </select>
+              <select name="role" class="filter-select" required>
+                <option value="" th:text="#{event.participants.selectRole}">Select role…</option>
+                <option th:each="r : ${participantRoles}" th:value="${r.name()}" th:text="${r.name()}">Role</option>
+              </select>
+              <input type="text" name="note" class="filter-input"
+                     th:placeholder="#{event.participants.notePlaceholder}" style="min-width:140px;">
+              <button type="submit" class="btn btn-primary"
+                      th:text="#{event.participants.addBtn}">Add</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
     </div>
-  </div>
+
+  </div><!-- /event-view-grid -->
 </div>
 </section>
 </div>

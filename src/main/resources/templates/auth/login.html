@@ -2,218 +2,392 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Hone</title>
-      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <title>Register</title>
 
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    <style>
+        /* ══════════════════════════════════════════════
+   REGISTER PAGE — paste at the bottom of styles.css
+   Replace the old .form-card rule with this one
+══════════════════════════════════════════════ */
 
-    html, body {
-      height: 100%;
-    }
+        /* MODIFIED — removed transform: translateY(-2.5rem) */
+        .form-card {
+            background: var(--white);
+            border-radius: var(--radius-3xl);
+            box-shadow: var(--shadow-xl);
+            padding: 2.5rem 1.75rem;
+        }
 
-    .login-wrap {
-              display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      max-width: 26rem;
-      animation: slideUp .45s cubic-bezier(.22,.68,0,1.2) both;
-    }
+        @media (min-width: 640px) {
+            .form-card {
+                padding: 3rem 3.5rem;
+            }
+        }
 
-    .login-card {
-      background: #ffffff;
-      border-radius: 1.25rem;
-      box-shadow: 0 6px 32px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
-      padding: 2.25rem 2.5rem 2rem;
-    }
+        /* ── NEW CLASSES BELOW ── */
 
-    /* Header */
-    .login-header {
-      text-align: center;
-      margin-bottom: 1.75rem;
-    }
+        @keyframes blobFloat {
 
-    .login-eyebrow {
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #1e3d6e;
-      margin-bottom: 0.45rem;
-    }
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
 
-    .login-divider {
-      width: 2.25rem;
-      height: 2px;
-      background: #1e3d6e;
-      margin: 0.45rem auto 0.85rem;
-      border-radius: 2px;
-    }
+            50% {
+                transform: translateY(-16px) scale(1.05);
+            }
+        }
 
-    .login-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      font-weight: 900;
-      color: #0d1b2e;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-    }
+        .register-layout {
+            max-width: var(--max-w);
+            margin: 0 auto;
+            display: grid;
+            gap: 4px;
+            grid-template-columns: 1fr 1fr;
+            align-items: start;
+        }
 
-    /* Fields */
-    .login-field {
-      margin-bottom: 1rem;
-    }
+        #page-register {
+            position: relative;
+            min-height: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 5rem 1.5rem 0rem 1.5rem;
+            color: var(--white);
+            overflow: hidden;
+            background: var(--navy-900);
+        }
 
-    .login-field label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #374151;
-      margin-bottom: 0.4rem;
-    }
+        .home-hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url(https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1400&q=80);
+            background-size: cover;
+            background-position: center;
+            opacity: .22;
+        }
 
-    .login-field input {
-      width: 100%;
-      padding: 0.65rem 0.9rem;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 0.5rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      color: #111827;
-      background: #ffffff;
-      outline: none;
-      transition: border-color .18s, box-shadow .18s;
-    }
+        .home-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(13, 27, 46, .92) 0%, rgba(30, 61, 110, .7) 100%);
+        }
 
-    .login-field input::placeholder { color: #b0b7c3; }
+        .register-description {
+            position: sticky;
+            top: 6rem;
+        }
 
-    .login-field input:focus {
-      border-color: #1e3d6e;
-      box-shadow: 0 0 0 3px rgba(30,61,110,0.08);
-    }
 
-    .login-field input.is-error { border-color: #f87171; }
-    .login-field input.is-error:focus {
-      border-color: #ef4444;
-      box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
-    }
+        .dot-grid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 130px;
+            background-image: radial-gradient(circle, rgba(30, 61, 110, .10) 1.2px, transparent 1.2px);
+            background-size: 16px 16px;
+        }
 
-    .login-err {
-      color: #ef4444;
-      font-size: 0.68rem;
-      margin-top: 0.25rem;
-      min-height: 0.9rem;
-    }
+        .desc-inner {
+            position: relative;
+            z-index: 1;
+        }
 
-    /* Button */
-    .btn-login {
-      width: 100%;
-      background: #1e3d6e;
-      color: #ffffff;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      margin-top: 1rem;
-      transition: background .18s, box-shadow .18s, transform .12s;
-      box-shadow: 0 3px 14px rgba(30,61,110,0.25);
-    }
+        .reg-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--navy-50);
+            border: 1px solid rgba(30, 61, 110, .2);
+            color: var(--navy-600);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.45rem 1rem;
+            border-radius: var(--radius-full);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
 
-    .btn-login:hover {
-      background: #16315a;
-      box-shadow: 0 5px 20px rgba(30,61,110,0.35);
-      transform: translateY(-1px);
-    }
+        .register-description h1 {
+            font-size: clamp(1.9rem, 3.5vw, 2.65rem);
+            font-weight: 900;
+            color: var(--gray-50);
+            margin-bottom: 1.2rem;
+            line-height: 1.15;
+        }
 
-    .btn-login:active { transform: translateY(0); }
+        .register-description h1 .gold {
+            color: var(--gray-50);
+        }
 
-    /* Footer links */
-    .login-links {
-      margin-top: 1.25rem;
-      text-align: center;
-    }
+        .desc-text {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            line-height: 1.85;
+            margin-bottom: 2rem;
+        }
 
-    .login-links p {
-      font-size: 0.75rem;
-      color: #9ca3af;
-      margin-bottom: 0.3rem;
-    }
+        .info-pills {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
 
-    .login-links a {
-      color: #1e3d6e;
-      font-weight: 700;
-      text-decoration: none;
-    }
+        .info-pill {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            padding: 0.8rem 1rem;
+            transition: box-shadow .2s, background .2s;
+        }
 
-    .login-links a:hover { text-decoration: underline; }
-  </style>
+        .info-pill:hover {
+            background: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+
+        .pill-icon {
+            width: 2.4rem;
+            height: 2.4rem;
+            flex-shrink: 0;
+            background: var(--navy-50);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .pill-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--gray-400);
+            margin-bottom: 0.12rem;
+        }
+
+        .pill-value {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        /* Fields */
+        .login-field {
+            margin-bottom: 1rem;
+        }
+
+        .login-field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.4rem;
+        }
+
+        .login-field input {
+            width: 100%;
+            padding: 0.65rem 0.9rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            color: #111827;
+            background: #ffffff;
+            outline: none;
+            transition: border-color .18s, box-shadow .18s;
+        }
+
+        .login-field input::placeholder {
+            color: #b0b7c3;
+        }
+
+        .login-field input:focus {
+            border-color: #1e3d6e;
+            box-shadow: 0 0 0 3px rgba(30, 61, 110, 0.08);
+        }
+
+        .login-field input.is-error {
+            border-color: #f87171;
+        }
+
+        .login-field input.is-error:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+        }
+
+        .login-err {
+            color: #ef4444;
+            font-size: 0.68rem;
+            margin-top: 0.25rem;
+            min-height: 0.9rem;
+        }
+
+        /* Button */
+        .btn-login {
+            width: 100%;
+            background: #1e3d6e;
+            color: #ffffff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background .18s, box-shadow .18s, transform .12s;
+            box-shadow: 0 3px 14px rgba(30, 61, 110, 0.25);
+        }
+
+        .btn-login:hover {
+            background: #16315a;
+            box-shadow: 0 5px 20px rgba(30, 61, 110, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        /* Footer links */
+        .login-links {
+            margin-top: 1.25rem;
+            text-align: center;
+        }
+
+        .login-links p {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-bottom: 0.3rem;
+        }
+
+        .login-links a {
+            color: #1e3d6e;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .login-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
     <div th:replace="~{website/layout :: layout(~{::section#content}, #{dashboard.title})}">
         <section id="content">
-            <div class="login-wrap">
-                <div class="login-card">
 
-                    <div class="login-header">
-                        <p class="login-eyebrow">BCC Global Congress</p>
-                        <div class="login-divider"></div>
-                        <h1 class="login-title">Login</h1>
+            <!-- REGISTER PAGE -->
+            <div id="page-register">
+
+                <div class="home-hero-bg"></div>
+                <div class="home-hero-overlay"></div>
+
+                <div class="register-layout">
+
+                    <!-- ════ LEFT: Description with blob background ════ -->
+                    <div class="register-description animate-slide-up">
+                        <div class="desc-bg">
+
+                            <!-- Content -->
+                            <div class="desc-inner">
+                                <h1 th:text="#{auth.login.title}"></h1>
+                                <p class="auth-subtitle" th:text="#{auth.login.subtitle}">Sign in to BGC Event</p>
+                                <p class="desc-text">
+                                    Join us for an extraordinary gathering of leaders, visionaries, and changemakers
+                                    from around the world. The BCC Global Congress 2026 is your opportunity to connect,
+                                    learn, and be inspired in the heart of Kigali, Rwanda.
+                                </p>
+
+                            </div><!-- /desc-inner -->
+
+                        </div><!-- /desc-bg -->
+                    </div><!-- /register-description -->
+
+                    <!-- ════ RIGHT: Form ════ -->
+                    <div class="animate-slide-up delay-1">
+
+                        <form th:action="@{/login}" method="post" class="auth-form">
+
+                            <div class="login-wrap">
+                                <div class="login-card">
+
+                                    <div class="login-header">
+                                        <p class="login-eyebrow">BCC Global Congress</p>
+                                        <div class="login-divider"></div>
+                                        <h1 class="login-title" th:text="#{auth.login.subtitle}">Login</h1>
+                                    </div>
+
+
+                                    <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
+                                    <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}">
+                                    </div>
+                                    <div th:if="${logoutMsg}" class="alert alert-info" th:text="${logoutMsg}"></div>
+
+                                    <div class="login-field">
+                                        <label th:text="#{auth.login.email}">Email</label>
+                                        <input type="email" name="username" class="form-control"
+                                            placeholder="you@example.com" required autofocus>
+                                        <p class="login-err" id="err-username"></p>
+                                    </div>
+
+                                    <div class="login-field" style="margin-bottom: 0;">
+                                        <label th:text="#{auth.login.password}">Password</label>
+                                        <input type="password" name="password" class="form-control"
+                                            placeholder="••••••••" required>
+                                        <p class="login-err" id="err-password"></p>
+                                    </div>
+
+                                    <div class="login-links" style="margin: 0;">
+                                        <p style="margin: 0; text-align: right;"><a th:text="#{auth.forgot.title}" th:href="@{/forgot-password}">Forgot
+                                            password?</a></p>
+                                    </div>
+
+                                    <button class="btn-login" th:text="#{auth.register.submit}"
+                                        onclick="handleLogin()">Login</button>
+
+                                    <div class="login-links">
+                                        <p>Don't have an account? <a href="/register">Register here</a></p>
+                                        <p><a href="/">← Back to Home</a></p>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+
+                        </form>
+                    </div><!-- /right column -->
+
+                </div><!-- /register-layout -->
+            </div><!-- /page-register -->
+
+            <!-- SUCCESS PAGE -->
+            <div id="page-success" class="hidden">
+                <div class="success-wrap">
+                    <div class="success-card animate-slide-up">
+                        <span class="emoji">🎉</span>
+                        <h2>Registration Complete!</h2>
+                        <p>Thank you, <strong id="success-name"></strong>! Your registration for BCC Global Congress
+                            2026 is confirmed. We look forward to seeing you in Kigali!</p>
+                        <a href="index.html" class="btn-back-home">Back to Home</a>
                     </div>
-
-                    <div class="login-field">
-                        <label for="username">User name</label>
-                        <input id="username" type="text" placeholder="Enter your username" />
-                        <p class="login-err" id="err-username"></p>
-                    </div>
-
-                    <div class="login-field">
-                        <label for="password">Password</label>
-                        <input id="password" type="password" placeholder="Enter Password" />
-                        <p class="login-err" id="err-password"></p>
-                    </div>
-
-                    <button class="btn-login" onclick="handleLogin()">Login</button>
-
-                    <div class="login-links">
-                        <p>Don't have an account? <a href="register.html">Register here</a></p>
-                        <p><a href="index.html">← Back to Home</a></p>
-                    </div>
-
                 </div>
             </div>
+
         </section>
     </div>
 </body>
-  <script>
-    function handleLogin() {
-      let valid = true;
-      ['username','password'].forEach(id => {
-        document.getElementById(id).classList.remove('is-error');
-        document.getElementById('err-'+id).textContent = '';
-      });
-      function setErr(id, msg) {
-        document.getElementById(id).classList.add('is-error');
-        document.getElementById('err-'+id).textContent = msg;
-        valid = false;
-      }
-      if (!document.getElementById('username').value.trim()) setErr('username','Username is required');
-      if (!document.getElementById('password').value.trim()) setErr('password','Password is required');
-      if (!valid) return;
-      window.location.href = 'index.html';
-    }
-    document.querySelectorAll('input').forEach(el =>
-      el.addEventListener('keydown', e => { if (e.key==='Enter') handleLogin(); })
-    );
-  </script>
+
 </html>

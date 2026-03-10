@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,19 +37,19 @@ import java.util.stream.Collectors;
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
-    private static final String[] COLORS = {"#3b82f6","#22c55e","#f59e0b","#8b5cf6","#ef4444","#06b6d4"};
+    private static final String[] COLORS = { "#3b82f6", "#22c55e", "#f59e0b", "#8b5cf6", "#ef4444", "#06b6d4" };
 
     @Override
     public Event create(EventDto dto, User creator) {
         Event event = Event.builder()
-            .title(dto.getTitle())
-            .description(dto.getDescription())
-            .location(dto.getLocation())
-            .startDateTime(dto.getStartDateTime())
-            .endDateTime(dto.getEndDateTime())
-            .qrCodeValue(UUID.randomUUID().toString())
-            .createdBy(creator)
-            .build();
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .location(dto.getLocation())
+                .startDateTime(dto.getStartDateTime())
+                .endDateTime(dto.getEndDateTime())
+                .qrCodeValue(UUID.randomUUID().toString())
+                .createdBy(creator)
+                .build();
         return eventRepository.save(event);
     }
 
@@ -92,16 +93,16 @@ public class EventServiceImpl implements EventService {
         DateTimeFormatter fmt = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         List<Event> events = eventRepository.findAll();
         return events.stream()
-            .map(e -> CalendarEventDto.builder()
-                .id(String.valueOf(e.getId()))
-                .title(e.getTitle())
-                .start(e.getStartDateTime().format(fmt))
-                .end(e.getEndDateTime().format(fmt))
-                .color(COLORS[(int)(e.getId() % COLORS.length)])
-                .extendedPropsLocation(e.getLocation())
-                .url("/events/" + e.getId())
-                .build())
-            .collect(Collectors.toList());
+                .map(e -> CalendarEventDto.builder()
+                        .id(String.valueOf(e.getId()))
+                        .title(e.getTitle())
+                        .start(e.getStartDateTime().format(fmt))
+                        .end(e.getEndDateTime().format(fmt))
+                        .color(COLORS[(int) (e.getId() % COLORS.length)])
+                        .extendedPropsLocation(e.getLocation())
+                        .url("/events/" + e.getId())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -132,9 +133,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @EntityGraph(attributePaths = "attendanceRecords")
     public int getAttendanceCount(Long eventId) {
-        return eventRepository.findById(eventId)
-                .map(event -> event.getAttendanceCount())
+        return eventRepository.findById(eventId).map(event -> event.getAttendanceRecords().size())
                 .orElse(0);
     }
 
@@ -149,6 +150,6 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public Page<Event> findPaginated(String search, Pageable pageable) {
         return eventRepository.findByTitleOrLocationContaining(
-            (search == null || search.isBlank()) ? null : search, pageable);
+                (search == null || search.isBlank()) ? null : search, pageable);
     }
 }

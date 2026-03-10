@@ -59,7 +59,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/register", "/login", "/forgot-password", "/reset-password", "/css/**", "/js/**",
-                    "/index", "/agenda", "/speaker",
+                    "/","/hone","/index", "/agenda", "/speaker",
                     "/images/**", "/h2-console/**", "/api/events/calendar"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")

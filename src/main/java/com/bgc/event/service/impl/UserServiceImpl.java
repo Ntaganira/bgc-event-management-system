@@ -11,6 +11,7 @@ package com.bgc.event.service.impl;
  */
 
 import com.bgc.event.dto.RegisterDto;
+import com.bgc.event.entity.BccOffice;
 import com.bgc.event.entity.Role;
 import com.bgc.event.entity.User;
 import com.bgc.event.repository.BccOfficeRepository;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +45,14 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(dto.getEmail()))
             throw new RuntimeException("Email already registered: " + dto.getEmail());
 
+        // Link to BCC office if selected
+        if (dto.getOfficeId() == null)
+            throw new RuntimeException("Please select a branch");
+
+        Optional<BccOffice> office = officeRepository.findById(dto.getOfficeId());
+
         var builder = User.builder()
+                .branch(office.get().getName())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .email(dto.getEmail())
@@ -53,13 +62,8 @@ public class UserServiceImpl implements UserService {
                 .returnDate(dto.getReturnDate())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .enabled(true)
-                .emailConfirmed(false);
-
-        // Link to BCC office if selected
-        if (dto.getOfficeId() != null) {
-            officeRepository.findById(dto.getOfficeId())
-                    .ifPresent(builder::office);
-        }
+                .emailConfirmed(false)
+                .office(office.orElse(null));
 
         User user = builder.build();
 
@@ -128,13 +132,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @EntityGraph(attributePaths = "office")
     public Page<User> findPaginated(String search, Pageable pageable) {
         if (search == null || search.isBlank()) {
             return userRepository.findAllByOrderByCreatedAtDesc(pageable);
         }
         return userRepository
-            .findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
-                search, search, search, pageable);
+                .findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                        search, search, search, pageable);
     }
-    
+
 }

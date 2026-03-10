@@ -19,7 +19,13 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String email;
+    private String phoneNumber;
     private String branch;
     private String title;
     private boolean enabled;
+    // Profile fields (all optional)
+    private String bio;
+    private String profilePicture;
+    private String linkedinUrl;
+    private String websiteUrl;
 }

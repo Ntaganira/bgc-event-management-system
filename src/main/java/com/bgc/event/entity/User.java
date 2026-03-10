@@ -97,4 +97,16 @@ public class User {
         if (branch != null && !branch.isBlank()) return branch;
         return "—";
     }
+
+    @Column(columnDefinition = "TEXT")
+    private String bio;
+
+    @Column(name = "profile_picture", length = 500)
+    private String profilePicture;
+
+    @Column(name = "linkedin_url", length = 500)
+    private String linkedinUrl;
+
+    @Column(name = "website_url", length = 500)
+    private String websiteUrl;
 }

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><title>Agenda</title></head>
+<body>
+<div th:replace="~{fragments/layout :: layout(~{::section#content}, #{agenda.title})}">
+<section id="content">
+<div class="content">
+
+  <!-- ═══ PAGE HEADER ════════════════════════════════════════════ -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title" th:text="#{agenda.title}">Agenda</h1>
+      <p class="page-sub" th:text="#{agenda.subtitle}">Public event agenda — Daily, Weekly &amp; Monthly</p>
+    </div>
+    <!-- Create event shortcut for authorised users -->
+    <div class="page-actions" sec:authorize="hasAuthority('CREATE_EVENT')">
+      <a th:href="@{/events/new}" class="btn btn-primary">
+        + <span th:text="#{event.new}">New Event</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ═══ TOOLBAR ═════════════════════════════════════════════════ -->
+  <div class="agenda-toolbar">
+
+    <!-- View switcher (Daily / Weekly / Monthly) -->
+    <div class="agenda-view-tabs">
+      <a th:href="@{/agenda(view='daily',   display=${display}, date=${date})}"
+         class="av-tab" th:classappend="${view == 'daily'}   ? ' active'">
+        <span th:text="#{agenda.view.daily}">Day</span>
+      </a>
+      <a th:href="@{/agenda(view='weekly',  display=${display}, date=${date})}"
+         class="av-tab" th:classappend="${view == 'weekly'}  ? ' active'">
+        <span th:text="#{agenda.view.weekly}">Week</span>
+      </a>
+      <a th:href="@{/agenda(view='monthly', display=${display}, date=${date})}"
+         class="av-tab" th:classappend="${view == 'monthly'} ? ' active'">
+        <span th:text="#{agenda.view.monthly}">Month</span>
+      </a>
+    </div>
+
+    <!-- Navigator (Prev / period label / Next / Today) -->
+    <div class="agenda-nav">
+      <a th:href="@{/agenda(view=${view}, display=${display}, date=${prevDate})}"
+         class="agenda-nav-btn" title="Previous">‹</a>
+
+      <span class="agenda-period-label">
+        <!-- Daily -->
+        <span th:if="${view == 'daily'}"
+              th:text="${#temporals.format(date, 'EEEE, dd MMMM yyyy')}">Mon, 27 Feb 2026</span>
+        <!-- Weekly -->
+        <span th:if="${view == 'weekly'}"
+              th:text="${#temporals.format(windowStart,'dd MMM')+' – '+#temporals.format(windowEnd,'dd MMM yyyy')}">
+          24 Feb – 02 Mar 2026
+        </span>
+        <!-- Monthly -->
+        <span th:if="${view == 'monthly'}"
+              th:text="${#temporals.format(date,'MMMM yyyy')}">February 2026</span>
+      </span>
+
+      <a th:href="@{/agenda(view=${view}, display=${display}, date=${nextDate})}"
+         class="agenda-nav-btn" title="Next">›</a>
+      <a th:href="@{/agenda(view=${view}, display=${display})}"
+         class="agenda-nav-today" th:text="#{agenda.today}">Today</a>
+    </div>
+
+    <!-- List / Calendar display toggle -->
+    <div class="agenda-display-toggle">
+      <a th:href="@{/agenda(view=${view}, display='list',     date=${date})}"
+         class="adt-btn" th:classappend="${display == 'list'}     ? ' active'" title="List view">
+        ☰
+      </a>
+      <a th:href="@{/agenda(view=${view}, display='calendar', date=${date})}"
+         class="adt-btn" th:classappend="${display == 'calendar'} ? ' active'" title="Calendar view">
+        📅
+      </a>
+    </div>
+
+  </div><!-- /toolbar -->
+
+  <!-- Event count badge -->
+  <div class="agenda-count-row">
+    <span class="agenda-count-badge">
+      <span th:text="${totalCount}">0</span>
+      <span th:text="#{agenda.events}">events</span>
+    </span>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       LIST DISPLAY
+  ═════════════════════════════════════════════════════════════ -->
+  <div th:if="${display == 'list'}">
+
+    <!-- Empty state -->
+    <div th:if="${#maps.isEmpty(byDay)}" class="agenda-empty">
+      <div class="agenda-empty-icon">📭</div>
+      <p th:text="#{agenda.noEvents}">No events scheduled for this period.</p>
+      <a th:href="@{/agenda(view=${view}, display='list')}"
+         class="btn btn-outline" th:text="#{agenda.backToday}">Back to Today</a>
+    </div>
+
+    <!-- Day groups -->
+    <div th:each="entry : ${byDay}" class="agenda-day-group">
+
+      <!-- Day header -->
+      <div class="adg-header"
+           th:classappend="${entry.key == today} ? ' adg-today'">
+        <div class="adg-day-num" th:text="${#temporals.format(entry.key,'dd')}">27</div>
+        <div class="adg-day-info">
+          <span class="adg-weekday" th:text="${#temporals.format(entry.key,'EEEE')}">Monday</span>
+          <span class="adg-month"   th:text="${#temporals.format(entry.key,'MMMM yyyy')}">February 2026</span>
+        </div>
+        <span th:if="${entry.key == today}" class="adg-today-pill" th:text="#{agenda.today}">Today</span>
+        <span class="adg-event-count"
+              th:text="${#lists.size(entry.value) + ' ' + (entry.value.size() == 1 ? 'event' : 'events')}">
+          1 event
+        </span>
+      </div>
+
+      <!-- Events for this day -->
+      <div class="adg-events">
+        <div th:each="e : ${entry.value}" class="agenda-event-card">
+          <div class="aec-time-col">
+            <span class="aec-time-start"
+                  th:text="${#temporals.format(e.startDateTime,'HH:mm')}">09:00</span>
+            <span class="aec-time-sep">—</span>
+            <span class="aec-time-end"
+                  th:text="${#temporals.format(e.endDateTime,'HH:mm')}">10:00</span>
+          </div>
+          <div class="aec-accent"></div>
+          <div class="aec-body">
+            <div class="aec-title">
+              <a th:href="@{/events/{id}(id=${e.id})}"
+                 sec:authorize="isAuthenticated()"
+                 th:text="${e.title}">Event Title</a>
+              <span sec:authorize="!isAuthenticated()" th:text="${e.title}">Event Title</span>
+            </div>
+            <div th:if="${e.location != null and !e.location.isEmpty()}" class="aec-meta">
+              <span class="aec-meta-icon">📍</span>
+              <span th:text="${e.location}">Kigali Convention Centre</span>
+            </div>
+            
+            <div th:if="${e.description != null and !e.description.isEmpty()}" class="aec-desc"
+                 th:text="${#strings.abbreviate(e.description, 120)}">Description…</div>
+            <div class="aec-footer">
+              <span class="aec-duration">
+                <!-- status badge -->
+                <span th:if="${e.startDateTime.isAfter(#temporals.createNow())}"
+                      class="badge badge-green" th:text="#{agenda.upcoming}">Upcoming</span>
+                <span th:if="${e.endDateTime.isBefore(#temporals.createNow())}"
+                      class="badge badge-gray" th:text="#{agenda.past}">Past</span>
+                <span th:if="${!e.startDateTime.isAfter(#temporals.createNow()) and !e.endDateTime.isBefore(#temporals.createNow())}"
+                      class="badge badge-amber" th:text="#{agenda.ongoing}">Ongoing</span>
+              </span>
+              <a th:href="@{/events/{id}(id=${e.id})}" class="aec-link"
+                 sec:authorize="isAuthenticated()" th:text="#{agenda.viewDetails}">View details →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /list -->
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       CALENDAR DISPLAY
+  ═════════════════════════════════════════════════════════════ -->
+  <div th:if="${display == 'calendar'}">
+
+    <!-- ── DAILY calendar ── -->
+    <div th:if="${view == 'daily'}" class="agenda-day-timeline">
+      <div class="adt-header">
+        <span th:text="${#temporals.format(date,'EEEE dd MMMM yyyy')}">Monday 27 Feb 2026</span>
+      </div>
+      <div th:if="${events.isEmpty()}" class="agenda-empty" style="margin-top:24px;">
+        <div class="agenda-empty-icon">📭</div>
+        <p th:text="#{agenda.noEvents}">No events today.</p>
+      </div>
+      <div th:if="${!events.isEmpty()}" class="adt-events">
+        <div th:each="e : ${events}" class="adt-event">
+          <div class="adt-time">
+            <span th:text="${#temporals.format(e.startDateTime,'HH:mm')}">09:00</span>
+          </div>
+          <div class="adt-bar"></div>
+          <div class="adt-info">
+            <div class="adt-title" th:text="${e.title}">Title</div>
+            <div class="adt-loc" th:if="${e.location != null}"
+                 th:text="'📍 ' + ${e.location}">Location</div>
+            <div class="adt-time-range"
+                 th:text="${#temporals.format(e.startDateTime,'HH:mm') + ' – ' + #temporals.format(e.endDateTime,'HH:mm')}">
+              09:00 – 10:30
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WEEKLY calendar grid ── -->
+    <div th:if="${view == 'weekly'}" class="agenda-week-grid">
+      <div class="awg-header-row">
+        <div class="awg-time-col"></div>
+        <div th:each="d : ${#lists.toList({windowStart, windowStart.plusDays(1), windowStart.plusDays(2), windowStart.plusDays(3), windowStart.plusDays(4), windowStart.plusDays(5), windowStart.plusDays(6)})}"
+             class="awg-day-header"
+             th:classappend="${d == today} ? ' awg-today'">
+          <div class="awg-wday" th:text="${#temporals.format(d,'EEE')}">Mon</div>
+          <div class="awg-dnum" th:text="${#temporals.format(d,'dd')}">24</div>
+        </div>
+      </div>
+      <div class="awg-body">
+        <div class="awg-time-col">
+          <div class="awg-hour-label" th:each="h : ${#numbers.sequence(0,23)}"
+               th:text="${h + ':00'}">0:00</div>
+        </div>
+        <div class="awg-days-area">
+          <!-- Hour lines -->
+          <div class="awg-hour-lines">
+            <div class="awg-hour-line" th:each="h : ${#numbers.sequence(0,23)}"></div>
+          </div>
+          <!-- 7 day columns -->
+          <div class="awg-day-cols">
+            <div th:each="d : ${#lists.toList({windowStart, windowStart.plusDays(1), windowStart.plusDays(2), windowStart.plusDays(3), windowStart.plusDays(4), windowStart.plusDays(5), windowStart.plusDays(6)})}"
+                 class="awg-day-col" th:classappend="${d == today} ? ' awg-today-col'">
+              <div th:each="e : ${events}"
+                   th:if="${e.startDateTime.toLocalDate() == d}"
+                   class="awg-event-block"
+                   th:style="'top:' + ${e.startDateTime.hour * 60 + e.startDateTime.minute} + 'px; height:' + ${T(java.lang.Math).max(30,(e.endDateTime.hour * 60 + e.endDateTime.minute) - (e.startDateTime.hour * 60 + e.startDateTime.minute))} + 'px;'">
+                <div class="awg-event-title" th:text="${e.title}">Title</div>
+                <div class="awg-event-time"
+                     th:text="${#temporals.format(e.startDateTime,'HH:mm')}">09:00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MONTHLY calendar grid ── -->
+    <div th:if="${view == 'monthly'}" class="agenda-month-grid">
+      <!-- Week day headers -->
+      <div class="amg-weekdays">
+        <div th:each="d : ${'Mon,Tue,Wed,Thu,Fri,Sat,Sun'.split(',')}" th:text="${d}">Mon</div>
+      </div>
+      <!-- Day cells -->
+      <div class="amg-grid">
+        <div th:each="week : ${calendarGrid}" class="amg-week-row">
+          <div th:each="d : ${week}" class="amg-day-cell"
+               th:classappend="(${d.monthValue != date.monthValue} ? ' amg-other-month' : '') + (${d == today} ? ' amg-today' : '')">
+            <div class="amg-day-num" th:text="${d.dayOfMonth}">1</div>
+            <div class="amg-day-events">
+              <div th:each="e : ${events}"
+                   th:if="${e.startDateTime.toLocalDate() == d}"
+                   class="amg-event-pill">
+                <span class="amg-pill-time"
+                      th:text="${#temporals.format(e.startDateTime,'HH:mm')}">09:00</span>
+                <span class="amg-pill-title" th:text="${e.title}">Event</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /calendar -->
+
+</div>
+</section>
+</div>
+</body>
+</html>

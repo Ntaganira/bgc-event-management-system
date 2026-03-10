@@ -127,7 +127,12 @@
                 <span class="nav-icon"><i class="fas fa-check-circle" style="color: white;"></i> </span>
                 <span class="nav-label" th:text="#{nav.attendance}">Attendance</span>
             </a>
-            
+            <a th:href="@{/agenda}"
+               class="nav-item"
+               >
+                <span class="nav-icon"><i class="fas fa-calendar-alt" style="color: white;"></i></span>
+                <span class="nav-label" th:text="#{nav.agenda}">Agenda</span>
+            </a>
             <!-- ── BCC Offices (top-level section) ── -->
             <div class="nav-section-label"
                  sec:authorize="hasAuthority('MANAGE_OFFICES')"

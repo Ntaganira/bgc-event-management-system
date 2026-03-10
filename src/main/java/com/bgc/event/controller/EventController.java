@@ -92,12 +92,18 @@ public class EventController {
         return "redirect:/events";
     }
 
-    @GetMapping("/events/{id}/edit")
+       @GetMapping("/events/{id}/edit")
     @PreAuthorize("hasAuthority('EDIT_EVENT')")
     public String editEventForm(@PathVariable Long id, Model model) {
         Event e = eventService.findById(id).orElseThrow();
-        model.addAttribute("eventDto", new EventDto(e.getId(), e.getTitle(),
-            e.getDescription(), e.getLocation(), e.getStartDateTime(), e.getEndDateTime()));
+        EventDto dto = new EventDto();
+        dto.setId(e.getId());
+        dto.setTitle(e.getTitle());
+        dto.setDescription(e.getDescription());
+        dto.setLocation(e.getLocation());
+        dto.setStartDateTime(e.getStartDateTime());
+        dto.setEndDateTime(e.getEndDateTime());
+        model.addAttribute("eventDto", dto);
         return "events/form";
     }
 

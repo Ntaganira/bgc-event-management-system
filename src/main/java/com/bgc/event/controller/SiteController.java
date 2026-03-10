@@ -29,14 +29,9 @@ public class SiteController {
     private final MessageSource messageSource;
 
 
-    @GetMapping("/index")
+    @GetMapping({"/","/index","/home"})
     public String indexPage(Model model) {
         return "website/index";
-    }
-
-    @GetMapping("/agenda")
-    public String agendaPage(Model model) {
-        return "website/agenda";
     }
 
     @GetMapping("/speaker")

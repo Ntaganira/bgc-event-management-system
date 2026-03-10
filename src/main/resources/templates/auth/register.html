@@ -2,154 +2,321 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="#{auth.register.title} + ' | BGC Event'">Register</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <title>Register</title>
+
+    <style>
+        /* ══════════════════════════════════════════════
+   REGISTER PAGE — paste at the bottom of styles.css
+   Replace the old .form-card rule with this one
+══════════════════════════════════════════════ */
+
+/* MODIFIED — removed transform: translateY(-2.5rem) */
+.form-card {
+  background: var(--white);
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-xl);
+  padding: 2.5rem 1.75rem;
+}
+@media (min-width: 640px) { .form-card { padding: 3rem 3.5rem; } }
+
+/* ── NEW CLASSES BELOW ── */
+
+@keyframes blobFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-16px) scale(1.05); }
+}
+
+.register-layout {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}
+
+#page-register {
+    position: relative;
+    min-height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 5rem 1.5rem 0rem 1.5rem;
+    color: var(--white);
+    overflow: hidden;
+    background: var(--navy-900);
+}
+
+.home-hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url(https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1400&q=80);
+    background-size: cover;
+    background-position: center;
+    opacity: .22;
+}
+
+.home-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(13, 27, 46, .92) 0%, rgba(30, 61, 110, .7) 100%);
+}
+
+.register-description {
+  position: sticky;
+  top: 6rem;
+}
+
+
+.dot-grid {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 130px;
+  background-image: radial-gradient(circle, rgba(30,61,110,.10) 1.2px, transparent 1.2px);
+  background-size: 16px 16px;
+}
+
+.desc-inner { position: relative; z-index: 1; }
+
+.reg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--navy-50);
+  border: 1px solid rgba(30,61,110,.2);
+  color: var(--navy-600);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-full);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.register-description h1 {
+  font-size: clamp(1.9rem, 3.5vw, 2.65rem);
+  font-weight: 900;
+  color: var(--gray-50);
+  margin-bottom: 1.2rem;
+  line-height: 1.15;
+}
+.register-description h1 .gold { color: var(--gray-50); }
+
+.desc-text {
+  color: var(--gray-500);
+  font-size: 0.9rem;
+  line-height: 1.85;
+  margin-bottom: 2rem;
+}
+
+.info-pills { display: flex; flex-direction: column; gap: 0.75rem; }
+.info-pill {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 0.8rem 1rem;
+  transition: box-shadow .2s, background .2s;
+}
+.info-pill:hover { background: var(--white); box-shadow: var(--shadow-md); }
+.pill-icon {
+  width: 2.4rem; height: 2.4rem;
+  flex-shrink: 0;
+  background: var(--navy-50);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+.pill-label {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--gray-400); margin-bottom: 0.12rem;
+}
+.pill-value { font-size: 0.85rem; font-weight: 700; color: var(--gray-800); }
+    </style>
 </head>
 
-<body class="auth-body">
-    <div class="auth-container">
-        <div class="auth-card" style="max-width:560px;">
+<body>
+    <div th:replace="~{website/layout :: layout(~{::section#content}, #{dashboard.title})}">
+        <section id="content">
 
-            <div class="auth-logo">
-                <div class="logo-icon">BGC</div>
+            <!-- REGISTER PAGE -->
+            <div id="page-register">
+
+                <div class="home-hero-bg"></div>
+                <div class="home-hero-overlay"></div>
+
+                <div class="register-layout">
+
+                    <!-- ════ LEFT: Description with blob background ════ -->
+                    <div class="register-description animate-slide-up">
+                        <div class="desc-bg">
+
+                            <!-- Content -->
+                            <div class="desc-inner">
+                                <h1>Register for<br/><span class="gold">BCC Global<br/>Congress</span> 2026</h1>
+                                <p class="desc-text">
+                                    Join us for an extraordinary gathering of leaders, visionaries, and changemakers
+                                    from around the world. The BCC Global Congress 2026 is your opportunity to connect,
+                                    learn, and be inspired in the heart of Kigali, Rwanda.
+                                </p>
+
+                                <div class="info-pills">
+                                    <div class="info-pill">
+                                        <div class="pill-icon">📅</div>
+                                        <div>
+                                            <div class="pill-label">Date</div>
+                                            <div class="pill-value">2026 — Kigali, Rwanda</div>
+                                        </div>
+                                    </div>
+                                    <div class="info-pill">
+                                        <div class="pill-icon">📍</div>
+                                        <div>
+                                            <div class="pill-label">Location</div>
+                                            <div class="pill-value">REC Masoro</div>
+                                        </div>
+                                    </div>
+                                    <div class="info-pill">
+                                        <div class="pill-icon">✉️</div>
+                                        <div>
+                                            <div class="pill-label">Contact</div>
+                                            <div class="pill-value">info@bccglobalcongress.org</div>
+                                        </div>
+                                    </div>
+                                    <div class="info-pill">
+                                        <div class="pill-icon">📞</div>
+                                        <div>
+                                            <div class="pill-label">Phone</div>
+                                            <div class="pill-value">+250 780 000 000</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- /desc-inner -->
+
+                        </div><!-- /desc-bg -->
+                    </div><!-- /register-description -->
+
+                    <!-- ════ RIGHT: Form ════ -->
+                    <div class="animate-slide-up delay-1">
+
+                        <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
+
+                        <form th:action="@{/register}" th:object="${registerDto}" method="post" class="auth-form">
+                            <div class="form-card">
+                                <h2>Registration Form</h2>
+
+                                <!-- Personal Information -->
+                                <div class="field-group">
+                                    <p class="group-title">Personal Information</p>
+                                    <div class="grid-2">
+                                        <div class="field">
+                                            <label th:text="#{auth.register.firstName}">First Name</label>
+                                            <input type="text" th:field="*{firstName}" class="form-control" required>
+                                            <span class="field-error" th:errors="*{firstName}"></span>
+                                        </div>
+                                        <div class="field">
+                                            <label th:text="#{auth.register.lastName}">Last Name</label>
+                                            <input type="text" th:field="*{lastName}" class="form-control" required>
+                                            <span class="field-error" th:errors="*{lastName}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Contact Information -->
+                                <div class="field-group">
+                                    <p class="group-title">Contact Information</p>
+                                    <div class="grid-2">
+                                        <div class="field">
+                                            <label th:text="#{auth.register.email}">Email</label>
+                                            <input type="email" th:field="*{email}" class="form-control" required>
+                                            <span class="field-error" th:errors="*{email}"></span>
+                                        </div>
+                                        <div class="field">
+                                            <label th:text="#{auth.register.phone}">Phone</label>
+                                            <input type="text" th:field="*{phoneNumber}" class="form-control">
+                                            <span class="err" id="err-phone"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Additional Information -->
+                                <div class="field-group">
+                                    <p class="group-title">Additional Information</p>
+                                    <div class="space-y">
+                                        <div class="field">
+                                            <label th:text="#{auth.register.branch}">BCC Office / Branch</label>
+                                            <select id="branch" th:field="*{officeId}" class="form-control">
+                                                <option value="" th:text="#{auth.register.branchPlaceholder}">
+                                                    -- Select your office --
+                                                </option>
+                                                <optgroup th:each="entry : ${officesByCountry}" th:label="${entry.key}">
+                                                    <option th:each="office : ${entry.value}"
+                                                        th:value="${office.id}"
+                                                        th:text="${office.name + ' (' + office.city + ')'}">
+                                                    </option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                        <div class="field">
+                                            <label th:text="#{auth.register.title2}">Title / Position</label>
+                                            <input type="text" th:field="*{title}" class="form-control">
+                                        </div>
+                                        <div class="grid-2">
+                                            <div class="field">
+                                                <label th:text="#{auth.register.arrivalDate}">Arrival Date</label>
+                                                <input type="date" th:field="*{arrivalDate}" class="form-control">
+                                            </div>
+                                            <div class="field">
+                                                <label th:text="#{auth.register.returnDate}">Return Date</label>
+                                                <input type="date" th:field="*{returnDate}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="form-group">
+                                                <label th:text="#{auth.register.password}">Password</label>
+                                                <div class="password-input-wrap">
+                                                    <input type="password" th:field="*{password}" id="regPassword"
+                                                        class="form-control" required>
+                                                </div>
+                                                <div class="pw-strength-bar">
+                                                    <div class="pw-strength-fill" id="regStrengthFill"></div>
+                                                </div>
+                                                <small class="text-muted" id="regStrengthLabel"></small>
+                                                <span class="field-error" th:errors="*{password}"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-full btn-submit"
+                                    th:text="#{auth.register.submit}">Complete Registration</button>
+
+                            </div><!-- /form-card -->
+                        </form>
+                    </div><!-- /right column -->
+
+                </div><!-- /register-layout -->
+            </div><!-- /page-register -->
+
+            <!-- SUCCESS PAGE -->
+            <div id="page-success" class="hidden">
+                <div class="success-wrap">
+                    <div class="success-card animate-slide-up">
+                        <span class="emoji">🎉</span>
+                        <h2>Registration Complete!</h2>
+                        <p>Thank you, <strong id="success-name"></strong>! Your registration for BCC Global Congress
+                            2026 is confirmed. We look forward to seeing you in Kigali!</p>
+                        <a href="index.html" class="btn-back-home">Back to Home</a>
+                    </div>
+                </div>
             </div>
-            <h2 class="auth-title" th:text="#{auth.register.title}">Create account</h2>
-            <p class="auth-subtitle" th:text="#{auth.register.subtitle}">Register for BGC Event</p>
 
-            <!-- Language switcher -->
-            <div class="lang-switcher" style="justify-content:center; margin-bottom:16px;">
-                <a th:href="@{/register(lang=en)}" th:classappend="${#locale.language=='en'}?' active'"
-                    class="lang-btn">EN</a>
-                <span class="lang-sep">|</span>
-                <a th:href="@{/register(lang=fr)}" th:classappend="${#locale.language=='fr'}?' active'"
-                    class="lang-btn">FR</a>
-            </div>
-
-            <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
-
-            <form th:action="@{/register}" th:object="${registerDto}" method="post" class="auth-form">
-
-                <!-- Name row -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label th:text="#{auth.register.firstName}">First Name</label>
-                        <input type="text" th:field="*{firstName}" class="form-control" required>
-                        <span class="field-error" th:errors="*{firstName}"></span>
-                    </div>
-                    <div class="form-group">
-                        <label th:text="#{auth.register.lastName}">Last Name</label>
-                        <input type="text" th:field="*{lastName}" class="form-control" required>
-                        <span class="field-error" th:errors="*{lastName}"></span>
-                    </div>
-                </div>
-
-                <!-- Email -->
-                <div class="form-group">
-                    <label th:text="#{auth.register.email}">Email</label>
-                    <input type="email" th:field="*{email}" class="form-control" required>
-                    <span class="field-error" th:errors="*{email}"></span>
-                </div>
-
-                <!-- Phone + Title row -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label th:text="#{auth.register.phone}">Phone</label>
-                        <input type="text" th:field="*{phoneNumber}" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label th:text="#{auth.register.title2}">Title / Position</label>
-                        <input type="text" th:field="*{title}" class="form-control">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label th:text="#{auth.register.branch}">BCC Office / Branch</label>
-
-                    <select th:field="*{officeId}" class="form-control">
-                        <option value="" th:text="#{auth.register.branchPlaceholder}">
-                            -- Select your office --
-                        </option>
-
-                        <optgroup th:each="entry : ${officesByCountry}" th:label="${entry.key}">
-
-                            <option th:each="office : ${entry.value}" th:value="${office.id}"
-                                th:text="${office.name + ' (' + office.city + ')'}">
-                            </option>
-
-                        </optgroup>
-                    </select>
-
-                    <small class="text-muted" th:text="#{auth.register.branchHint}">
-                        Select the BCC office you are associated with.
-                    </small>
-                </div>
-
-                <!-- Arrival / Return dates row -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label th:text="#{auth.register.arrivalDate}">Arrival Date</label>
-                        <input type="date" th:field="*{arrivalDate}" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label th:text="#{auth.register.returnDate}">Return Date</label>
-                        <input type="date" th:field="*{returnDate}" class="form-control">
-                    </div>
-                </div>
-
-                <!-- Password -->
-                <div class="form-group">
-                    <label th:text="#{auth.register.password}">Password</label>
-                    <div class="password-input-wrap">
-                        <input type="password" th:field="*{password}" id="regPassword" class="form-control" required>
-                        <button type="button" class="toggle-pw" onclick="togglePw('regPassword')">👁</button>
-                    </div>
-                    <div class="pw-strength-bar">
-                        <div class="pw-strength-fill" id="regStrengthFill"></div>
-                    </div>
-                    <small class="text-muted" id="regStrengthLabel"></small>
-                    <span class="field-error" th:errors="*{password}"></span>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-full" th:text="#{auth.register.submit}">Create
-                    Account</button>
-            </form>
-
-            <p class="auth-footer">
-                <a th:href="@{/login}" th:text="#{auth.register.login}">Already have an account?</a>
-            </p>
-        </div>
+        </section>
     </div>
-
-    <script>
-        function togglePw(id) {
-            const input = document.getElementById(id);
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
-        const pwInput = document.getElementById('regPassword');
-        const fill = document.getElementById('regStrengthFill');
-        const label = document.getElementById('regStrengthLabel');
-        if (pwInput) {
-            pwInput.addEventListener('input', function () {
-                const v = this.value;
-                let s = 0;
-                if (v.length >= 6) s++;
-                if (v.length >= 10) s++;
-                if (/[A-Z]/.test(v)) s++;
-                if (/[0-9]/.test(v)) s++;
-                if (/[^A-Za-z0-9]/.test(v)) s++;
-                const labels = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-                const colors = ['', '#ef4444', '#f97316', '#eab308', '#22c55e', '#16a34a'];
-                fill.style.width = (s / 5 * 100) + '%';
-                fill.style.background = colors[s] || '#e2e8f0';
-                label.textContent = labels[s] || '';
-                label.style.color = colors[s] || '';
-            });
-        }
-    </script>
 </body>
 
 </html>

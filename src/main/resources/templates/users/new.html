@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><title>Add User</title></head>
+<body>
+<div th:replace="~{fragments/layout :: layout(~{::section#content}, #{user.new})}">
+<section id="content">
+<div class="content">
+
+  <div class="page-header">
+    <h2 th:text="#{user.new}">Add User</h2>
+    <a th:href="@{/users}" class="btn btn-outline">← <span th:text="#{common.back}">Back</span></a>
+  </div>
+
+  <div class="card" style="max-width:680px;">
+
+    <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
+
+    <form th:action="@{/users/new}" th:object="${registerDto}" method="post" class="auth-form">
+
+      <!-- Name row -->
+      <div class="form-row">
+        <div class="form-group">
+          <label th:text="#{auth.register.firstName}">First Name</label>
+          <input type="text" th:field="*{firstName}" class="form-control" required>
+          <span class="field-error" th:errors="*{firstName}"></span>
+        </div>
+        <div class="form-group">
+          <label th:text="#{auth.register.lastName}">Last Name</label>
+          <input type="text" th:field="*{lastName}" class="form-control" required>
+          <span class="field-error" th:errors="*{lastName}"></span>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label th:text="#{auth.register.email}">Email</label>
+        <input type="email" th:field="*{email}" class="form-control" required>
+        <span class="field-error" th:errors="*{email}"></span>
+      </div>
+
+      <!-- Phone + Title -->
+      <div class="form-row">
+        <div class="form-group">
+          <label th:text="#{user.phone}">Phone</label>
+          <input type="text" th:field="*{phoneNumber}" class="form-control">
+        </div>
+        <div class="form-group">
+          <label th:text="#{auth.register.title2}">Title / Position</label>
+          <input type="text" th:field="*{title}" class="form-control"
+                 th:placeholder="#{user.title.placeholder}">
+        </div>
+      </div>
+
+      <!-- Office -->
+      <div class="form-group">
+        <label th:text="#{auth.register.branch}">BCC Office / Branch</label>
+        <select th:field="*{officeId}" class="form-control">
+          <option value="" th:text="#{auth.register.branchPlaceholder}">-- Select office --</option>
+          <option th:each="o : ${offices}"
+                  th:value="${o.id}"
+                  th:text="${o.name + ' (' + o.city + ', ' + o.country + ')'}">Office</option>
+        </select>
+      </div>
+
+      <!-- Arrival / Return dates -->
+      <div class="form-row">
+        <div class="form-group">
+          <label th:text="#{auth.register.arrivalDate}">Arrival Date</label>
+          <input type="date" th:field="*{arrivalDate}" class="form-control">
+        </div>
+        <div class="form-group">
+          <label th:text="#{auth.register.returnDate}">Return Date</label>
+          <input type="date" th:field="*{returnDate}" class="form-control">
+        </div>
+      </div>
+
+      <!-- Roles (admin can pre-assign) -->
+      <div class="form-group" th:if="${not #lists.isEmpty(allRoles)}">
+        <label th:text="#{user.new.roles}">Assign Roles</label>
+        <div class="role-checkbox-grid">
+          <label th:each="r : ${allRoles}" class="role-checkbox-item">
+            <input type="checkbox" name="roleIds" th:value="${r.id}">
+            <span th:text="${r.name.replace('ROLE_','')}">ROLE</span>
+          </label>
+        </div>
+        <small class="text-muted" th:text="#{user.new.roles.hint}">Roles can also be assigned later from the user profile.</small>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label th:text="#{auth.register.password}">Password</label>
+        <div class="password-input-wrap">
+          <input type="password" th:field="*{password}" id="newUserPw"
+                 class="form-control" required>
+          <button type="button" class="toggle-pw" onclick="togglePw('newUserPw')">👁</button>
+        </div>
+        <div class="pw-strength-bar"><div class="pw-strength-fill" id="newUserStrengthFill"></div></div>
+        <small class="text-muted" id="newUserStrengthLabel"></small>
+        <span class="field-error" th:errors="*{password}"></span>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" th:text="#{user.new.submit}">Create User</button>
+        <a th:href="@{/users}" class="btn btn-outline" th:text="#{common.cancel}">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</section>
+</div>
+<script>
+function togglePw(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+const pwInput = document.getElementById('newUserPw');
+const fill    = document.getElementById('newUserStrengthFill');
+const label   = document.getElementById('newUserStrengthLabel');
+if (pwInput) {
+  pwInput.addEventListener('input', function() {
+    const v = this.value;
+    let s = 0;
+    if (v.length >= 6)  s++;
+    if (v.length >= 10) s++;
+    if (/[A-Z]/.test(v)) s++;
+    if (/[0-9]/.test(v)) s++;
+    if (/[^A-Za-z0-9]/.test(v)) s++;
+    const labels = ['','Weak','Fair','Good','Strong','Very Strong'];
+    const colors = ['','#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
+    fill.style.width  = (s/5*100) + '%';
+    fill.style.background = colors[s] || '#e2e8f0';
+    label.textContent = labels[s] || '';
+    label.style.color = colors[s] || '';
+  });
+}
+</script>
+</body>
+</html>

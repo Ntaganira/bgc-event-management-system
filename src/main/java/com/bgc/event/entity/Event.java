@@ -79,11 +79,7 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private Set<Attendance> attendanceRecords = new HashSet<>();
 
-    public int getAttendanceCount() {
-        return attendanceRecords != null ? attendanceRecords.size() : 0;
-    }
-
-    public int getAttendeesCount() {
-        return attendees != null ? attendees.size() : 0;
-    }
+    @Builder.Default
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EventParticipant> participants = new HashSet<>();
 }

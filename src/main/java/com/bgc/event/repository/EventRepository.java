@@ -73,4 +73,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "OR LOWER(e.location) LIKE LOWER(CONCAT('%',:search,'%'))) " +
             "ORDER BY e.startDateTime DESC")
     Page<Event> findByTitleOrLocationContaining(@Param("search") String search, Pageable pageable);
+
+        /** Events filtered by date range */
+    @Query("SELECT e FROM Event e WHERE " +
+           "(:from IS NULL OR e.startDateTime >= :from) AND " +
+           "(:to   IS NULL OR e.startDateTime <= :to) " +
+           "ORDER BY e.startDateTime DESC")
+    List<Event> findForReport(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+
 }

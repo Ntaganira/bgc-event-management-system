@@ -45,4 +45,5 @@ INSERT INTO bcc_offices (code, name, country, city, address, phone, email, head_
 ('ACC',     'BCC Accra Office',           'Ghana',       'Accra',         'Airport City, Accra',           '+233 30 000 001',  'accra@bgc.rw',   'Kwame Mensah'),
 ('JHB',     'BCC Johannesburg Office',    'South Africa','Johannesburg',  'Sandton, Johannesburg',         '+27 11 000 001',   'jhb@bgc.rw',     'Naledi Dlamini'),
 ('ADD',     'BCC Addis Ababa Office',     'Ethiopia',    'Addis Ababa',   'Bole Sub-City, Addis Ababa',    '+251 11 000 001',  'addis@bgc.rw',   'Tigist Haile'),
+('BXL',     'BCC Brussels Office',        'Belgium',     'Brussels',      'Rue de la Loi 10, Brussels',    '+32 2 000 001',    'brussels@bgc.rw','Marc Dupont'),
 ('WDC',     'BCC Washington D.C. Office', 'USA',         'Washington DC', '1600 K Street NW, Washington',  '+1 202 000 001',   'dc@bgc.rw',      'Linda Thompson');
