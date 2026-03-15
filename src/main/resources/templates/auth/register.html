@@ -187,7 +187,7 @@
         <section id="content">
 
             <!-- REGISTER PAGE -->
-            <div id="page-register">
+            <div  th:if="${successMsg == null}" id="page-register">
 
                 <div class="home-hero-bg"></div>
                 <div class="home-hero-overlay"></div>
@@ -324,11 +324,11 @@
                                                 <input type="date" th:field="*{returnDate}" class="form-control">
                                             </div>
                                         </div>
-                                        <div class="field">
+                                        <!-- <div class="field">
                                             <div class="form-group">
                                                 <label th:text="#{auth.register.password}">Password</label>
                                                 <div class="password-input-wrap">
-                                                    <input type="password" th:field="*{password}" id="regPassword"
+                                                    <input th:value="password123" type="password" th:field="*{password}" id="regPassword"
                                                         class="form-control" required>
                                                 </div>
                                                 <div class="pw-strength-bar">
@@ -337,7 +337,7 @@
                                                 <small class="text-muted" id="regStrengthLabel"></small>
                                                 <span class="field-error" th:errors="*{password}"></span>
                                             </div>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
 
@@ -352,14 +352,14 @@
             </div><!-- /page-register -->
 
             <!-- SUCCESS PAGE -->
-            <div id="page-success" class="hidden">
+            <div  th:if="${successMsg != null}" id="page-success">
                 <div class="success-wrap">
                     <div class="success-card animate-slide-up">
                         <span class="emoji">🎉</span>
-                        <h2>Registration Complete!</h2>
-                        <p>Thank you, <strong id="success-name"></strong>! Your registration for BCC Global Congress
+                        <h2 th:text="#{auth.register.success.title}">Registration Complete!</h2>
+                        <p th:text="#{auth.register.success.desc}">Thank you, <strong id="success-name"></strong>! Your registration for BCC Global Congress
                             2026 is confirmed. We look forward to seeing you in Kigali!</p>
-                        <a href="index.html" class="btn-back-home">Back to Home</a>
+                        <a th:href="@{/}"  class="btn-back-home"> <span th:text="#{common.go.back}"></span></a>
                     </div>
                 </div>
             </div>

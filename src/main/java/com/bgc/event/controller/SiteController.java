@@ -25,11 +25,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SiteController {
 
-    
     private final MessageSource messageSource;
 
-
-    @GetMapping({"/","/index","/home"})
+    @GetMapping({ "/", "/index", "/home" })
     public String indexPage(Model model) {
         return "website/index";
     }
@@ -38,8 +36,6 @@ public class SiteController {
     public String speakerPage(Model model) {
         return "website/speaker";
     }
-
-    
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(required = false) String error,
@@ -54,4 +50,8 @@ public class SiteController {
         return "auth/login";
     }
 
+    @GetMapping("/agender")
+    public String agenderPage(Model model) {
+        return "website/agenda";
+    }
 }

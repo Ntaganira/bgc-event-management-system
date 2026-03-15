@@ -191,6 +191,9 @@ main { flex: 1; }
     padding: 8px 10px;
     display: flex;
     flex-direction: row-reverse;
+    position: absolute;
+    top: 30px;
+    right: 20px;
 }
 .lang-btn { font-size: 11px; font-weight: 700; color: var(--gray-600); text-decoration: none;
   padding: 3px 8px; border-radius: 4px; transition: all .15s; letter-spacing: .5px; }
@@ -676,7 +679,9 @@ footer {
   margin: 0 auto;
   transform: translateY(-2.5rem);
 }
-@media (min-width: 640px) { .form-card { padding: 3rem 3.5rem; } }
+
+.form-card { padding: 6rem 3.5rem; }
+
 .form-card h2 {
   font-size: 1.35rem;
   font-weight: 900;
@@ -799,9 +804,6 @@ footer {
   padding: 3rem 1.5rem;
 }
 .login-card {
-  background: var(--white);
-  border-radius: var(--radius-3xl);
-  box-shadow: var(--shadow-xl);
   padding: 2.5rem 2rem;
   width: 100%;
   margin-bottom: 30px;
@@ -956,133 +958,88 @@ footer {
    dismissed on DOMContentLoaded. Per-element skeletons
    used inside cards for richer effect.
 ════════════════════════════════════════════════════ */
-
-/* ── Shimmer keyframe ─────────────────────────────── */
-@keyframes shimmer {
-  0%   { background-position: -600px 0; }
-  100% { background-position:  600px 0; }
+#page-skeleton{
+  position:fixed;
+  inset:0;
+  background:#ffffff;
+  z-index:9999;
+  padding:30px;
+  display:flex;
+  flex-direction:column;
+  gap:40px;
 }
 
-/* ── Base skeleton block ──────────────────────────── */
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    #e2e8f0 25%,
-    #f1f5f9 50%,
-    #e2e8f0 75%
-  );
-  background-size: 600px 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
-  border-radius: 6px;
-  display: block;
+.skeleton{
+  background:linear-gradient(90deg,#eee,#f5f5f5,#eee);
+  background-size:200% 100%;
+  animation:skeleton 1.2s infinite;
+  border-radius:6px;
 }
 
-/* ── Skeleton shapes ──────────────────────────────── */
-.skeleton-text   { height: 14px; margin-bottom: 8px; }
-.skeleton-title  { height: 20px; width: 55%; margin-bottom: 12px; }
-.skeleton-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
-.skeleton-badge  { height: 22px; width: 64px; border-radius: 12px; }
-.skeleton-btn    { height: 32px; width: 80px; border-radius: 6px; }
-.skeleton-input  { height: 38px; border-radius: 6px; margin-bottom: 12px; }
-.skeleton-chart  { height: 260px; border-radius: 8px; }
-.skeleton-w25    { width: 25%; }
-.skeleton-w40    { width: 40%; }
-.skeleton-w60    { width: 60%; }
-.skeleton-w75    { width: 75%; }
-.skeleton-w100   { width: 100%; }
-
-/* ── Skeleton stat card ───────────────────────────── */
-.skeleton-stat-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-}
-.skeleton-stat-card .sk-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  flex-shrink: 0;
-}
-.skeleton-stat-card .sk-info { flex: 1; }
-
-/* ── Skeleton table row ───────────────────────────── */
-.skeleton-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-.skeleton-row:last-child { border-bottom: none; }
-
-/* ── Page overlay ─────────────────────────────────── */
-#page-skeleton {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: #f8fafc;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  transition: opacity 0.22s ease, transform 0.22s ease;
-}
-#page-skeleton.skeleton-done {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-6px);
+@keyframes skeleton{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
 }
 
-/* ── Skeleton topbar ──────────────────────────────── */
-#page-skeleton .sk-topbar {
-  height: 60px;
-  background: #fff;
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  gap: 16px;
+/* NAVBAR */
+.sk-navbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
 }
 
-/* ── Skeleton body = sidebar + content ───────────── */
-#page-skeleton .sk-body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
+.sk-logo{width:40px;height:40px;border-radius:50%}
+
+.sk-nav-links{
+  display:flex;
+  gap:20px;
 }
 
-/* ── Skeleton sidebar ─────────────────────────────── */
-#page-skeleton .sk-sidebar {
-  width: 240px;
-  background: #1e3a5f;
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex-shrink: 0;
-}
-#page-skeleton .sk-sidebar .skeleton {
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0.08) 25%,
-    rgba(255,255,255,0.16) 50%,
-    rgba(255,255,255,0.08) 75%
-  );
-  background-size: 600px 100%;
+.sk-link{width:70px;height:14px}
+
+.sk-actions{
+  display:flex;
+  gap:10px;
 }
 
-/* ── Skeleton content area ────────────────────────── */
-#page-skeleton .sk-content {
-  flex: 1;
-  padding: 28px 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  overflow: hidden;
+.sk-btn{width:110px;height:36px;border-radius:20px}
+
+.sk-btn-outline{width:80px;height:36px;border-radius:20px}
+
+/* HERO */
+.sk-hero{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:15px;
+  margin-top:40px;
 }
+
+.sk-title{width:420px;height:28px}
+
+.sk-text{width:320px;height:14px}
+
+.small{width:250px}
+
+.sk-main-btn{width:160px;height:40px;border-radius:20px}
+
+/* FOOTER */
+
+.sk-footer{
+  margin-top:auto;
+  display:flex;
+  justify-content:space-between;
+}
+
+.sk-footer-col{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.sk-footer-title{width:150px;height:16px}
+
+.sk-footer-line{width:180px;height:12px}
 
 /* ── BCC page-specific skeletons ──────────────────── */
 
@@ -1184,4 +1141,24 @@ footer {
   display: flex;
   justify-content: center;
   padding-top: 8px;
+}
+
+@media (min-width: 768px) {
+  .nav-links { display: flex; }
+
+}
+@media (max-width: 768px) {
+  .login-layout {
+    margin: 0 auto;
+    display: grid;
+    gap: 0;
+    grid-template-columns: 1fr;
+}
+
+.register-layout {
+    grid-template-columns: 1fr;
+}
+.register-description{
+  display: none;
+}
 }

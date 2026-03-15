@@ -101,7 +101,9 @@
     <!-- ═══ SIDEBAR ═══ -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <div class="logo-icon">BGC</div>
+            <div class="logo-icon">
+              <img class="logo-img" th:src="@{/images/bcc_logo.png}" alt="BCC Logo" onerror="this.style.display='none'" />
+            </div>
             <span class="logo-text" th:text="#{app.name}">BGC Event</span>
         </div>
 

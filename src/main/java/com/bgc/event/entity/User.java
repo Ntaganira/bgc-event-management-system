@@ -57,7 +57,8 @@ public class User {
     private LocalDate returnDate;
 
     @Column(nullable = false)
-    private String password;
+    @Builder.Default
+    private String password = "password123";
 
     @Builder.Default
     @Column(nullable = false)

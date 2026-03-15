@@ -39,7 +39,7 @@ public class DashboardController {
     private final AttendanceRepository attendanceRepository;
     private final ObjectMapper         objectMapper;
 
-    @GetMapping({"/", "/dashboard"})
+    @GetMapping({"/dashboard"})
     @PreAuthorize("hasAuthority('VIEW_DASHBOARD')")
     public String dashboard(Model model) {
         LocalDateTime now = LocalDateTime.now();  

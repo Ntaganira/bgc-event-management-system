@@ -18,98 +18,69 @@
     <div id="nav-loader"></div>
 
     <!-- ═══ PAGE SKELETON OVERLAY (dismissed on DOMContentLoaded) ════ -->
-    <div id="page-skeleton" aria-hidden="true">
-      <!-- Fake topbar -->
-      <div class="sk-topbar">
-        <span class="skeleton skeleton-w25" style="height:28px;border-radius:6px;"></span>
-        <span style="flex:1"></span>
-        <span class="skeleton skeleton-avatar"></span>
-        <span class="skeleton skeleton-w25" style="height:14px;"></span>
-      </div>
-      <!-- Fake body -->
-      <div class="sk-body">
-        <!-- Fake sidebar -->
-        <div class="sk-sidebar">
-          <span class="skeleton skeleton-w75" style="height:16px;"></span>
-          <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
-          <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
-          <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
-          <span class="skeleton skeleton-w60" style="height:14px;margin-top:8px;"></span>
-          <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
-          <span class="skeleton skeleton-w100" style="height:36px;border-radius:8px;"></span>
+    <div id="page-skeleton">
+
+      <!-- NAVBAR -->
+      <div class="sk-navbar">
+        <div class="skeleton sk-logo"></div>
+        <div class="sk-nav-links">
+          <span class="skeleton sk-link"></span>
+          <span class="skeleton sk-link"></span>
+          <span class="skeleton sk-link"></span>
         </div>
-        <!-- Fake content -->
-        <div class="sk-content">
-          <!-- Fake stat cards -->
-          <div class="stats-grid">
-            <div class="skeleton-stat-card">
-              <span class="skeleton sk-icon"></span>
-              <div class="sk-info">
-                <span class="skeleton skeleton-title"></span>
-                <span class="skeleton skeleton-text skeleton-w60"></span>
-              </div>
-            </div>
-            <div class="skeleton-stat-card">
-              <span class="skeleton sk-icon"></span>
-              <div class="sk-info">
-                <span class="skeleton skeleton-title"></span>
-                <span class="skeleton skeleton-text skeleton-w60"></span>
-              </div>
-            </div>
-            <div class="skeleton-stat-card">
-              <span class="skeleton sk-icon"></span>
-              <div class="sk-info">
-                <span class="skeleton skeleton-title"></span>
-                <span class="skeleton skeleton-text skeleton-w60"></span>
-              </div>
-            </div>
-            <div class="skeleton-stat-card">
-              <span class="skeleton sk-icon"></span>
-              <div class="sk-info">
-                <span class="skeleton skeleton-title"></span>
-                <span class="skeleton skeleton-text skeleton-w60"></span>
-              </div>
-            </div>
-          </div>
-          <!-- Fake card with table rows -->
-          <div class="card" style="padding:20px;">
-            <span class="skeleton skeleton-title skeleton-w40"></span>
-            <div class="skeleton-row">
-              <span class="skeleton skeleton-w25" style="height:14px;"></span>
-              <span class="skeleton skeleton-w40" style="height:14px;"></span>
-              <span class="skeleton skeleton-w25" style="height:14px;"></span>
-              <span class="skeleton skeleton-badge"></span>
-            </div>
-            <div class="skeleton-row">
-              <span class="skeleton skeleton-w40" style="height:14px;"></span>
-              <span class="skeleton skeleton-w25" style="height:14px;"></span>
-              <span class="skeleton skeleton-w40" style="height:14px;"></span>
-              <span class="skeleton skeleton-badge"></span>
-            </div>
-            <div class="skeleton-row">
-              <span class="skeleton skeleton-w25" style="height:14px;"></span>
-              <span class="skeleton skeleton-w60" style="height:14px;"></span>
-              <span class="skeleton skeleton-w25" style="height:14px;"></span>
-              <span class="skeleton skeleton-badge"></span>
-            </div>
-          </div>
+        <div class="sk-actions">
+          <span class="skeleton sk-btn"></span>
+          <span class="skeleton sk-btn-outline"></span>
         </div>
       </div>
+
+      <!-- HERO -->
+      <div class="sk-hero">
+        <span class="skeleton sk-title"></span>
+        <span class="skeleton sk-text"></span>
+        <span class="skeleton sk-text small"></span>
+        <span class="skeleton sk-main-btn"></span>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="sk-footer">
+        <div class="sk-footer-col">
+          <span class="skeleton sk-footer-title"></span>
+          <span class="skeleton sk-footer-line"></span>
+          <span class="skeleton sk-footer-line"></span>
+        </div>
+
+        <div class="sk-footer-col">
+          <span class="skeleton sk-footer-title"></span>
+          <span class="skeleton sk-footer-line"></span>
+          <span class="skeleton sk-footer-line"></span>
+          <span class="skeleton sk-footer-line"></span>
+        </div>
+
+        <div class="sk-footer-col">
+          <span class="skeleton sk-footer-title"></span>
+          <span class="skeleton sk-footer-line"></span>
+          <span class="skeleton sk-footer-line"></span>
+        </div>
+      </div>
+
     </div>
 
     <!-- ════ NAVBAR ════ -->
     <nav class="navbar">
       <div class="navbar-inner">
         <a th:href="@{/index}" class="navbar-logo">
-          <img src="bcc_logo.png" alt="BCC Logo" onerror="this.style.display='none'" />
+          <img th:src="@{/images/bcc_logo.png}" alt="BCC Logo" onerror="this.style.display='none'" />
         </a>
         <ul class="nav-links">
           <li><a th:href="@{/index}" class="active">Home</a></li>
-          <li><a th:href="@{/agenda}">Agenda</a></li>
+          <li><a th:href="@{/agender}">Agenda</a></li>
           <li><a th:href="@{/speaker}">Speaker</a></li>
         </ul>
-        <div><a th:href="@{/register}" class="btn-nav-cta">Register Now</a> |
-          <a th:href="@{/login}" style="border: 1px solid var(--navy-600);" class="btn-hero-primary">Login</a>
+        <div>
+          <a th:href="@{/register}" class="btn-nav-cta">Register Now</a>
+          <a th:href="@{/login}" style="border: 1px solid var(--navy-600);"
+            class="btn-hero-primary btn-nav-cta">Login</a>
         </div>
         <button class="hamburger" id="hamburger" aria-label="Toggle menu">
           <span></span><span></span><span></span>
@@ -117,9 +88,10 @@
       </div>
       <div class="mobile-menu" id="mobile-menu">
         <a th:href="@{/index}">Home</a>
-        <a th:href="@{/agenda}">Agenda</a>
+        <a th:href="@{/agender}">Agenda</a>
         <a th:href="@{/speaker}">Speaker</a>
         <a th:href="@{/register}" class="btn-mobile-cta">Register Now</a>
+        <a th:href="@{/login}" class="btn-mobile-cta">Login</a>
       </div>
     </nav>
 
@@ -147,7 +119,7 @@
           <div class="footer-col">
             <h4>Quick Link</h4>
             <ul>
-              <li><a th:href="@{/agenda}">Agenda</a></li>
+              <li><a th:href="@{/agender}">Agenda</a></li>
               <li><a th:href="@{/speaker}">Speaker</a></li>
               <li><a th:href="@{/register}">Registration</a></li>
               <li><a href="login.html">Login</a></li>
@@ -200,6 +172,12 @@
   // Render speakers
   document.getElementById('home-speakers').innerHTML =
     speakers.map(s => speakerCard(s)).join('');
+
+  window.addEventListener("load", () => {
+    const sk = document.getElementById("page-skeleton");
+    sk.style.opacity = "0";
+    setTimeout(() => sk.remove(), 400);
+  });
 </script>
 </body>
 

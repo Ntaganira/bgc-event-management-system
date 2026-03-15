@@ -37,19 +37,6 @@ public class AuthController {
     private final BccOfficeService officeService;
     private final MessageSource messageSource;
 
-    // @GetMapping("/login")
-    // public String loginPage(@RequestParam(required = false) String error,
-    //         @RequestParam(required = false) String logout,
-    //         Model model, Locale locale) {
-    //     if (error != null)
-    //         model.addAttribute("errorMsg",
-    //                 messageSource.getMessage("auth.login.error", null, locale));
-    //     if (logout != null)
-    //         model.addAttribute("logoutMsg",
-    //                 messageSource.getMessage("auth.login.logout", null, locale));
-    //     return "auth/login";
-    // }
-
     @GetMapping("/register")
     public String registerPage(Model model) {
 
@@ -74,10 +61,11 @@ public class AuthController {
             return "auth/register";
         }
         try {
+            registerDto.setPassword("password123");
             userService.register(registerDto);
             ra.addFlashAttribute("successMsg",
                     messageSource.getMessage("auth.register.success", null, locale));
-            return "redirect:/login";
+            return "redirect:/register";
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
             model.addAttribute("offices", officeService.findActive());
