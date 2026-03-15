@@ -133,8 +133,6 @@
   </div>
 </body>
 
-<script th:src="@{/js/data.js}"></script>
-<script th:src="@{/js/components.js}"></script>
 <script>
   // Navbar hamburger
   const ham = document.getElementById('hamburger');
@@ -144,41 +142,15 @@
     mob.classList.toggle('open');
   });
 
-  // Render home agenda tabs + cards
-  const tabsEl = document.getElementById('home-tabs');
-  const agendaEl = document.getElementById('home-agenda');
-  let activeDay = Object.keys(agendaData)[0];
-
-  function renderHomeTabs() {
-    tabsEl.innerHTML = Object.keys(agendaData).map(day =>
-      `<button class="day-tab ${day === activeDay ? 'active' : ''}" data-day="${day}">${day}</button>`
-    ).join('');
-    tabsEl.querySelectorAll('.day-tab').forEach(btn => {
-      btn.addEventListener('click', () => {
-        activeDay = btn.dataset.day;
-        renderHomeTabs();
-        renderHomeAgenda();
-      });
-    });
-  }
-
-  function renderHomeAgenda() {
-    agendaEl.innerHTML = agendaData[activeDay].map(item => agendaCard(item)).join('');
-  }
-
-  renderHomeTabs();
-  renderHomeAgenda();
-
-  // Render speakers
-  document.getElementById('home-speakers').innerHTML =
-    speakers.map(s => speakerCard(s)).join('');
-
   window.addEventListener("load", () => {
     const sk = document.getElementById("page-skeleton");
     sk.style.opacity = "0";
     setTimeout(() => sk.remove(), 400);
   });
 </script>
+
+<script th:src="@{/js/data.js}"></script>
+<script th:src="@{/js/components.js}"></script>
 </body>
 
 </html>
