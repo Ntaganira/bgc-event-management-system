@@ -53,4 +53,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @EntityGraph(attributePaths = "roles")
     Page<User> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    
+    
+    java.util.Optional<com.bgc.event.entity.User> findByUserCode(String userCode);
+
+    @Query("SELECT COUNT(u) FROM User u "
+         + "WHERE (:from IS NULL OR u.createdAt >= :from) "
+         + "AND   (:to   IS NULL OR u.createdAt <= :to)")
+    long countRegistrationsInRange(@Param("from") java.time.LocalDateTime from,
+                                   @Param("to")   java.time.LocalDateTime to);
 }

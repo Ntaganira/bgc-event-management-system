@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: bgc-event
+    runtime: docker
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: bgc-event-db
+          property: connectionString
+      - key: DB_USERNAME
+        fromDatabase:
+          name: bgc-event-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: bgc-event-db
+          property: password
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: APP_BASE_URL
+        sync: false
+
+databases:
+  - name: bgc-event-db
+    plan: free
+    databaseName: bgceventdb
+    user: bgcuser

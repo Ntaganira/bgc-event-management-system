@@ -46,7 +46,7 @@ mvn spring-boot:run
 ### Default Admin Account
 | Email | Password |
 |---|---|
-| ntaganira71@gmail.com | password123 |
+| admin@bgc.com | Admin@123 |
 
 ---
 

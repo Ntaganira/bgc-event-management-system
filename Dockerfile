@@ -1,32 +1,14 @@
-# BGC Event Management System - Dockerfile
-# Author: NTAGANIRA Heritier | Date: 2026-02-27
-
-# ------------------------
-# Builder stage
-# ------------------------
-FROM eclipse-temurin:17-jdk-jammy AS builder
+# ── Stage 1: Build ────────────────────────────────────────────────
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
-
-# Copy project files
 COPY pom.xml .
+RUN mvn dependency:go-offline -q
 COPY src ./src
+RUN mvn clean package -DskipTests -q
 
-# Install Maven and build the project
-RUN apt-get update && apt-get install -y maven && \
-    mvn clean package -DskipTests
-
-# ------------------------
-# Production stage
-# ------------------------
-FROM eclipse-temurin:17-jre-jammy
+# ── Stage 2: Run ─────────────────────────────────────────────────
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-
-# Copy the built jar from builder stage
-COPY --from=builder /app/target/*.jar app.jar
-
-# Expose port and set Spring profile
+COPY --from=build /app/target/bgc-event-1.0.0.jar app.jar
 EXPOSE 8080
-ENV SPRING_PROFILES_ACTIVE=prod
-
-# Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -93,10 +93,15 @@ public class User {
     }
 
     public String getOfficeName() {
-        if (office != null) return office.getName();
-        if (branch != null && !branch.isBlank()) return branch;
+        if (office != null)
+            return office.getName();
+        if (branch != null && !branch.isBlank())
+            return branch;
         return "—";
     }
+
+    @Column(name = "user_code", unique = true, length = 255)
+    private String userCode;
 
     @Column(columnDefinition = "TEXT")
     private String bio;

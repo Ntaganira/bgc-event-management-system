@@ -1,167 +1,25 @@
-# =====================================================
-# BGC EVENT MANAGEMENT SYSTEM — .gitignore
-# Stack : Spring Boot 3.2 · Maven · Java 17
-# Author: NTAGANIRA Heritier
-# =====================================================
-
-
-# ── Maven ─────────────────────────────────────────
+# ---- Build ----
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-.mvn/wrapper/maven-wrapper.properties
-
-
-# ── Java compiled output ──────────────────────────
-*.class
 *.jar
 *.war
-*.ear
-*.nar
+*.class
 
+# ---- IDE ----
+.idea/
+*.iml
+.vscode/
+*.swp
 
-# ── Spring Boot ───────────────────────────────────
-# Local override properties (never commit secrets)
+# ---- Secrets — NEVER commit these ----
 application-local.properties
-application-local.yml
-application-dev.properties
-application-prod.properties
-
-# Spring Boot fat jar
-*.jar
-!.mvn/**/*.jar
-
-# QR code output directory (runtime generated files)
-qr-codes/
-
-
-# ── Secrets & credentials ─────────────────────────
-# These must NEVER be committed
 *.env
 .env
-.env.*
-secrets.properties
-credentials.properties
 
-# Mail / SMTP passwords
-mail.properties
-
-# H2 database files (dev — created at runtime)
-*.db
-*.mv.db
-*.trace.db
-
-
-# ── IDE — IntelliJ IDEA ───────────────────────────
-.idea/
-*.iws
-*.iml
-*.ipr
-out/
-.idea_modules/
-
-# IntelliJ run configurations (machine-specific)
-.idea/runConfigurations/
-
-
-# ── IDE — Eclipse / STS ───────────────────────────
-.classpath
-.project
-.settings/
-.springBeans
-.sts4-cache/
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-
-# ── IDE — VS Code ────────────────────────────────
-.vscode/
-*.code-workspace
-
-
-# ── IDE — NetBeans ───────────────────────────────
-nbproject/private/
-nbbuild/
-dist/
-nbdist/
-.nb-gradle/
-
-
-# ── OS generated files ────────────────────────────
-# macOS
+# ---- OS ----
 .DS_Store
-.AppleDouble
-.LSOverride
-._*
-.Spotlight-V100
-.Trashes
-
-# Windows
 Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-*.lnk
 
-# Linux
-*~
-
-
-# ── Docker ────────────────────────────────────────
-# Keep Dockerfile and docker-compose.yml committed
-# Ignore local override compose files
-docker-compose.override.yml
-docker-compose.local.yml
-
-# Docker volumes / data mounted at runtime
-docker-data/
-postgres-data/
-
-
-# ── Logs ──────────────────────────────────────────
+# ---- Logs ----
 *.log
-*.log.*
 logs/
-spring.log
-
-
-# ── Thymeleaf template cache ──────────────────────
-# (Spring caches compiled templates at runtime)
-# Nothing to ignore — handled by application.properties
-
-
-# ── Flyway ────────────────────────────────────────
-# Keep all migration scripts (V1__*.sql … V11__*.sql)
-# Ignore any local undo/test migration files
-**/db/migration/U*.sql
-**/db/migration/R*.sql
-
-
-# ── Test output ───────────────────────────────────
-surefire-reports/
-failsafe-reports/
-test-results/
-
-
-# ── Code coverage ─────────────────────────────────
-.jacoco/
-jacoco.exec
-coverage/
-
-
-# ── Node / npm (if frontend tooling is added) ─────
-node_modules/
-npm-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-
-# ── Miscellaneous ─────────────────────────────────
-*.tmp
-*.bak
-*.swp
-*.swo
-.cache/
+qr-codes/

@@ -2,11 +2,11 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Register</title>
+    <title>login</title>
 
     <style>
         /* ══════════════════════════════════════════════
-   REGISTER PAGE — paste at the bottom of styles.css
+   login PAGE — paste at the bottom of styles.css
    Replace the old .form-card rule with this one
 ══════════════════════════════════════════════ */
 
@@ -38,7 +38,7 @@
             }
         }
 
-        .register-layout {
+        .login-layout {
             max-width: var(--max-w);
             margin: 0 auto;
             display: grid;
@@ -47,7 +47,7 @@
             align-items: start;
         }
 
-        #page-register {
+        #page-login {
             position: relative;
             min-height: 480px;
             display: flex;
@@ -75,7 +75,7 @@
             background: linear-gradient(135deg, rgba(13, 27, 46, .92) 0%, rgba(30, 61, 110, .7) 100%);
         }
 
-        .register-description {
+        .login-description {
             position: sticky;
             top: 6rem;
         }
@@ -112,7 +112,7 @@
             margin-bottom: 1.5rem;
         }
 
-        .register-description h1 {
+        .login-description h1 {
             font-size: clamp(1.9rem, 3.5vw, 2.65rem);
             font-weight: 900;
             color: var(--gray-50);
@@ -120,7 +120,7 @@
             line-height: 1.15;
         }
 
-        .register-description h1 .gold {
+        .login-description h1 .gold {
             color: var(--gray-50);
         }
 
@@ -288,16 +288,16 @@
     <div th:replace="~{website/layout :: layout(~{::section#content}, #{dashboard.title})}">
         <section id="content">
 
-            <!-- REGISTER PAGE -->
-            <div id="page-register">
+            <!-- login PAGE -->
+            <div id="page-login">
 
                 <div class="home-hero-bg"></div>
                 <div class="home-hero-overlay"></div>
 
-                <div class="register-layout">
+                <div class="login-layout">
 
                     <!-- ════ LEFT: Description with blob background ════ -->
-                    <div class="register-description animate-slide-up">
+                    <div class="login-description animate-slide-up">
                         <div class="desc-bg">
 
                             <!-- Content -->
@@ -311,9 +311,9 @@
                                 </p>
 
                             </div><!-- /desc-inner -->
-
+                            
                         </div><!-- /desc-bg -->
-                    </div><!-- /register-description -->
+                    </div><!-- /login-description -->
 
                     <!-- ════ RIGHT: Form ════ -->
                     <div class="animate-slide-up delay-1">
@@ -321,10 +321,15 @@
                         <form th:action="@{/login}" method="post" class="auth-form">
 
                             <div class="login-wrap">
+                                
                                 <div class="login-card">
-
                                     <div class="login-header">
-                                        <p class="login-eyebrow">BCC Global Congress</p>
+                                        <span class="lang-switcher">
+                                            <a th:href="@{''(lang=en)}" th:classappend="${#locale.language == 'en'} ? ' active'" class="lang-btn">EN</a>
+                                            <span class="lang-sep">|</span>
+                                            <a th:href="@{''(lang=fr)}" th:classappend="${#locale.language == 'fr'} ? ' active'" class="lang-btn">FR</a>
+                                        </span>
+                                        <!-- <p class="login-eyebrow">BCC Global Congress</p> -->
                                         <div class="login-divider"></div>
                                         <h1 class="login-title" th:text="#{auth.login.subtitle}">Login</h1>
                                     </div>
@@ -354,11 +359,11 @@
                                             password?</a></p>
                                     </div>
 
-                                    <button class="btn-login" th:text="#{auth.register.submit}"
+                                    <button class="btn-login" th:text="#{auth.login.submit}"
                                         onclick="handleLogin()">Login</button>
 
                                     <div class="login-links">
-                                        <p>Don't have an account? <a href="/register">Register here</a></p>
+                                        <p>Don't have an account? <a href="/login">login here</a></p>
                                         <p><a href="/">← Back to Home</a></p>
                                     </div>
 
@@ -370,8 +375,8 @@
                         </form>
                     </div><!-- /right column -->
 
-                </div><!-- /register-layout -->
-            </div><!-- /page-register -->
+                </div><!-- /login-layout -->
+            </div><!-- /page-login -->
 
             <!-- SUCCESS PAGE -->
             <div id="page-success" class="hidden">

@@ -108,12 +108,13 @@
             <version>5.2.5</version>
         </dependency>
 
-        <!-- Export: PDF (OpenPDF — free, actively maintained fork of iText 4) -->
+        <!-- Export: PDF (OpenPDF — free fork of iText 4, Java 17 compatible) -->
         <dependency>
             <groupId>com.github.librepdf</groupId>
             <artifactId>openpdf</artifactId>
-            <version>1.3.43</version>
+            <version>1.3.30</version>
         </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

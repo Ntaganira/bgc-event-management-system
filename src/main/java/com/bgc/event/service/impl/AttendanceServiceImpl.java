@@ -16,6 +16,7 @@ import com.bgc.event.entity.Event;
 import com.bgc.event.entity.User;
 import com.bgc.event.repository.AttendanceRepository;
 import com.bgc.event.repository.EventRepository;
+import com.bgc.event.repository.UserRepository;
 import com.bgc.event.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,20 +31,21 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
     private final EventRepository eventRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Attendance markByQR(User user, String qrValue) {
         Event event = eventRepository.findAll().stream()
-            .filter(e -> qrValue.equals(e.getQrCodeValue()))
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Invalid QR code"));
+                .filter(e -> qrValue.equals(e.getQrCodeValue()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Invalid QR code"));
         return markAttendance(user, event, AttendanceMethod.QR);
     }
 
     @Override
     public Attendance markByCode(User user, Long eventId) {
         Event event = eventRepository.findById(eventId)
-            .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new RuntimeException("Event not found"));
         return markAttendance(user, event, AttendanceMethod.CODE);
     }
 
@@ -52,10 +54,10 @@ public class AttendanceServiceImpl implements AttendanceService {
             throw new RuntimeException("Already checked in for this event");
         }
         Attendance att = Attendance.builder()
-            .user(user)
-            .event(event)
-            .method(method)
-            .build();
+                .user(user)
+                .event(event)
+                .method(method)
+                .build();
         return attendanceRepository.save(att);
     }
 
@@ -81,5 +83,14 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Transactional(readOnly = true)
     public long countByEvent(Event event) {
         return attendanceRepository.countByEvent(event);
+    }
+
+    @Override
+    public Attendance markByUserCode(String userCode, Long eventId) {
+        User user = userRepository.findByUserCode(userCode)
+                .orElseThrow(() -> new RuntimeException("No member found with code: " + userCode));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+        return markAttendance(user, event, AttendanceMethod.QR);
     }
 }

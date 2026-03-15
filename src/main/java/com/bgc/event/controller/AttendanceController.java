@@ -55,6 +55,22 @@ public class AttendanceController {
         return "redirect:/attendance";
     }
 
+    @Auditable(action = "MARK_ATTENDANCE_USER_QR", entity = "Attendance", idExpression = "#userCode")
+    @PostMapping("/scan-user-qr")
+    @PreAuthorize("hasAuthority('MARK_ATTENDANCE')")
+    public String scanUserQr(@RequestParam String userCode,
+                              @RequestParam Long   eventId,
+                              RedirectAttributes   ra) {
+        try {
+            var att = attendanceService.markByUserCode(userCode.trim().toUpperCase(), eventId);
+            ra.addFlashAttribute("successMsg",
+                att.getUser().getFullName() + " checked in successfully!");
+        } catch (Exception e) {
+            ra.addFlashAttribute("errorMsg", e.getMessage());
+        }
+        return "redirect:/attendance";
+    }
+
     @Auditable(action = "MARK_ATTENDANCE", entity = "Attendance", idExpression = "#eventId")
     @PostMapping("/mark-code")
     @PreAuthorize("hasAuthority('MARK_ATTENDANCE')")
@@ -81,3 +97,4 @@ public class AttendanceController {
         return "attendance/event-detail";
     }
 }
+

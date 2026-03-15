@@ -865,7 +865,7 @@ code { font-family: monospace; background: var(--bg); padding: 2px 6px; border-r
 ═══════════════════════════════════════════════════════════════ */
 .user-view-grid {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 350px 1fr;
   gap: 20px;
   align-items: start;
 }
@@ -907,4 +907,51 @@ code { font-family: monospace; background: var(--bg); padding: 2px 6px; border-r
 @media (max-width: 768px) {
   .user-view-grid { grid-template-columns: 1fr; }
   .uv-profile-card { position: static; }
+}
+
+
+/* ── User profile — QR section below profile card ── */
+.uv-qr-wrap {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1.5px dashed #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.uv-qr-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+}
+.uv-qr-img {
+  width: 148px;
+  height: 148px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  padding: 6px;
+  background: #fff;
+}
+.uv-qr-code {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #1e3a5f;
+  letter-spacing: 0.06em;
+  font-family: monospace;
+  background: #f1f5f9;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.uv-qr-hint { font-size: 11px; color: #94a3b8; text-align: center; }
+
+/* ── Attendance check-in grid ── */
+.attendance-checkin-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: start;
 }

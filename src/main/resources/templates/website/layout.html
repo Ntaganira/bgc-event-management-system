@@ -108,7 +108,9 @@
           <li><a th:href="@{/agenda}">Agenda</a></li>
           <li><a th:href="@{/speaker}">Speaker</a></li>
         </ul>
-        <a th:href="@{/register}" class="btn-nav-cta">Register Now</a>
+        <div><a th:href="@{/register}" class="btn-nav-cta">Register Now</a> |
+          <a th:href="@{/login}" style="border: 1px solid var(--navy-600);" class="btn-hero-primary">Login</a>
+        </div>
         <button class="hamburger" id="hamburger" aria-label="Toggle menu">
           <span></span><span></span><span></span>
         </button>
@@ -122,7 +124,7 @@
     </nav>
 
     <main>
-       <div th:replace="${content}"></div>
+      <div th:replace="${content}"></div>
     </main>
 
     <!-- ════ FOOTER ════ -->

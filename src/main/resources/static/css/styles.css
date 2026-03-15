@@ -170,6 +170,36 @@ main { flex: 1; }
   transition: background .18s, box-shadow .18s;
   box-shadow: var(--shadow-sm);
 }
+
+.btn-nav-cta-login {
+  display: none;
+  background: var(--navy-600);
+  color: var(--white);
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--radius-md);
+  transition: background .18s, box-shadow .18s;
+  box-shadow: var(--shadow-sm);
+}
+.topbar-lang-switcher{background: var(--text-main);padding: 10px 20px;border-radius: 5px;}
+/* ═══════════════════════════════════════════════════
+   LANG SWITCHER
+════════════════════════════════════════════════════ */
+.lang-switcher {
+    align-items: flex-start;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: row-reverse;
+}
+.lang-btn { font-size: 11px; font-weight: 700; color: var(--gray-600); text-decoration: none;
+  padding: 3px 8px; border-radius: 4px; transition: all .15s; letter-spacing: .5px; }
+.lang-btn:hover, .lang-btn.active { color: #fff; background: var(--navy-800); }
+.lang-sep { color: rgba(255,255,255,0.2); font-size: 11px; }
+/* On auth pages (light bg) */
+.auth-body .lang-btn { color: #64748b; }
+.auth-body .lang-btn:hover, .auth-body .lang-btn.active { color: #1e3a5f; background: #e8f0fe; }
+.auth-body .lang-sep { color: #cbd5e1; }
 .btn-nav-cta:hover { background: var(--navy-hover); }
 @media (min-width: 768px) { .btn-nav-cta { display: inline-block; } }
 
@@ -321,8 +351,8 @@ main { flex: 1; }
   color: var(--navy-700);
   font-weight: 700;
   font-size: 0.875rem;
-  padding: 0.85rem 1.75rem;
-  border-radius: var(--radius-xl);
+  padding: 0.6rem 1.75rem;
+  border-radius: var(--radius-md);
   transition: background .18s;
   box-shadow: var(--shadow-lg);
 }
@@ -796,10 +826,15 @@ footer {
 
 
 .login-divider {
-  width: 2.5rem;
-  height: 2px;
-  background: var(--navy-600);
-  margin: 0.6rem auto;
+    width: 11.5rem;
+    height: 2px;
+    background: var(--gray-300);
+    margin: 0.6rem;
+    /* text-align: -webkit-right; */
+    /* display: flex; */
+    position: absolute;
+    right: 30px;
+    top: 61px;
 }
 .login-card h1 {
   font-size: 1.5rem;
@@ -807,6 +842,7 @@ footer {
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--gray-900);
+  margin: 17px auto;
 }
 .btn-login {
   width: 100%;
