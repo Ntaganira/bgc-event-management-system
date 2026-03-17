@@ -24,8 +24,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -59,8 +57,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/register", "/login", "/forgot-password", "/reset-password", "/css/**", "/js/**",
-                    "/","/hone","/index", "/agender", "/speaker",
-                    "/images/**", "/h2-console/**", "/api/events/calendar"
+                    "/images/**", "/h2-console/**", "/api/events/calendar",
+                    "/", "/index", "/speaker", "/agender", "/agenda/**", "/qr/**"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
@@ -73,14 +71,15 @@ public class SecurityConfig {
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+                .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout=true")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
+                .deleteCookies("JSESSIONID", "remember-me")
                 .permitAll()
             )
-            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin())) // for H2 console
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/api/**"));
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/api/**", "/logout"));
 
         return http.build();
     }

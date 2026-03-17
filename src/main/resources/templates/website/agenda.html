@@ -2,15 +2,74 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Hone</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{agenda.title} + ' | BGC Event'">Agenda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+
 </head>
 
 <body>
     <div th:replace="~{website/layout :: layout(~{::section#content}, #{dashboard.title})}">
         <section id="content">
-          
+
+            <!-- ════ HERO ════ -->
+            <section class="hero">
+                <div class="hero-inner animate-slide-up">
+                    <span class="hero-badge">October 15–17, 2026</span>
+                    <h1>Conference Agenda</h1>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                        labore et dolore magna aliqua.</p>
+                </div>
+            </section>
+
+            <!-- ════ AGENDA CONTENT ════ -->
+            <section class="section section-gray" style="min-height: 60vh;">
+                <div class="container-md">
+                    <div class="day-tabs" id="agenda-tabs"></div>
+                    <div class="agenda-list" id="agenda-list"></div>
+                </div>
+            </section>
+
+            <!-- ════ CTA ════ -->
+            <section class="cta-banner">
+                <h2>JOIN BCC GLOBAL CONGRESS 2026</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                    et dolore magna aliqua.</p>
+                <a href="register.html" class="btn-cta">Register Now</a>
+            </section>
+
         </section>
     </div>
+    <th:block layout:fragment="scripts">
+        <script>
+            // Tabs
+            const tabsEl = document.getElementById('agenda-tabs');
+            const listEl = document.getElementById('agenda-list');
+            let activeDay = Object.keys(agendaData)[0];
+
+            function renderTabs() {
+                tabsEl.innerHTML = Object.keys(agendaData).map(day =>
+                    `<button class="day-tab ${day === activeDay ? 'active' : ''}" data-day="${day}">${day}</button>`
+                ).join('');
+                tabsEl.querySelectorAll('.day-tab').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        activeDay = btn.dataset.day;
+                        renderTabs();
+                        renderList();
+                    });
+                });
+            }
+
+            function renderList() {
+                listEl.innerHTML = agendaData[activeDay].map(item => agendaCard(item)).join('');
+            }
+
+            renderTabs();
+            renderList();
+        </script>
+    </th:block>
 </body>
 
 </html>

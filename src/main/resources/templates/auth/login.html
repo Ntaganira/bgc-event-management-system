@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
-    <title>login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{auth.login.title} + ' | BGC Event'">Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         /* ══════════════════════════════════════════════
@@ -326,9 +328,9 @@
                                 <div class="login-card">
                                     <div class="login-header">
                                         <span class="lang-switcher">
-                                            <a th:href="@{''(lang=en)}" th:classappend="${#locale.language == 'en'} ? ' active'" class="lang-btn">EN</a>
+                                            <a th:href="@{(lang=en)}" th:classappend="${#locale.language == 'en'} ? ' active'" class="lang-btn">EN</a>
                                             <span class="lang-sep">|</span>
-                                            <a th:href="@{''(lang=fr)}" th:classappend="${#locale.language == 'fr'} ? ' active'" class="lang-btn">FR</a>
+                                            <a th:href="@{(lang=fr)}" th:classappend="${#locale.language == 'fr'} ? ' active'" class="lang-btn">FR</a>
                                         </span>
                                         <!-- <p class="login-eyebrow">BCC Global Congress</p> -->
                                         <div class="login-divider"></div>
@@ -336,7 +338,8 @@
                                     </div>
 
 
-                                    <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
+                                    <div th:if="${error}" class="alert alert-danger" th:text="${errorMsg}"></div>
+
                                     <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}">
                                     </div>
                                     <div th:if="${logoutMsg}" class="alert alert-info" th:text="${logoutMsg}"></div>

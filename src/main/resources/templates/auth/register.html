@@ -6,9 +6,9 @@
 
     <style>
         /* ══════════════════════════════════════════════
-   REGISTER PAGE — paste at the bottom of styles.css
-   Replace the old .form-card rule with this one
-══════════════════════════════════════════════ */
+            REGISTER PAGE — paste at the bottom of styles.css
+            Replace the old .form-card rule with this one
+            ══════════════════════════════════════════════ */
 
         /* MODIFIED — removed transform: translateY(-2.5rem) */
         .form-card {
@@ -187,7 +187,7 @@
         <section id="content">
 
             <!-- REGISTER PAGE -->
-            <div  th:if="${successMsg == null}" id="page-register">
+            <div th:if="${successMsg == null}" id="page-register">
 
                 <div class="home-hero-bg"></div>
                 <div class="home-hero-overlay"></div>
@@ -352,14 +352,15 @@
             </div><!-- /page-register -->
 
             <!-- SUCCESS PAGE -->
-            <div  th:if="${successMsg != null}" id="page-success">
+            <div th:if="${successMsg != null}" id="page-success">
                 <div class="success-wrap">
                     <div class="success-card animate-slide-up">
                         <span class="emoji">🎉</span>
                         <h2 th:text="#{auth.register.success.title}">Registration Complete!</h2>
-                        <p th:text="#{auth.register.success.desc}">Thank you, <strong id="success-name"></strong>! Your registration for BCC Global Congress
+                        <p th:text="#{auth.register.success.desc}">Thank you, <strong id="success-name"></strong>! Your
+                            registration for BCC Global Congress
                             2026 is confirmed. We look forward to seeing you in Kigali!</p>
-                        <a th:href="@{/}"  class="btn-back-home"> <span th:text="#{common.go.back}"></span></a>
+                        <a th:href="@{/}" class="btn-back-home"> <span th:text="#{common.go.back}"></span></a>
                     </div>
                 </div>
             </div>

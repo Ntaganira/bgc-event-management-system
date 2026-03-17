@@ -173,10 +173,15 @@
                    th:classappend="${#locale.language == 'fr'} ? ' active'"
                    class="lang-btn">FR</a>
             </div>
-            <a th:href="@{/logout}" class="nav-item">
-                <span class="nav-icon"><i class="fas fa-power-off" style="color: white;"></i></span>
-                <span class="nav-label" th:text="#{nav.logout}">Logout</span>
-            </a>
+            <form id="logoutForm" th:action="@{/logout}" method="post" style="margin:0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="nav-item" style="width:100%;background:none;border:none;cursor:pointer;text-align:left;"
+                        onclick="document.getElementById('logoutForm').submit(); return false;">
+                    <span class="nav-icon"><i class="fas fa-power-off" style="color: white;"></i></span>
+                    <span class="nav-label" th:text="#{nav.logout}">Logout</span>
+                </button>
+            </form>
+
         </div>
     </aside>
 

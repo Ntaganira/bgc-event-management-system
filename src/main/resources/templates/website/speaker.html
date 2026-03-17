@@ -36,6 +36,13 @@
 
         </section>
     </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            document.getElementById('speakers-grid').innerHTML =
+                speakers.map(s => speakerCard(s)).join('');
+        </script>
+    </th:block>
 </body>
 
 </html>
