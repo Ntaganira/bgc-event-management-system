@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{agenda.title} + ' | BGC Event'">Agenda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+    <div th:replace="~{website/layout :: layout(~{::section#content}, #{dashboard.title})}">
+        <section id="content">
+            <div class="profile-page">
+                <div class="profile-inner animate-slide-up">
+
+                    <!-- Back button -->
+                    <a th:href="@{/speaker}" class="btn-back">← Back to Speakers</a>
+
+                    <!-- Profile Card (filled by JS) -->
+                    <div class="profile-card" id="profile-card">
+                        <!-- Rendered by JS -->
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+    <th:block layout:fragment="scripts">
+        <script>
+
+            // Get speaker ID from URL
+            const params = new URLSearchParams(window.location.search);
+            const id = parseInt(params.get('id')) || 1;
+            const speaker = speakers.find(s => s.id === id) || speakers[0];
+
+            // Update page title
+            document.title = speaker.name + ' – BCC Global Congress 2026';
+
+            // Render profile card
+            document.getElementById('profile-card').innerHTML = `
+    <div class="profile-header">
+      <div class="profile-avatar">${speaker.initials}</div>
+      <div class="profile-info">
+        <h1>${speaker.name}</h1>
+        <p class="profile-role">${speaker.role}</p>
+        <p class="profile-committee">${speaker.committee}</p>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <h2>Biography</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </div>
+
+    <div class="profile-section" style="border-top: 1px solid var(--gray-100); padding-top: 2rem;">
+      <h2>Sessions</h2>
+      <div class="session-item">
+        <span class="agenda-tag">BCG</span>
+        <div>
+          <p class="session-title">Lorem ipsum dolor sit amet</p>
+          <p class="session-meta">Day 1 · 09:00 – 10:30</p>
+        </div>
+      </div>
+    </div>
+  `;
+        </script>
+    </th:block>
+</body>
+
+</html>

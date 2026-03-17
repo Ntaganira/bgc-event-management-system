@@ -22,7 +22,7 @@ function speakerCard(s) {
       <div class="speaker-avatar">${s.initials}</div>
       <h3>${s.name}</h3>
       <p>${s.desc}</p>
-      <a href="speaker-profile.html?id=${s.id}" class="btn-view-profile">View Profile</a>
+      <a href="speaker-profile?id=${s.id}" class="btn-view-profile">View Profile</a>
     </div>`;
 }
 

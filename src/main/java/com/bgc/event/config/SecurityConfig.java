@@ -58,7 +58,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/register", "/login", "/forgot-password", "/reset-password", "/css/**", "/js/**",
                     "/images/**", "/h2-console/**", "/api/events/calendar",
-                    "/", "/index", "/speaker", "/agender", "/agenda/**", "/qr/**"
+                    "/", "/index", "/speaker", "/agender", "/agenda/**", "/qr/**","/speaker-profile"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()

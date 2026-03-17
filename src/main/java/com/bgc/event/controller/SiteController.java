@@ -54,4 +54,14 @@ public class SiteController {
     public String agenderPage(Model model) {
         return "website/agenda";
     }
+
+    @GetMapping("/speaker-profile")
+    public String getSpeakerProfile(@RequestParam("id") Long id, Model model) {
+
+        // Speaker speaker = speakerService.findById(id);
+
+        // model.addAttribute("speaker", speaker);
+
+        return "website/speaker-profile"; 
+    }
 }
