@@ -13,7 +13,9 @@ package com.bgc.event.controller;
 import com.bgc.event.audit.Auditable;
 import com.bgc.event.dto.RegisterDto;
 import com.bgc.event.entity.BccOffice;
+import com.bgc.event.entity.User;
 import com.bgc.event.service.BccOfficeService;
+import com.bgc.event.service.SendEmail;
 import com.bgc.event.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ public class AuthController {
     private final UserService userService;
     private final BccOfficeService officeService;
     private final MessageSource messageSource;
+    private final SendEmail sendEmail;
 
     @GetMapping("/register")
     public String registerPage(Model model) {
@@ -62,9 +65,12 @@ public class AuthController {
         }
         try {
             registerDto.setPassword("password123");
-            userService.register(registerDto);
+            User user = userService.register(registerDto);
             ra.addFlashAttribute("successMsg",
                     messageSource.getMessage("auth.register.success", null, locale));
+            
+            //Sending an Email to a new registered User
+            sendEmail.sendHtmlEmail(user);
             return "redirect:/register";
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
