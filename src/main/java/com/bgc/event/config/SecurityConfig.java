@@ -12,6 +12,10 @@ package com.bgc.event.config;
  */
 
 import com.bgc.event.security.CustomUserDetailsService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +28,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Set;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -50,9 +59,42 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * Ensures an HTTP session exists BEFORE the view is rendered for the
+     * public pages whose forms rely on `th:action` (Spring Security CSRF).
+     *
+     * Rendering those templates emits the CSRF hidden field via
+     * HttpSessionCsrfTokenRepository.saveToken(), which calls
+     * request.getSession(true). On a fresh browser (no session yet) the
+     * response buffer is already flushed by the time the form is reached
+     * (large inline styles + layout markup), so session creation fails with
+     * "Cannot create a session after the response has been committed" and the
+     * page renders blank. Creating the session here — before any output is
+     * written — fixes that without changing Spring Security's CSRF defaults.
+     */
+    @Bean
+    public OncePerRequestFilter csrfSessionFilter() {
+        Set<String> formPaths = Set.of("/login", "/register", "/forgot-password", "/reset-password");
+        return new OncePerRequestFilter() {
+            @Override
+            protected boolean shouldNotFilter(HttpServletRequest request) {
+                return !("GET".equals(request.getMethod())
+                        && formPaths.contains(request.getServletPath()));
+            }
+
+            @Override
+            protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+                    throws ServletException, IOException {
+                request.getSession();
+                chain.doFilter(request, response);
+            }
+        };
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .addFilterBefore(csrfSessionFilter(), CsrfFilter.class)
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
