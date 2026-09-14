@@ -75,13 +75,13 @@
           <img th:src="@{/images/bcc_logo.png}" alt="BCC Logo" onerror="this.style.display='none'" />
         </a>
         <ul class="nav-links">
-          <li><a th:href="@{/index}" class="active">Home</a></li>
+          <li><a th:href="@{/index}">Home</a></li>
           <li><a th:href="@{/agender}">Agenda</a></li>
           <li><a th:href="@{/speaker}">Speaker</a></li>
         </ul>
         <div>
           <a th:href="@{/register}" class="btn-nav-cta">Register Now</a>
-          <a th:href="@{/loginn}" style="border: 1px solid var(--navy-600);"
+          <a th:href="@{/login}" style="border: 1px solid var(--navy-600);"
             class="btn-hero-primary btn-nav-cta">Login</a>
         </div>
         <button class="hamburger" id="hamburger" aria-label="Toggle menu">
@@ -93,7 +93,7 @@
         <a th:href="@{/agender}">Agenda</a>
         <a th:href="@{/speaker}">Speaker</a>
         <a th:href="@{/register}" class="btn-mobile-cta">Register Now</a>
-        <a th:href="@{/loginn}" class="btn-mobile-cta">Login</a>
+        <a th:href="@{/login}" class="btn-mobile-cta">Login</a>
       </div>
     </nav>
 
@@ -124,7 +124,7 @@
               <li><a th:href="@{/agender}">Agenda</a></li>
               <li><a th:href="@{/speaker}">Speaker</a></li>
               <li><a th:href="@{/register}">Registration</a></li>
-              <li><a th:href="@{/loginn}">Login</a></li>
+              <li><a th:href="@{/login}">Login</a></li>
             </ul>
           </div>
         </div>
@@ -136,6 +136,18 @@
   <script th:src="@{/js/data.js}"></script>
   <script th:src="@{/js/components.js}"></script>
   <script>
+    // Highlight active nav link based on current path
+    (function () {
+      var seg = window.location.pathname.split('/')[1] || 'index';
+      if (seg === 'home') seg = 'index';
+      document.querySelectorAll('.nav-links a, .mobile-menu a:not(.btn-mobile-cta), .footer-col ul li a')
+        .forEach(function (a) {
+          var href = (a.getAttribute('href') || '').replace(/\/+$/, '');
+          var target = href.split('/').pop() || 'index';
+          if (target === seg) a.classList.add('active');
+        });
+    })();
+
     // Navbar hamburger
     const ham = document.getElementById('hamburger');
     const mob = document.getElementById('mobile-menu');

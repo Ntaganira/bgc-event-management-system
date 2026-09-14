@@ -54,13 +54,21 @@ public class AuthController {
         return "auth/register";
     }
 
+    private void populateOffices(Model model) {
+        Map<String, List<BccOffice>> officesByCountry = officeService.findActive()
+                .stream()
+                .collect(Collectors.groupingBy(BccOffice::getCountry));
+
+        model.addAttribute("officesByCountry", officesByCountry);
+    }
+
     @Auditable(action = "REGISTER", entity = "User", idExpression = "#registerDto.email")
     @PostMapping("/register")
     public String register(@Valid @ModelAttribute RegisterDto registerDto,
             BindingResult result, Model model,
             RedirectAttributes ra, Locale locale) {
         if (result.hasErrors()) {
-            model.addAttribute("offices", officeService.findActive());
+            populateOffices(model);
             return "auth/register";
         }
         try {
@@ -74,7 +82,7 @@ public class AuthController {
             return "redirect:/register";
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
-            model.addAttribute("offices", officeService.findActive());
+            populateOffices(model);
             return "auth/register";
         }
     }

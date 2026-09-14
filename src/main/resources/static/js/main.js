@@ -14,14 +14,18 @@ document.addEventListener('DOMContentLoaded', function () {
         setTimeout(() => { el.style.transition = 'opacity 0.5s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 500); }, 4000);
     });
 
-    // Highlight active nav item
+    // Highlight active nav item (longest/most-specific match wins)
     const path = window.location.pathname;
-    document.querySelectorAll('.nav-item').forEach(function (item) {
-        const href = item.getAttribute('href') || '';
-        if (href && path.startsWith(href) && href !== '/') {
-            item.classList.add('active');
-        }
-    });
+    const items = Array.from(document.querySelectorAll('.nav-item'));
+    const match = items
+        .map(item => {
+            const href = item.getAttribute('href') || '';
+            const isMatch = href && href !== '/' && (path === href || path.startsWith(href + '/'));
+            return { item, href, isMatch };
+        })
+        .filter(m => m.isMatch)
+        .sort((a, b) => b.href.length - a.href.length)[0];
+    if (match) match.item.classList.add('active');
 });
 
 

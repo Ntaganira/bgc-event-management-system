@@ -42,6 +42,13 @@ public class SendEmailImpl implements SendEmail {
         // ── Thymeleaf context — variables injected into the template ──────
         Context ctx = new Context(locale);
         ctx.setVariable("firstName", user.getFirstName());
+        ctx.setVariable("fullName", user.getFullName());
+        ctx.setVariable("email", user.getEmail());
+        ctx.setVariable("branch", user.getBranch());
+        ctx.setVariable("title", user.getTitle());
+        ctx.setVariable("arrivalDate", user.getArrivalDate());
+        ctx.setVariable("returnDate", user.getReturnDate());
+        ctx.setVariable("userCode", user.getUserCode());
         ctx.setVariable("subject", subject);
 
         // ── Render password-reset.html → HTML String ──────────────────────

@@ -1,41 +1,156 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
-  <title>Registration Form</title>
+  <title th:text="${subject}">Registration Confirmation</title>
 </head>
 
-
+<!--
+  Rendered by TemplateEngine (not the web MVC engine).
+  Variables injected from SendEmailImpl:
+    ${firstName}   — user's first name
+    ${fullName}    — user's full name
+    ${email}       — user's email
+    ${branch}      — BCC office / branch name (plain string, lazy-load safe)
+    ${title}       — title / position (may be null)
+    ${arrivalDate} — arrival date (may be null)
+    ${returnDate}  — return date (may be null)
+    ${userCode}    — registration code (may be null)
+    ${subject}     — email subject (used in layout <title>)
+  All text strings come from #{email.registration.*} — resolved per user locale.
+-->
 <body>
-  <div th:replace="~{layout :: layout(~{::section#body})}">
-    <section id="body">
+<div th:replace="~{layout :: layout(~{::section#body})}">
+<section id="body">
 
-      <!-- Icon -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-        </tr>
-      </table>
+  <!-- ✅ Confirmation icon -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td style="text-align:center;padding:32px 40px 0;">
+        <div style="display:inline-block;background:#dcfce7;border-radius:50%;
+                    width:64px;height:64px;line-height:64px;font-size:28px;
+                    text-align:center;">🎉</div>
+      </td>
+    </tr>
+  </table>
 
-      <!-- Heading + body copy -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td style="padding:24px 40px 8px;">
-            <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#1E3A5F;"
-              th:text="#{auth.register.success.title}">Password Reset Request</h1>
+  <!-- Heading + body copy -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td style="padding:20px 40px 8px;text-align:center;">
+        <h1 style="margin:0 0 10px;font-size:24px;font-weight:800;color:#1E3A5F;"
+            th:text="#{email.registration.heading}">Registration Confirmed</h1>
+        <p style="margin:0 0 4px;font-size:15px;color:#374151;line-height:1.6;">
+          <span th:text="#{email.registration.greeting}">Hello</span>
+          <strong th:text="${firstName}">User</strong>,
+        </p>
+        <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.7;"
+           th:text="#{email.registration.intro}">
+          Thank you for registering for the BCC Global Congress 2026.
+        </p>
+      </td>
+    </tr>
+  </table>
 
-            <p style="margin:0 0 6px;font-size:15px;color:#374151;line-height:1.6;">
-              <span th:text="#{email.reset.greeting}">Hello</span>
-              <strong th:text="${firstName}">User</strong>,
-            </p>
+  <!-- Registrant details card -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td style="padding:0 40px 20px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
+          <tr>
+            <td style="padding:14px 20px;border-bottom:1px solid #e2e8f0;">
+              <p style="margin:0;font-size:12px;font-weight:700;color:#2563EB;
+                        letter-spacing:1px;text-transform:uppercase;"
+                 th:text="#{email.registration.detailsTitle}">
+                Your Registration
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:6px 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:8px 0;font-size:13px;color:#6b7280;width:45%;"
+                      th:text="#{email.registration.fullName}">Full Name</td>
+                  <td style="padding:8px 0;font-size:14px;font-weight:600;color:#111827;"
+                      th:text="${fullName}">John Doe</td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0;font-size:13px;color:#6b7280;width:45%;"
+                      th:text="#{email.registration.branch}">BCC Office</td>
+                  <td style="padding:8px 0;font-size:14px;font-weight:600;color:#111827;"
+                      th:text="${branch}">BCC Headquarters</td>
+                </tr>
+                <tr th:if="${title != null and !title.isBlank()}">
+                  <td style="padding:8px 0;font-size:13px;color:#6b7280;width:45%;"
+                      th:text="#{email.registration.title2}">Title / Position</td>
+                  <td style="padding:8px 0;font-size:14px;font-weight:600;color:#111827;"
+                      th:text="${title}">Engineer</td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0;font-size:13px;color:#6b7280;width:45%;"
+                      th:text="#{email.registration.email}">Email</td>
+                  <td style="padding:8px 0;font-size:14px;font-weight:600;color:#111827;"
+                      th:text="${email}">user@bgc.com</td>
+                </tr>
+                <tr th:if="${arrivalDate != null}">
+                  <td style="padding:8px 0;font-size:13px;color:#6b7280;width:45%;"
+                      th:text="#{email.registration.arrival}">Arrival Date</td>
+                  <td style="padding:8px 0;font-size:14px;font-weight:600;color:#111827;"
+                      th:text="${arrivalDate}">2026-08-24</td>
+                </tr>
+                <tr th:if="${returnDate != null}">
+                  <td style="padding:8px 0;font-size:13px;color:#6b7280;width:45%;"
+                      th:text="#{email.registration.return}">Return Date</td>
+                  <td style="padding:8px 0;font-size:14px;font-weight:600;color:#111827;"
+                      th:text="${returnDate}">2026-08-27</td>
+                </tr>
+                <tr th:if="${userCode != null and !userCode.isBlank()}">
+                  <td style="padding:8px 0;font-size:13px;color:#6b7280;width:45%;"
+                      th:text="#{email.registration.code}">Registration Code</td>
+                  <td style="padding:8px 0;font-size:14px;font-weight:600;color:#111827;"
+                      th:text="${userCode}">BGC-2026-001</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 
-            <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;"
-              th:text="#{auth.register.success.desc}">
-            </p>
-          </td>
-        </tr>
-      </table>
-    </section>
-  </div>
+  <!-- Event info band -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td style="background:linear-gradient(135deg,#0D1B2E 0%,#1E3D6E 100%);
+                 border-radius:10px;padding:18px 24px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="font-size:15px;font-weight:800;color:#ffffff;letter-spacing:0.3px;"
+                th:text="#{email.registration.eventName}">BCC Global Congress 2026</td>
+          </tr>
+          <tr>
+            <td style="padding-top:4px;font-size:13px;color:#a3c2e8;"
+                th:text="#{email.registration.eventDetail}">Kigali, Rwanda · REC Masoro</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Small note -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td style="padding:20px 40px 32px;text-align:center;">
+        <p style="margin:0;font-size:12px;color:#9ca3af;line-height:1.7;"
+           th:text="#{email.registration.note}">
+          This email confirms your registration. No action is required.
+        </p>
+      </td>
+    </tr>
+  </table>
+
+</section>
+</div>
 </body>
-
 </html>

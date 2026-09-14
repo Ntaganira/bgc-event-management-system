@@ -246,6 +246,7 @@ main { flex: 1; }
   transition: color .18s;
 }
 .mobile-menu a:hover { color: var(--navy-600); }
+.mobile-menu a.active { color: var(--navy-600); font-weight: 700; }
 .mobile-menu .btn-mobile-cta {
   background: var(--navy-600);
   color: var(--white);
@@ -654,6 +655,7 @@ footer {
 .footer-col ul li { margin-bottom: 0.4rem; font-size: 0.875rem; }
 .footer-col ul li a { color: var(--gray-400); transition: color .18s; }
 .footer-col ul li a:hover { color: var(--white); }
+.footer-col ul li a.active { color: var(--white); font-weight: 600; }
 .footer-col ul li strong { color: var(--gray-300); }
 .footer-bottom {
   border-top: 1px solid rgba(255,255,255,.1);
@@ -708,7 +710,7 @@ footer {
 .field label {
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--gray-600);
+  color: var(--gray-800);
   margin-bottom: 0.4rem;
   text-transform: uppercase;
   letter-spacing: .04em;
@@ -1161,4 +1163,9 @@ footer {
 .register-description{
   display: none;
 }
+}
+
+/* intl-tel-input: render country-name text in near-black on register form */
+.iti__country-name.iti__country-name {
+  color: var(--gray-800);
 }

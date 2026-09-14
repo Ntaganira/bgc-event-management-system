@@ -244,7 +244,7 @@
 
                     <!-- ════ RIGHT: Form ════ -->
                     <div class="animate-slide-up delay-1">
-                        <form th:action="@{/register}" th:object="${registerDto}" method="post" class="auth-form">
+                        <form th:action="@{/register}" th:object="${registerDto}" method="post" class="auth-form" id="regForm">
                             <div class="form-card">
                                 <span class="lang-switcher" style="    margin-bottom: 30px;">
                                     <a th:href="@{''(lang=en)}" th:classappend="${#locale.language == 'en'} ? ' active'"
@@ -285,7 +285,8 @@
                                         </div>
                                         <div class="field">
                                             <label th:text="#{auth.register.phone}">Phone</label>
-                                            <input type="text" th:field="*{phoneNumber}" class="form-control">
+                                            <input type="tel" th:field="*{phoneNumber}"
+                                                class="form-control phone-number" placeholder="+250 7XX XXX XXX">
                                             <span class="err" id="err-phone"></span>
                                         </div>
                                     </div>
@@ -365,6 +366,33 @@
 
         </section>
     </div>
+
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/intl-tel-input@24.6.0/build/css/intlTelInput.css">
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@24.6.0/build/js/intlTelInput.min.js"></script>
+    <script>
+        (function () {
+            var el = document.getElementById('phoneNumber');
+            var form = document.getElementById('regForm');
+            if (!el || typeof window.intlTelInput === 'undefined') return;
+
+            var iti = window.intlTelInput(el, {
+                initialCountry: 'rw',
+                preferredCountries: ['rw', 'bi', 'cd', 'ke', 'tz', 'ug', 'ng', 'za', 'gb'],
+                separateDialCode: true,
+                utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@24.6.0/build/js/utils.js'
+            });
+
+            if (form) {
+                form.addEventListener('submit', function () {
+                    var full = iti.getNumber();
+                    if (full && full !== '+') {
+                        el.value = full;
+                    }
+                });
+            }
+        })();
+    </script>
 </body>
 
 </html>
