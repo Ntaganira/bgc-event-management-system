@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -132,7 +131,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    @EntityGraph(attributePaths = "office")
     public Page<User> findPaginated(String search, Pageable pageable) {
         if (search == null || search.isBlank()) {
             return userRepository.findAllByOrderByCreatedAtDesc(pageable);

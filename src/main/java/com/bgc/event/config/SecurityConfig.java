@@ -112,6 +112,12 @@ public class SecurityConfig {
                 .failureUrl("/login?error=true")
                 .permitAll()
             )
+            .rememberMe(remember -> remember
+                .key("bgc-event-remember-me-key")
+                .rememberMeParameter("remember-me")
+                .tokenValiditySeconds(1209600)
+                .userDetailsService(userDetailsService)
+            )
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout=true")

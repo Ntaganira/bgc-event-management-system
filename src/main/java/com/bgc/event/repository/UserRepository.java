@@ -34,10 +34,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    @EntityGraph(attributePaths = "roles")
+    @EntityGraph(attributePaths = {"roles", "office"})
     List<User> findAll();
 
-    @EntityGraph(attributePaths = "roles")
+    @EntityGraph(attributePaths = {"roles", "office"})
     Optional<User> findById(Long id);
 
     @EntityGraph(attributePaths = "roles")
@@ -47,11 +47,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE u.email = :email")
     Optional<User> findByEmailWithRolesAndPermissions(@Param("email") String email);
 
-    @EntityGraph(attributePaths = "roles")
+    @EntityGraph(attributePaths = {"roles", "office"})
     Page<User> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
             String firstName, String lastName, String email, Pageable pageable);
 
-    @EntityGraph(attributePaths = "roles")
+    @EntityGraph(attributePaths = {"roles", "office"})
     Page<User> findAllByOrderByCreatedAtDesc(Pageable pageable);
     
     

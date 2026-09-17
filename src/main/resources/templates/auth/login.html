@@ -363,8 +363,15 @@
                                             password?</a></p>
                                     </div>
 
-                                    <button class="btn-login" th:text="#{auth.login.submit}"
-                                        onclick="handleLogin()">Login</button>
+                                    <div class="login-field" style="margin-bottom: 0;">
+                                        <label class="rm-label" style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:#6b7280;cursor:pointer;">
+                                            <input type="checkbox" name="remember-me" value="true"
+                                                   style="width:auto;accent-color:#1e3d6e;">
+                                            <span th:text="#{auth.login.remember}">Remember me</span>
+                                        </label>
+                                    </div>
+
+                                    <button class="btn-login" th:text="#{auth.login.submit}">Login</button>
 
                                     <div class="login-links">
                                         <p>Don't have an account? <a href="/login">login here</a></p>

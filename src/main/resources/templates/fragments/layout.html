@@ -183,12 +183,19 @@
             </form>
 
         </div>
+    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+            <svg class="icon-collapse" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <svg class="icon-expand" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
     </aside>
 
     <!-- ═══ MAIN ═══ -->
     <div class="main">
         <header class="topbar">
-            <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
             <h1 class="topbar-title" th:text="${pageTitle}">Page</h1>
             <div class="topbar-spacer"></div>
             <div class="topbar-user">

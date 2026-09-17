@@ -71,18 +71,17 @@
     <!-- ════ NAVBAR ════ -->
     <nav class="navbar">
       <div class="navbar-inner">
-        <a th:href="@{/index}" class="navbar-logo">
-          <img th:src="@{/images/bcc_logo.png}" alt="BCC Logo" onerror="this.style.display='none'" />
-        </a>
-        <ul class="nav-links">
-          <li><a th:href="@{/index}">Home</a></li>
-          <li><a th:href="@{/agender}">Agenda</a></li>
-          <li><a th:href="@{/speaker}">Speaker</a></li>
-        </ul>
+        <div class="navbar-left">
+          <a th:href="@{/index}" class="navbar-logo">
+            <img th:src="@{/images/bcc_logo.png}" alt="BCC Logo" onerror="this.style.display='none'" />
+          </a>
+          <a th:href="@{/index}" class="navbar-home">Home</a>
+        </div>
         <div>
-          <a th:href="@{/register}" class="btn-nav-cta">Register Now</a>
-          <a th:href="@{/login}" style="border: 1px solid var(--navy-600);"
-            class="btn-hero-primary btn-nav-cta">Login</a>
+          <a href="https://bcntv.org/" class="btn-nav-cta">Follow BGC on BCN TV</a>
+          <!-- <a th:href="@{/register}" class="btn-nav-cta">Register Now</a> -->
+          <!-- <a th:href="@{/login}" style="border: 1px solid var(--navy-600);"
+            class="btn-hero-primary btn-nav-cta">Login</a> -->
         </div>
         <button class="hamburger" id="hamburger" aria-label="Toggle menu">
           <span></span><span></span><span></span>
@@ -90,10 +89,11 @@
       </div>
       <div class="mobile-menu" id="mobile-menu">
         <a th:href="@{/index}">Home</a>
-        <a th:href="@{/agender}">Agenda</a>
-        <a th:href="@{/speaker}">Speaker</a>
-        <a th:href="@{/register}" class="btn-mobile-cta">Register Now</a>
-        <a th:href="@{/login}" class="btn-mobile-cta">Login</a>
+        <a href="https://bcntv.org/">Follow BGC on BCN TV</a>
+        <!-- <a th:href="@{/agender}">Agenda</a> -->
+        <!-- <a th:href="@{/speaker}">Speaker</a> -->
+        <!-- <a th:href="@{/register}" class="btn-mobile-cta">Register Now</a>
+        <a th:href="@{/login}" class="btn-mobile-cta">Login</a> -->
       </div>
     </nav>
 
@@ -107,24 +107,20 @@
         <div class="footer-grid">
           <div class="footer-col">
             <h4>BCC Global Congress (BGC) 2026</h4>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.</p>
+            <p>A global gathering of the BCC family, united in faith, discipleship, connection, celebration, and mission.</p>
           </div>
           <div class="footer-col">
             <h4>Contact</h4>
             <ul>
-              <li><strong>Email:</strong> info@bccglobalcongress.org</li>
-              <li><strong>Phone:</strong> +250 780 000 000</li>
-              <li><strong>Location:</strong> Kigali, Rwanda</li>
+              <li><strong>Email:</strong> bgc26@bccinternational.org</li>
+              <li><strong>Phone:</strong> +250 788 309 212 / +1 (737) 825-1137</li>
             </ul>
           </div>
           <div class="footer-col">
-            <h4>Quick Link</h4>
+            <h4>Quick Links</h4>
             <ul>
-              <li><a th:href="@{/agender}">Agenda</a></li>
-              <li><a th:href="@{/speaker}">Speaker</a></li>
-              <li><a th:href="@{/register}">Registration</a></li>
-              <li><a th:href="@{/login}">Login</a></li>
+              <li><a th:href="@{/index}">Home</a></li>
+              <li><a th:href="@{/index}">BGC2026 Program</a></li>
             </ul>
           </div>
         </div>
@@ -140,7 +136,7 @@
     (function () {
       var seg = window.location.pathname.split('/')[1] || 'index';
       if (seg === 'home') seg = 'index';
-      document.querySelectorAll('.nav-links a, .mobile-menu a:not(.btn-mobile-cta), .footer-col ul li a')
+      document.querySelectorAll('.navbar-home, .mobile-menu a:not(.btn-mobile-cta), .footer-col ul li a')
         .forEach(function (a) {
           var href = (a.getAttribute('href') || '').replace(/\/+$/, '');
           var target = href.split('/').pop() || 'index';

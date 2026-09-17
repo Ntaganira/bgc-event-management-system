@@ -132,6 +132,27 @@ main { flex: 1; }
   letter-spacing: .04em;
 }
 
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+.navbar-home {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  letter-spacing: .03em;
+  padding-bottom: 3px;
+  border-bottom: 2px solid transparent;
+  transition: color .18s, border-color .18s;
+}
+.navbar-home:hover,
+.navbar-home.active {
+  color: var(--navy-600);
+  border-bottom-color: var(--navy-600);
+}
+
 /* Desktop links */
 .nav-links {
   display: none;
@@ -387,10 +408,26 @@ main { flex: 1; }
   gap: 2rem;
   text-align: center;
 }
+.info-strip-header { grid-column: 1 / -1; }
+.info-strip-header h2 {
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  font-weight: 900;
+  color: var(--gray-900);
+  margin-bottom: 0.35rem;
+}
+.info-strip-header p {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+}
 @media (min-width: 560px) {
-  .info-strip-inner { grid-template-columns: repeat(3, 1fr); }
+  .info-strip-inner { grid-template-columns: repeat(2, 1fr); }
 }
 .info-item { display: flex; flex-direction: column; align-items: center; }
+.info-pair { margin-bottom: 0.85rem; }
+.info-pair:last-child { margin-bottom: 0; }
 .info-icon {
   width: 3.5rem;
   height: 3.5rem;
@@ -402,6 +439,11 @@ main { flex: 1; }
   font-size: 1.5rem;
   margin-bottom: 0.75rem;
   box-shadow: inset 0 2px 6px rgba(0,0,0,.06);
+}
+.info-icon svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--navy-600);
 }
 .info-label {
   font-size: 0.68rem;
@@ -429,6 +471,20 @@ main { flex: 1; }
   max-width: 32rem;
   margin: 0 auto;
   line-height: 1.75;
+}
+.agenda-dates {
+  color: var(--navy-600) !important;
+  font-weight: 700;
+  letter-spacing: .06em;
+  margin-bottom: 1rem !important;
+}
+.sub-label {
+  color: var(--navy-600) !important;
+  font-weight: 800;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-size: 0.8rem !important;
+  margin-bottom: 0.5rem;
 }
 
 /* ── Generic section wrapper ── */
@@ -469,6 +525,42 @@ main { flex: 1; }
 }
 .why-card h3 { font-size: 1rem; font-weight: 700; color: var(--gray-800); margin-bottom: 0.5rem; }
 .why-card p  { font-size: 0.875rem; color: var(--gray-500); line-height: 1.75; }
+
+/* ── SUPPORT CARDS ── */
+.support-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+@media (min-width: 768px) { .support-grid { grid-template-columns: repeat(3, 1fr); } }
+.support-card {
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-2xl);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: box-shadow .25s;
+}
+.support-card:hover { box-shadow: var(--shadow-md); }
+.support-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-lg);
+  background: var(--navy-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+.support-value { font-weight: 700; font-size: 1rem; color: var(--gray-800); margin-bottom: 0.25rem; }
+.support-label { font-size: 0.68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gray-400); }
 
 /* ══════════════════════════
    DAY TABS
