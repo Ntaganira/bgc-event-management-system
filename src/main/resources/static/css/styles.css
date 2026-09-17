@@ -704,6 +704,12 @@ main { flex: 1; }
   margin: 0 auto 2rem;
   line-height: 1.8;
 }
+.cta-banner .cta-dates {
+  color: var(--gold-400);
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin-bottom: 1rem;
+}
 .btn-cta {
   display: inline-block;
   background: var(--white);
